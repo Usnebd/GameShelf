@@ -8,7 +8,13 @@ function App() {
   return (
     <>
       <Navbar></Navbar>
-      <Stack direction="row" justifyContent="space - between">
+      <Stack
+        direction="row"
+        justifyContent="space - between"
+        sx={{
+          height: "100%",
+        }}
+      >
         <Sidebar></Sidebar>
         <Feed></Feed>
       </Stack>

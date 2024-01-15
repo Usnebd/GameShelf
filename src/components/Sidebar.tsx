@@ -1,4 +1,5 @@
 import { ModeNight } from "@mui/icons-material";
+import "./Sidebar.css";
 import {
   Box,
   List,
@@ -10,7 +11,15 @@ import {
 
 export default function Sidebar() {
   return (
-    <Box flex={1} p={1} sx={{ display: { xs: "none", sm: "block" } }}>
+    <Box
+      flex={1}
+      p={1}
+      sx={{
+        backgroundColor: "yellow",
+        height: "100%",
+        display: { xs: "none", sm: "block" },
+      }}
+    >
       <List>
         <ListItem>
           <Typography>add</Typography>
