@@ -2,10 +2,7 @@ import { Box, Toolbar, Typography } from "@mui/material";
 
 function Content() {
   return (
-    <Box
-      component="main"
-      sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
-    >
+    <Box component="main" p={3}>
       <Toolbar />
       <Typography paragraph>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
