@@ -1,23 +1,12 @@
-import { Stack } from "@mui/material";
 import "./App.css";
 import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Feed from "./components/Feed";
+import Content from "./components/Content";
+import { Container } from "@mui/material";
 
 function App() {
   return (
     <>
       <Navbar></Navbar>
-      <Stack
-        direction="row"
-        justifyContent="space - between"
-        sx={{
-          height: "100%",
-        }}
-      >
-        <Sidebar></Sidebar>
-        <Feed></Feed>
-      </Stack>
     </>
   );
 }
