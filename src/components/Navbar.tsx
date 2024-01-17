@@ -1,4 +1,4 @@
-import { Box, Switch, useMediaQuery } from "@mui/material";
+import { Box, Divider, Switch, useMediaQuery } from "@mui/material";
 import { Drawer } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { Toolbar } from "@mui/material";
@@ -16,10 +16,11 @@ import { AppBar, Button, IconButton, Stack } from "@mui/material";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
 import Content from "./Content";
 
-const drawerWidth = 240;
+const drawerWidth = 230;
 
 export default function Navbar() {
   const pages = ["Home", "Menu", "Orders"];
+  const sidelist = ["Home", "Menu", "Orders"];
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -97,24 +98,29 @@ export default function Navbar() {
           </Typography>
           <LunchDiningIcon fontSize="large"></LunchDiningIcon>
         </Toolbar>
-        <Box sx={{ overflow: "auto" }}>
+        <Box id="sidebar">
           <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                  sx={{
-                    paddingBottom: 1.5,
-                    paddingTop: 1.5,
-                    marginBottom: 0.3,
-                    marginTop: 0.3,
-                  }}
-                >
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+            {sidelist.map((text) => (
+              <>
+                <ListItem key={text} disablePadding>
+                  <ListItemButton
+                    sx={{
+                      paddingBottom: 1.5,
+                      paddingTop: 1.5,
+                    }}
+                  >
+                    <ListItemText
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Typography variant="h6">{text}</Typography>
+                    </ListItemText>
+                  </ListItemButton>
+                </ListItem>
+                <Divider />
+              </>
             ))}
           </List>
         </Box>
