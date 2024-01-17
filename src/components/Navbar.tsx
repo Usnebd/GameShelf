@@ -1,10 +1,9 @@
-import { Box } from "@mui/material";
+import { Box, Switch, useMediaQuery } from "@mui/material";
 import { Drawer } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { Toolbar } from "@mui/material";
 import { List } from "@mui/material";
 import { Typography } from "@mui/material";
-import { Divider } from "@mui/material";
 import { ListItem } from "@mui/material";
 import { ListItemButton } from "@mui/material";
 import { ListItemIcon } from "@mui/material";
@@ -14,25 +13,36 @@ import MailIcon from "@mui/icons-material/Mail";
 import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import "./Navbar.css";
 import { AppBar, Button, IconButton, Stack } from "@mui/material";
+import ModeNightIcon from "@mui/icons-material/ModeNight";
 import Content from "./Content";
 
 const drawerWidth = 240;
 
 export default function Navbar() {
   const pages = ["Home", "Menu", "Orders"];
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
+        sx={{
+          width: `calc(100% - ${drawerWidth}px)`,
+          ml: `${drawerWidth}px`,
+          opacity: "0.95",
+        }}
       >
         <Toolbar>
-          <Stack spacing={2} direction="row" sx={{ flexGrow: 1 }}>
+          <Stack spacing={0} direction="row" sx={{ flexGrow: 1 }}>
             {pages.map((page) => (
-              <Button key={page} variant="text" color="secondary">
-                <Typography>{page}</Typography>
+              <Button
+                key={page}
+                variant="text"
+                color="secondary"
+                sx={{ textTransform: "none" }}
+              >
+                <Typography variant="h6" pl={1.5} pr={1.5}>
+                  {page}
+                </Typography>
               </Button>
             ))}
           </Stack>
@@ -43,11 +53,23 @@ export default function Navbar() {
               display: { xs: "none", sm: "block" },
             }}
           >
-            <Button variant="outlined" color="secondary">
-              Sign in
+            <Box sx={{ display: "inline" }}>
+              <ModeNightIcon sx={{ verticalAlign: "middle" }}></ModeNightIcon>
+              <Switch></Switch>
+            </Box>
+            <Button
+              variant="outlined"
+              color="secondary"
+              sx={{ textTransform: "none" }}
+            >
+              <Typography>Sign in</Typography>
             </Button>
-            <Button variant="contained" color="secondary">
-              Sign Up
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ textTransform: "none" }}
+            >
+              <Typography>Sign Up</Typography>
             </Button>
           </Stack>
         </Toolbar>
@@ -58,6 +80,7 @@ export default function Navbar() {
           width: drawerWidth,
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
+            borderRight: "none",
             width: drawerWidth,
             boxSizing: "border-box",
           },
@@ -66,39 +89,26 @@ export default function Navbar() {
         <Toolbar
           sx={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            pr={1}
-            sx={{ fontWeight: "bold" }}
-          >
+          <Typography variant="h5" noWrap component="div" mr={0.5}>
             MyChiosco
           </Typography>
-          <LunchDiningIcon></LunchDiningIcon>
+          <LunchDiningIcon fontSize="large"></LunchDiningIcon>
         </Toolbar>
         <Box sx={{ overflow: "auto" }}>
           <List>
             {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
+                <ListItemButton
+                  sx={{
+                    paddingBottom: 1.5,
+                    paddingTop: 1.5,
+                    marginBottom: 0.3,
+                    marginTop: 0.3,
+                  }}
+                >
                   <ListItemIcon>
                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon>
