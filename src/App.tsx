@@ -17,17 +17,6 @@ function App() {
           secondary: amber,
           mode: prefersDarkMode ? "dark" : "light",
         },
-        components: {
-          MuiPaper: {
-            styleOverrides: {
-              // the slot name defined in the `slot` and `overridesResolver` parameters
-              // of the `styled` API
-              root: {
-                backgroundColor: "rgb(54, 48, 48)",
-              },
-            },
-          },
-        },
       }),
     [prefersDarkMode]
   );
