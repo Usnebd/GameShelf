@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Content from "./components/Content";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { amber, indigo } from "@mui/material/colors";
-import { CssBaseline, useMediaQuery } from "@mui/material";
+import { Container, CssBaseline, useMediaQuery } from "@mui/material";
 import React from "react";
 
 function App() {
@@ -25,6 +25,9 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navbar></Navbar>
+      <Container>
+        <Content></Content>
+      </Container>
     </ThemeProvider>
   );
 }

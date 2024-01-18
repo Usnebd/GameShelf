@@ -1,5 +1,5 @@
 import { Box, Divider, Switch } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Drawer } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { Toolbar } from "@mui/material";
@@ -13,21 +13,44 @@ import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import "./Navbar.css";
 import { AppBar, Button, IconButton, Stack } from "@mui/material";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
-import Content from "./Content";
 
 export default function Navbar() {
   const pages = ["Home", "Menu", "Orders"];
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [anchorPosition, setAnchor] = useState<"left" | "bottom" | undefined>(
+    "left"
+  );
+  const [drawerWidth, setDrawerWidth] = useState("180px");
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Chiudi il Drawer se la dimensione della finestra è "md"
+      if (window.innerWidth >= 900) {
+        //900 = md
+        setDrawerOpen(false);
+      }
+      if (window.innerWidth >= 600) {
+        setAnchor("left");
+        setDrawerWidth("180px");
+      } else {
+        setAnchor("bottom");
+        setDrawerWidth("100%");
+      }
+    };
+
+    // Aggiungi l'evento di ridimensionamento
+    window.addEventListener("resize", handleResize);
+
+    // Pulisci l'evento di ridimensionamento al momento del cleanup
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
-      >
+      <AppBar position="fixed">
         <Toolbar>
           <Box
             component="a"
@@ -103,7 +126,6 @@ export default function Navbar() {
               </Button>
             ))}
           </Box>
-
           <Stack
             spacing={1}
             direction="row"
@@ -118,49 +140,79 @@ export default function Navbar() {
             <Button
               variant="outlined"
               color="secondary"
-              sx={{ textTransform: "none" }}
+              sx={{
+                textTransform: "none",
+              }}
             >
-              <Typography>Sign in</Typography>
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ textTransform: "none" }}
-            >
-              <Typography>Sign Up</Typography>
+              <Typography>Sign In</Typography>
             </Button>
           </Stack>
         </Toolbar>
       </AppBar>
       <Drawer
-        anchor="left"
+        anchor={anchorPosition}
         open={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         sx={{
           display: { xs: "flex", md: "none" },
-          width: "200px",
+          zIndex: (theme) => theme.zIndex.appBar + 1,
+          width: drawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
-            width: "200px",
+            width: drawerWidth,
           },
         }}
       >
-        <Toolbar />
         <List>
           {pages.map((page) => (
-            <ListItem
-              disablePadding
-              onClick={() => setDrawerOpen(false)}
-              sx={{ width: "200px" }}
-            >
-              <ListItemButton>
-                <ListItemText>
-                  <Typography variant="h6">{page}</Typography>
-                </ListItemText>
-              </ListItemButton>
-            </ListItem>
+            <>
+              <ListItem
+                disablePadding
+                onClick={() => setDrawerOpen(false)}
+                sx={{ width: drawerWidth }}
+              >
+                <ListItemButton>
+                  <ListItemText>
+                    <Typography variant="h6" align="center">
+                      {page}
+                    </Typography>
+                  </ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <Divider />
+            </>
           ))}
+          <ListItem>
+            <Box
+              sx={{
+                width: drawerWidth,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ModeNightIcon sx={{ verticalAlign: "middle" }}></ModeNightIcon>
+              <Switch></Switch>
+            </Box>
+          </ListItem>
+          <Divider />
+          <ListItem
+            onClick={() => setDrawerOpen(false)}
+            sx={{
+              width: drawerWidth,
+              justifyContent: "center",
+              mt: 1.5,
+            }}
+          >
+            <Button
+              variant="outlined"
+              color="secondary"
+              sx={{ textTransform: "none" }}
+            >
+              <Typography>Sign in</Typography>
+            </Button>
+          </ListItem>
         </List>
       </Drawer>
     </Box>
