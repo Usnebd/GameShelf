@@ -1,30 +1,35 @@
-import "./App.css";
-import Navbar from "./components/Navbar";
-import Content from "./components/Content";
+import { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { amber, indigo } from "@mui/material/colors";
 import { Container, CssBaseline, useMediaQuery } from "@mui/material";
-import React from "react";
+import { useMemo } from "react";
+import { Navbar } from "./components/Navbar";
+import Content from "./components/Content";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [mode, setMode] = useState(prefersDarkMode);
 
-  const theme = React.useMemo(
+  const theme = useMemo(
     () =>
       createTheme({
         palette: {
           primary: indigo,
           secondary: amber,
-          mode: prefersDarkMode ? "dark" : "light",
+          mode: mode ? "dark" : "light",
         },
       }),
-    [prefersDarkMode]
+    [mode]
   );
+
+  const toggleMode = () => {
+    setMode((prevMode) => !prevMode);
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Navbar></Navbar>
+      <Navbar mode={mode} toggleMode={toggleMode}></Navbar>
       <Container>
         <Content></Content>
       </Container>

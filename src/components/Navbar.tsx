@@ -1,5 +1,5 @@
 import { Box, Divider, Switch } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Drawer } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { Toolbar } from "@mui/material";
@@ -13,8 +13,14 @@ import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import "./Navbar.css";
 import { AppBar, Button, IconButton, Stack } from "@mui/material";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
+import React from "react";
 
-export default function Navbar() {
+interface NavbarProps {
+  mode: boolean;
+  toggleMode: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
   const pages = ["Home", "Menu", "Orders"];
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [anchorPosition, setAnchor] = useState<"left" | "bottom" | undefined>(
@@ -24,9 +30,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleResize = () => {
-      // Chiudi il Drawer se la dimensione della finestra è "md"
       if (window.innerWidth >= 900) {
-        //900 = md
         setDrawerOpen(false);
       }
       if (window.innerWidth >= 600) {
@@ -38,10 +42,10 @@ export default function Navbar() {
       }
     };
 
-    // Aggiungi l'evento di ridimensionamento
     window.addEventListener("resize", handleResize);
 
-    // Pulisci l'evento di ridimensionamento al momento del cleanup
+    handleResize();
+
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -50,7 +54,10 @@ export default function Navbar() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed">
+      <AppBar
+        position="fixed"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <Toolbar>
           <Box
             component="a"
@@ -112,7 +119,6 @@ export default function Navbar() {
             </Typography>
             <LunchDiningIcon fontSize="large"></LunchDiningIcon>
           </Box>
-
           <Box ml={2} sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
@@ -135,7 +141,11 @@ export default function Navbar() {
           >
             <Box sx={{ display: "inline" }}>
               <ModeNightIcon sx={{ verticalAlign: "middle" }}></ModeNightIcon>
-              <Switch></Switch>
+              <Switch
+                color="secondary"
+                checked={mode}
+                onChange={() => toggleMode()}
+              />
             </Box>
             <Button
               variant="outlined"
@@ -155,7 +165,6 @@ export default function Navbar() {
         onClose={() => setDrawerOpen(false)}
         sx={{
           display: { xs: "flex", md: "none" },
-          zIndex: (theme) => theme.zIndex.appBar + 1,
           width: drawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
@@ -164,9 +173,10 @@ export default function Navbar() {
           },
         }}
       >
+        <Toolbar />
         <List>
           {pages.map((page) => (
-            <>
+            <React.Fragment key={page + "-list"}>
               <ListItem
                 disablePadding
                 onClick={() => setDrawerOpen(false)}
@@ -180,10 +190,10 @@ export default function Navbar() {
                   </ListItemText>
                 </ListItemButton>
               </ListItem>
-              <Divider />
-            </>
+              <Divider key={page + "-divider"} />
+            </React.Fragment>
           ))}
-          <ListItem>
+          <ListItem key={"DarkModeSwitch"}>
             <Box
               sx={{
                 width: drawerWidth,
@@ -193,11 +203,16 @@ export default function Navbar() {
               }}
             >
               <ModeNightIcon sx={{ verticalAlign: "middle" }}></ModeNightIcon>
-              <Switch></Switch>
+              <Switch
+                color="secondary"
+                checked={mode}
+                onChange={() => toggleMode()}
+              />
             </Box>
           </ListItem>
-          <Divider />
+          <Divider key={"DarkModeSwitch-divider"} />
           <ListItem
+            key={"signButton"}
             onClick={() => setDrawerOpen(false)}
             sx={{
               width: drawerWidth,
@@ -217,4 +232,4 @@ export default function Navbar() {
       </Drawer>
     </Box>
   );
-}
+};
