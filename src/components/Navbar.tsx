@@ -1,5 +1,5 @@
 import { Box, Divider, Switch } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Drawer } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { Toolbar } from "@mui/material";
@@ -10,10 +10,12 @@ import { ListItemButton } from "@mui/material";
 import { ListItemText } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import LunchDiningIcon from "@mui/icons-material/LunchDining";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import "./Navbar.css";
 import { AppBar, Button, IconButton, Stack } from "@mui/material";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
 import React from "react";
+import { Link } from "react-router-dom";
 
 interface NavbarProps {
   mode: boolean;
@@ -52,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex" }} component="nav">
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -60,8 +62,8 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
       >
         <Toolbar>
           <Box
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={Link}
+            to={"/"}
             sx={{
               color: "inherit",
               textDecoration: "none",
@@ -122,6 +124,8 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
           <Box ml={2} sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
+                component={Link}
+                to={`/${page}`}
                 key={page}
                 color="secondary"
                 sx={{ my: 2, display: "block" }}
@@ -140,7 +144,11 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
             }}
           >
             <Box sx={{ display: "inline" }}>
-              <ModeNightIcon sx={{ verticalAlign: "middle" }}></ModeNightIcon>
+              {mode ? (
+                <ModeNightIcon sx={{ verticalAlign: "middle" }} />
+              ) : (
+                <LightModeIcon sx={{ verticalAlign: "middle" }} />
+              )}
               <Switch
                 color="secondary"
                 checked={mode}
@@ -182,7 +190,7 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
                 onClick={() => setDrawerOpen(false)}
                 sx={{ width: drawerWidth }}
               >
-                <ListItemButton>
+                <ListItemButton component={Link} to={`/${page}`}>
                   <ListItemText>
                     <Typography variant="h6" align="center">
                       {page}
@@ -202,7 +210,11 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
                 alignItems: "center",
               }}
             >
-              <ModeNightIcon sx={{ verticalAlign: "middle" }}></ModeNightIcon>
+              {mode ? (
+                <ModeNightIcon sx={{ verticalAlign: "middle" }} />
+              ) : (
+                <LightModeIcon sx={{ verticalAlign: "middle" }} />
+              )}
               <Switch
                 color="secondary"
                 checked={mode}

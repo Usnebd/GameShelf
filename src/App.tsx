@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { amber, indigo } from "@mui/material/colors";
-import { Container, CssBaseline, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Container,
+  CssBaseline,
+  Toolbar,
+  useMediaQuery,
+} from "@mui/material";
 import { useMemo } from "react";
 import { Navbar } from "./components/Navbar";
-import Content from "./components/Content";
+import { Outlet } from "react-router-dom";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -29,9 +35,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Navbar mode={mode} toggleMode={toggleMode}></Navbar>
+      <Box component="header">
+        <Navbar mode={mode} toggleMode={toggleMode} />
+        <Toolbar />
+      </Box>
       <Container>
-        <Content></Content>
+        <Box component="main" p={3}>
+          <Outlet />
+        </Box>
       </Container>
     </ThemeProvider>
   );
