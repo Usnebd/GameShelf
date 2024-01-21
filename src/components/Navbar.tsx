@@ -19,9 +19,14 @@ import { Link } from "react-router-dom";
 interface NavbarProps {
   mode: boolean;
   toggleMode: () => void;
+  setItem: (value: boolean) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  mode,
+  toggleMode,
+  setItem,
+}) => {
   const pages = ["Home", "Menu", "Orders"];
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [anchorPosition, setAnchor] = useState<"left" | "bottom" | undefined>(
@@ -147,7 +152,10 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
                 <Switch
                   color="secondary"
                   checked={mode}
-                  onChange={() => toggleMode()}
+                  onChange={() => {
+                    toggleMode();
+                    setItem(!mode); // Chiamata a setItem con il nuovo valore di mode
+                  }}
                 />
               </Box>
             </Tooltip>
