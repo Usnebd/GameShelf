@@ -91,13 +91,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             <LogoText>MyChiosco</LogoText>
             <LunchDiningIcon fontSize="large"></LunchDiningIcon>
           </Box>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box position="fixed" sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               edge="start"
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
+              color="inherit"
               onClick={() =>
                 setDrawerOpen((prevIsDrawerOpen) => !prevIsDrawerOpen)
               }
@@ -110,10 +111,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             component={Link}
             to="/"
             sx={{
-              color: "inherit",
-              textDecoration: "none",
               display: { xs: "flex", md: "none" },
-              flexGrow: 1,
+              flexGrow: 1, // Fai espandere questo elemento per occupare lo spazio rimanente
+              justifyContent: "center",
+              alignItems: "center",
+              textDecoration: "none",
+              color: "inherit",
             }}
           >
             <LogoText>MyChiosco</LogoText>
@@ -174,9 +177,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       <Drawer
         anchor={anchorPosition}
         open={isDrawerOpen}
-        transitionDuration={300}
+        transitionDuration={130}
         onClose={() => setDrawerOpen(false)}
         sx={{
+          transitionTimingFunction: "ease-in-out",
           display: { xs: "flex", md: "none" },
           width: drawerWidth,
           flexShrink: 0,
@@ -226,28 +230,36 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Switch
                 color="secondary"
                 checked={mode}
-                onChange={() => toggleMode()}
+                onChange={() => {
+                  toggleMode();
+                  setItem(!mode); // Chiamata a setItem con il nuovo valore di mode
+                }}
               />
             </Box>
           </ListItem>
           <Divider key={"DarkModeSwitch-divider"} />
           <ListItem
-            key={"signButton"}
+            disablePadding
             onClick={() => setDrawerOpen(false)}
             sx={{
               width: drawerWidth,
               justifyContent: "center",
-              mt: 1.5,
+              backgroundColor: "secondary.main",
             }}
           >
-            <Button
-              variant="outlined"
-              color="secondary"
-              sx={{ textTransform: "none" }}
-            >
-              <Typography>Sign in</Typography>
-            </Button>
+            <ListItemButton>
+              <ListItemText sx={{ width: drawerWidth }}>
+                <Typography
+                  color="secondary.contrastText"
+                  variant="h6"
+                  align="center"
+                >
+                  Sign In
+                </Typography>
+              </ListItemText>
+            </ListItemButton>
           </ListItem>
+          <Divider />
         </List>
       </Drawer>
     </>

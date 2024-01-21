@@ -41,7 +41,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navbar mode={mode} toggleMode={toggleMode} setItem={setItem} />
-      <Box component="main" p={3} sx={{ height: "100%" }}>
+      <Box component="main" mt={5}>
         <Container>
           <Outlet />
         </Container>

@@ -11,11 +11,39 @@ function NotFound() {
         justifyContent: "center",
       }}
     >
-      <Typography fontWeight="Bold" sx={{ fontSize: "3vw" }}>
-        404 - Pagina non trovata
+      <Typography
+        fontWeight="Bold"
+        variant="h5"
+        sx={{ display: { xs: "block", sm: "none" } }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center", // Cambiato da justifyItems a justifyContent
+            alignItems: "center", // Aggiunto per centrare verticalmente
+          }}
+        >
+          <Box>404 - Pagina non trovata</Box>
+          <Box mt={2}>¯\_(ツ)_/¯</Box>
+        </Box>
       </Typography>
-      <Typography fontWeight="Bold" mt={2} sx={{ fontSize: "3vw" }}>
-        ¯\_(ツ)_/¯
+      <Typography
+        fontWeight="Bold"
+        variant="h4"
+        sx={{ display: { xs: "none", sm: "block" } }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center", // Cambiato da justifyItems a justifyContent
+            alignItems: "center", // Aggiunto per centrare verticalmente
+          }}
+        >
+          <Box>404 - Pagina non trovata</Box>
+          <Box mt={2}>¯\_(ツ)_/¯</Box>
+        </Box>
       </Typography>
     </Box>
   );

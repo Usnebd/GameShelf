@@ -1,9 +1,18 @@
-import { Box } from "@mui/material";
+import { Box, Fab } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 function Menu() {
   return (
-    <Box>
-      <p>afef</p>
+    <Box
+      position="fixed"
+      sx={{
+        bottom: "16px",
+        right: "16px",
+      }}
+    >
+      <Fab size="large" color="secondary" aria-label="add">
+        <AddIcon />
+      </Fab>
     </Box>
   );
 }
