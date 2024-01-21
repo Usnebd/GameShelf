@@ -1,4 +1,12 @@
-import { Box, Divider, Switch, Tooltip, styled } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Switch,
+  Tab,
+  Tabs,
+  Tooltip,
+  styled,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { Drawer } from "@mui/material";
 import { Toolbar } from "@mui/material";
@@ -71,6 +79,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     whiteSpace: "nowrap",
     color: "inherit",
   }));
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
 
   return (
     <>
@@ -122,21 +135,33 @@ export const Navbar: React.FC<NavbarProps> = ({
             <LogoText>MyChiosco</LogoText>
             <LunchDiningIcon fontSize="large"></LunchDiningIcon>
           </Box>
-          <Box ml={2} sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                component={Link}
-                to={page != "Home" ? page : "/"}
-                key={page}
-                color="inherit"
-                variant="text"
-                sx={{ display: "block" }}
-              >
-                <Typography pl={1} pr={1} py={0.8}>
-                  {page}
-                </Typography>
-              </Button>
-            ))}
+          <Box
+            ml={3}
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+            }}
+          >
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              textColor="secondary"
+              indicatorColor="secondary"
+            >
+              {pages.map((page) => (
+                <Tab
+                  key={page}
+                  label={page}
+                  component={Link}
+                  to={page != "Home" ? page : "/"}
+                  sx={{
+                    p: 1,
+                    fontSize: 16,
+                    color: "white",
+                  }}
+                />
+              ))}
+            </Tabs>
           </Box>
           <Stack
             spacing={1}

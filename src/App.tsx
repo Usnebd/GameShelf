@@ -29,6 +29,15 @@ function App() {
           fontWeightMedium: 600,
           fontWeightBold: 700,
         },
+        components: {
+          MuiTabs: {
+            styleOverrides: {
+              indicator: {
+                height: 3,
+              },
+            },
+          },
+        },
       }),
     [mode]
   );

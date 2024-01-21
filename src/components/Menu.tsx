@@ -1,7 +1,13 @@
-import { Box, Fab } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { Box, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
+import ShareIcon from "@mui/icons-material/Share";
 
 function Menu() {
+  const actions = [
+    { icon: <SaveIcon />, name: "Save" },
+    { icon: <ShareIcon />, name: "Share" },
+  ];
+
   return (
     <Box
       position="fixed"
@@ -10,9 +16,19 @@ function Menu() {
         right: "16px",
       }}
     >
-      <Fab size="large" color="secondary" aria-label="add">
-        <AddIcon />
-      </Fab>
+      <SpeedDial
+        ariaLabel="SpeedDial basic example"
+        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        icon={<SpeedDialIcon />}
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+          />
+        ))}
+      </SpeedDial>
     </Box>
   );
 }
