@@ -42,15 +42,12 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box component="header">
-        <Navbar mode={mode} toggleMode={toggleMode} />
-        <Toolbar />
-      </Box>
-      <Container>
-        <Box component="main" p={3}>
+      <Navbar mode={mode} toggleMode={toggleMode} />
+      <Box component="main" p={3} sx={{ height: "100%" }}>
+        <Container>
           <Outlet />
-        </Box>
-      </Container>
+        </Container>
+      </Box>
     </ThemeProvider>
   );
 }

@@ -1,7 +1,6 @@
 import { Box, Divider, Switch, Tooltip, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Drawer } from "@mui/material";
-import { CssBaseline } from "@mui/material";
 import { Toolbar } from "@mui/material";
 import { List } from "@mui/material";
 import { Typography } from "@mui/material";
@@ -53,6 +52,14 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
     };
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = isDrawerOpen ? "hidden" : "auto";
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isDrawerOpen]);
+
   const LogoText = styled(Typography)(({ theme }) => ({
     fontSize: theme.typography.h5.fontSize,
     marginRight: theme.spacing(0.7),
@@ -61,16 +68,15 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
   }));
 
   return (
-    <Box sx={{ display: "flex" }} component="nav">
-      <CssBaseline />
+    <>
       <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        position="sticky"
+        sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
           <Box
             component={Link}
-            to={"/"}
+            to="/"
             sx={{
               color: "inherit",
               textDecoration: "none",
@@ -160,6 +166,7 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
       <Drawer
         anchor={anchorPosition}
         open={isDrawerOpen}
+        transitionDuration={300}
         onClose={() => setDrawerOpen(false)}
         sx={{
           display: { xs: "flex", md: "none" },
@@ -235,6 +242,6 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
           </ListItem>
         </List>
       </Drawer>
-    </Box>
+    </>
   );
 };
