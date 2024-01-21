@@ -1,4 +1,4 @@
-import { Box, Divider, Switch } from "@mui/material";
+import { Box, Divider, Switch, Tooltip, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Drawer } from "@mui/material";
 import { CssBaseline } from "@mui/material";
@@ -53,6 +53,13 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
     };
   }, []);
 
+  const LogoText = styled(Typography)(({ theme }) => ({
+    fontSize: theme.typography.h5.fontSize,
+    marginRight: theme.spacing(0.7),
+    whiteSpace: "nowrap",
+    color: "inherit",
+  }));
+
   return (
     <Box sx={{ display: "flex" }} component="nav">
       <CssBaseline />
@@ -70,16 +77,7 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
               display: { xs: "none", md: "flex" },
             }}
           >
-            <Typography
-              variant="h5"
-              mr={0.7}
-              noWrap
-              sx={{
-                color: "inherit",
-              }}
-            >
-              MyChiosco
-            </Typography>
+            <LogoText>MyChiosco</LogoText>
             <LunchDiningIcon fontSize="large"></LunchDiningIcon>
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -98,8 +96,8 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
           </Box>
 
           <Box
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={Link}
+            to="/"
             sx={{
               color: "inherit",
               textDecoration: "none",
@@ -107,30 +105,20 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
               flexGrow: 1,
             }}
           >
-            <Typography
-              variant="h5"
-              mr={0.7}
-              noWrap
-              sx={{
-                fontWeight: 700,
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              MyChiosco
-            </Typography>
+            <LogoText>MyChiosco</LogoText>
             <LunchDiningIcon fontSize="large"></LunchDiningIcon>
           </Box>
           <Box ml={2} sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 component={Link}
-                to={`/${page}`}
+                to={page != "Home" ? page : "/"}
                 key={page}
-                color="secondary"
-                sx={{ my: 2, display: "block" }}
+                color="inherit"
+                variant="text"
+                sx={{ display: "block" }}
               >
-                <Typography pl={1} pr={1}>
+                <Typography pl={1} pr={1} py={0.8}>
                   {page}
                 </Typography>
               </Button>
@@ -143,18 +131,20 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
               display: { xs: "none", md: "block" },
             }}
           >
-            <Box sx={{ display: "inline" }}>
-              {mode ? (
-                <ModeNightIcon sx={{ verticalAlign: "middle" }} />
-              ) : (
-                <LightModeIcon sx={{ verticalAlign: "middle" }} />
-              )}
-              <Switch
-                color="secondary"
-                checked={mode}
-                onChange={() => toggleMode()}
-              />
-            </Box>
+            <Tooltip title="Dark Mode">
+              <Box sx={{ display: "inline" }}>
+                {mode ? (
+                  <ModeNightIcon sx={{ verticalAlign: "middle" }} />
+                ) : (
+                  <LightModeIcon sx={{ verticalAlign: "middle" }} />
+                )}
+                <Switch
+                  color="secondary"
+                  checked={mode}
+                  onChange={() => toggleMode()}
+                />
+              </Box>
+            </Tooltip>
             <Button
               variant="outlined"
               color="secondary"
@@ -181,8 +171,8 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
           },
         }}
       >
-        <Toolbar />
-        <List>
+        <Toolbar sx={{ display: { xs: "none", sm: "block" } }} />
+        <List disablePadding>
           {pages.map((page) => (
             <React.Fragment key={page + "-list"}>
               <ListItem
@@ -190,7 +180,10 @@ export const Navbar: React.FC<NavbarProps> = ({ mode, toggleMode }) => {
                 onClick={() => setDrawerOpen(false)}
                 sx={{ width: drawerWidth }}
               >
-                <ListItemButton component={Link} to={`/${page}`}>
+                <ListItemButton
+                  component={Link}
+                  to={page != "Home" ? page : "/"}
+                >
                   <ListItemText>
                     <Typography variant="h6" align="center">
                       {page}
