@@ -2,3 +2,6 @@
 .MuiToolbar-root .MuiButton-root {
   font-weight: bold;
 }
+.MuiToolbar-root a {
+  -webkit-tap-highlight-color: transparent;
+}

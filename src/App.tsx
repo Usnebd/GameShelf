@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { Navbar } from "./components/Navbar";
 import { Outlet } from "react-router-dom";
 import { useLocalStorage } from "./custom_hook/useLocalStorage";
+import Dial from "./components/Dial";
 
 function App() {
   const { setItem, getItem } = useLocalStorage("theme");
@@ -37,6 +38,14 @@ function App() {
               },
             },
           },
+          MuiSpeedDialAction: {
+            styleOverrides: {
+              staticTooltipLabel: {
+                color: mode ? "white" : "black",
+                fontWeight: 600,
+              },
+            },
+          },
         },
       }),
     [mode]
@@ -55,6 +64,7 @@ function App() {
           <Outlet />
         </Container>
       </Box>
+      <Dial mode={mode} toggleMode={toggleMode} setItem={setItem} />
     </ThemeProvider>
   );
 }
