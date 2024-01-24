@@ -22,7 +22,8 @@ import Avatar from "@mui/material/Avatar";
 import { auth } from "./firebase-conf";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { AuthContext, SnackBarContext } from "../App";
+import { AuthContext } from "../App";
+import { enqueueSnackbar } from "notistack";
 
 interface NavbarProps {
   mode: boolean;
@@ -36,8 +37,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   setItem,
 }) => {
   const { user } = useContext(AuthContext);
-  const { handleSnackbarOpen, handleSnackMessage } =
-    useContext(SnackBarContext);
   const navigate = useNavigate();
   const pages = ["Home", "Menu", "Orders"];
   const LogoText = styled(Typography)(({ theme }) => ({
@@ -54,12 +53,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
-        handleSnackMessage("Signed Out!");
-        handleSnackbarOpen();
+        enqueueSnackbar("Signed Out", { variant: "info" });
         navigate("/");
       })
-      .catch((error) => {
-        console.error("Sign out error:", error);
+      .catch(() => {
+        enqueueSnackbar("Error while Sign Out", { variant: "error" });
       });
   };
 

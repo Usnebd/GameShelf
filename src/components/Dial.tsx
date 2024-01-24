@@ -16,7 +16,8 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "./firebase-conf";
 import { signOut } from "firebase/auth";
-import { AuthContext, SnackBarContext } from "../App";
+import { AuthContext } from "../App";
+import { enqueueSnackbar } from "notistack";
 
 interface DialProps {
   mode: boolean;
@@ -27,8 +28,6 @@ interface DialProps {
 export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const { handleSnackbarOpen, handleSnackMessage } =
-    useContext(SnackBarContext);
   const actions = [
     { icon: <HomeIcon />, name: "Home", link: "/" },
     { icon: <MenuBookIcon />, name: "Menu", link: "/Menu" },
@@ -44,12 +43,11 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
         if (user !== null) {
           signOut(auth)
             .then(() => {
-              handleSnackMessage("Signed Out!");
-              handleSnackbarOpen();
+              enqueueSnackbar("Signed Out", { variant: "info" });
               navigate("/");
             })
-            .catch((error) => {
-              console.error("Sign out error:", error);
+            .catch(() => {
+              enqueueSnackbar("Error while Sign Out", { variant: "error" });
             });
         } else {
           navigate("/sign-in");

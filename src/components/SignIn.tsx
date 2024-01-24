@@ -10,10 +10,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import InputAdornment from "@mui/material/InputAdornment";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { SnackBarContext } from "../App";
 import { auth } from "./firebase-conf";
 import {
   browserSessionPersistence,
@@ -21,8 +20,10 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 export default function SignIn() {
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,27 +36,25 @@ export default function SignIn() {
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
-  const { handleSnackbarOpen, handleSnackMessage } =
-    useContext(SnackBarContext);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       if (isChecked) {
         setPersistence(auth, browserSessionPersistence)
-          .then()
+          .then(() => {
+            enqueueSnackbar("Saving User Credentials", { variant: "info" });
+          })
           .catch((error) => {
             console.log(error.message);
           });
       }
       await signInWithEmailAndPassword(auth, email, password);
-      handleSnackMessage("Signed in!");
-      handleSnackbarOpen();
+      enqueueSnackbar("Signed In", { variant: "success" });
       navigate("/");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        handleSnackMessage("Wrong Credentials!");
-        handleSnackbarOpen();
+        enqueueSnackbar("Wrong Credentials", { variant: "error" });
         return {
           message: `(${error.message})`,
         };

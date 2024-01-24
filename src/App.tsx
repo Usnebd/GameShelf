@@ -1,13 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { amber, indigo } from "@mui/material/colors";
-import {
-  Box,
-  Container,
-  CssBaseline,
-  Snackbar,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Container, CssBaseline, useMediaQuery } from "@mui/material";
 import { useMemo } from "react";
 import { Navbar } from "./components/Navbar";
 import { Outlet } from "react-router-dom";
@@ -15,15 +9,11 @@ import { useLocalStorage } from "./custom_hook/useLocalStorage";
 import Dial from "./components/Dial";
 import { auth } from "./components/firebase-conf";
 import { onAuthStateChanged } from "firebase/auth";
+import { SnackbarProvider } from "notistack";
 
 export const AuthContext = createContext({
   user: auth.currentUser,
   handleUser: () => {},
-});
-
-export const SnackBarContext = createContext({
-  handleSnackbarOpen: () => {},
-  handleSnackMessage: (_msg: string) => {},
 });
 
 function App() {
@@ -72,11 +62,6 @@ function App() {
   const toggleMode = () => {
     setMode((prevMode: boolean) => !prevMode);
   };
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const handleSnackbarOpen: () => void = () => setSnackbarOpen(true);
-  const handleSnackbarClose: () => void = () => setSnackbarOpen(false);
-  const handleSnackMessage: (msg: string) => void = (msg) => setMessage(msg);
   const [user, setUser] = useState(auth.currentUser);
   const handleUser: () => void = () => setUser(auth.currentUser);
   useEffect(() => {
@@ -90,12 +75,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthContext.Provider value={{ user, handleUser }}>
-        <SnackBarContext.Provider
-          value={{
-            handleSnackbarOpen,
-            handleSnackMessage,
-          }}
-        >
+        <SnackbarProvider>
           <CssBaseline />
           <Navbar mode={mode} toggleMode={toggleMode} setItem={setItem} />
           <Box component="main" mt={5}>
@@ -104,14 +84,7 @@ function App() {
             </Container>
           </Box>
           <Dial mode={mode} toggleMode={toggleMode} setItem={setItem} />
-          <Snackbar
-            disableWindowBlurListener
-            open={snackbarOpen}
-            autoHideDuration={3000}
-            message={message}
-            onClose={handleSnackbarClose}
-          />
-        </SnackBarContext.Provider>
+        </SnackbarProvider>
       </AuthContext.Provider>
     </ThemeProvider>
   );

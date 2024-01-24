@@ -14,9 +14,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useContext, useState } from "react";
-import { SnackBarContext } from "../App";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { enqueueSnackbar } from "notistack";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -29,8 +29,6 @@ export default function SignUp() {
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
-  const { handleSnackbarOpen, handleSnackMessage } =
-    useContext(SnackBarContext);
   const isValidEmail = (email: string) => {
     const atIndex = email.indexOf("@");
     const dotIndex = email.indexOf(".", atIndex);
@@ -57,18 +55,15 @@ export default function SignUp() {
         await createUserWithEmailAndPassword(auth, email, password);
         if (auth.currentUser) {
           sendEmailVerification(auth.currentUser).then(() => {
-            handleSnackMessage("Email Verification Sent!");
-            handleSnackbarOpen();
+            enqueueSnackbar("Email Verification Sent", { variant: "info" });
           });
         }
-        handleSnackMessage("Signed Up!");
-        handleSnackbarOpen();
+        enqueueSnackbar("Signed Up", { variant: "success" });
         navigate("/");
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        handleSnackMessage("Error!");
-        handleSnackbarOpen();
+        enqueueSnackbar("Invalid Credentials", { variant: "error" });
         return {
           message: `(${error.message})`,
         };
