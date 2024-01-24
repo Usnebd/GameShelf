@@ -10,8 +10,13 @@ import HomeIcon from "@mui/icons-material/Home";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import { useState } from "react";
+import LogoutIcon from "@mui/icons-material/Logout";
+import LoginIcon from "@mui/icons-material/Login";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "./firebase-conf";
+import { signOut } from "firebase/auth";
+import { AuthContext, SnackBarContext } from "../App";
 
 interface DialProps {
   mode: boolean;
@@ -21,14 +26,34 @@ interface DialProps {
 
 export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
   const navigate = useNavigate();
-
+  const { user } = useContext(AuthContext);
+  const { handleSnackbarOpen, handleSnackMessage } =
+    useContext(SnackBarContext);
   const actions = [
-    { icon: <HomeIcon />, name: "Home" },
-    { icon: <MenuBookIcon />, name: "Menu" },
-    { icon: <ShoppingCartIcon />, name: "Orders" },
+    { icon: <HomeIcon />, name: "Home", link: "/" },
+    { icon: <MenuBookIcon />, name: "Menu", link: "/Menu" },
+    { icon: <ShoppingCartIcon />, name: "Orders", link: "/Orders" },
     {
       icon: mode ? <ModeNightIcon /> : <LightModeIcon />,
       name: "Theme",
+    },
+    {
+      icon: user !== null ? <LogoutIcon /> : <LoginIcon />,
+      name: user !== null ? "Logout" : "Login",
+      onClick: () => {
+        if (user !== null) {
+          signOut(auth)
+            .then(() => {
+              handleSnackMessage("Signed Out!");
+              handleSnackbarOpen();
+            })
+            .catch((error) => {
+              console.error("Sign out error:", error);
+            });
+        } else {
+          navigate("/sign-in");
+        }
+      },
     },
   ];
 
@@ -71,10 +96,11 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
             onClick={() => {
               handleClose();
               if (action.name !== "Theme") {
-                if (action.name !== "Home") {
-                  navigate(`/${action.name}`);
-                } else {
-                  navigate("/");
+                if (action.link !== undefined) {
+                  navigate(action.link);
+                }
+                if (action.onClick !== undefined) {
+                  action.onClick();
                 }
               } else {
                 toggleMode();

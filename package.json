@@ -16,6 +16,8 @@
     "@mui/icons-material": "^5.15.4",
     "@mui/material": "^5.15.4",
     "@mui/material-next": "^6.0.0-alpha.117",
+    "@types/firebase": "^3.2.1",
+    "firebase": "^10.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.4",
@@ -30,7 +32,8 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "firebaseui": "^6.1.0",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "vite": "^5.0.12"
   }
 }

@@ -13,6 +13,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import SignIn from "./components/SignIn.tsx";
+import SignUp from "./components/SignUp.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +23,8 @@ const router = createBrowserRouter(
       <Route path="Menu" element={<Menu />} />
       <Route path="Orders" element={<Orders />} />
       <Route path="page-not-found" element={<NotFound />} />
+      <Route path="sign-in" element={<SignIn />} />
+      <Route path="sign-up" element={<SignUp />} />
       <Route path="*" element={<Navigate to="/page-not-found" />} />
     </Route>
   )

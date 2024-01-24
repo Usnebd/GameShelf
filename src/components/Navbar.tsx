@@ -1,13 +1,28 @@
-import { Box, Switch, Tab, Tabs, Tooltip, styled } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Switch,
+  Tab,
+  Tabs,
+  Tooltip,
+  styled,
+} from "@mui/material";
 import { Toolbar } from "@mui/material";
 import { Typography } from "@mui/material";
 import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import "./Navbar.css";
-import { AppBar, Button, Stack } from "@mui/material";
+import { AppBar, Button } from "@mui/material";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
+import { auth } from "./firebase-conf";
+import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { AuthContext, SnackBarContext } from "../App";
 
 interface NavbarProps {
   mode: boolean;
@@ -20,18 +35,42 @@ export const Navbar: React.FC<NavbarProps> = ({
   toggleMode,
   setItem,
 }) => {
+  const { user } = useContext(AuthContext);
+  const { handleSnackbarOpen, handleSnackMessage } =
+    useContext(SnackBarContext);
+  const navigate = useNavigate();
   const pages = ["Home", "Menu", "Orders"];
-
   const LogoText = styled(Typography)(({ theme }) => ({
     fontSize: theme.typography.h5.fontSize,
     marginRight: theme.spacing(0.7),
     whiteSpace: "nowrap",
     color: "inherit",
   }));
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (_: any, newValue: number) => {
     setValue(newValue);
+  };
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        handleSnackMessage("Signed Out!");
+        handleSnackbarOpen();
+      })
+      .catch((error) => {
+        console.error("Sign out error:", error);
+      });
+  };
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+  const handleOpenMenu = (event: {
+    currentTarget: React.SetStateAction<HTMLElement | null>;
+  }) => {
+    setAnchorEl(event.currentTarget);
   };
 
   return (
@@ -62,7 +101,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             sx={{
               display: { xs: "flex", md: "none" },
               flexGrow: 1, // Fai espandere questo elemento per occupare lo spazio rimanente
-              justifyContent: "center",
               alignItems: "center",
               textDecoration: "none",
               color: "inherit",
@@ -99,15 +137,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               ))}
             </Tabs>
           </Box>
-          <Stack
-            spacing={1}
-            direction="row"
+          <Box
             sx={{
-              display: { xs: "none", md: "block" },
+              display: "flex",
+              alignItems: "center", // Opzionale, per allineare verticalmente
+              justifyContent: "space-between",
+              // Altre proprietà di stile necessarie
             }}
           >
-            <Tooltip title="Dark Mode">
-              <Box sx={{ display: "inline" }}>
+            <Tooltip
+              title="Dark Mode"
+              sx={{ mr: 1, display: { xs: "none", md: "block" } }}
+            >
+              <Box>
                 {mode ? (
                   <ModeNightIcon sx={{ verticalAlign: "middle" }} />
                 ) : (
@@ -118,21 +160,53 @@ export const Navbar: React.FC<NavbarProps> = ({
                   checked={mode}
                   onChange={() => {
                     toggleMode();
-                    setItem(!mode); // Chiamata a setItem con il nuovo valore di mode
+                    setItem(!mode);
                   }}
                 />
               </Box>
             </Tooltip>
-            <Button
-              variant="outlined"
-              color="secondary"
-              sx={{
-                textTransform: "none",
-              }}
-            >
-              <Typography>Sign In</Typography>
-            </Button>
-          </Stack>
+            {user !== null ? (
+              <>
+                <IconButton
+                  onClick={handleOpenMenu}
+                  sx={{ textTransform: "none", color: "inherit" }}
+                >
+                  <Avatar>{user?.displayName?.charAt(0)}</Avatar>
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleCloseMenu}
+                  MenuListProps={{
+                    "aria-labelledby": "basic-button",
+                  }}
+                >
+                  <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseMenu();
+                      handleSignOut();
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button
+                onClick={() => {
+                  navigate("/sign-in");
+                }}
+                variant="outlined"
+                color="secondary"
+                sx={{
+                  textTransform: "none",
+                }}
+              >
+                <Typography>Sign In</Typography>
+              </Button>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
     </>

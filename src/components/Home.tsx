@@ -1,11 +1,7 @@
 import { Box } from "@mui/material";
 
 function Home() {
-  return (
-    <Box>
-      <p>aaaaaa</p>
-    </Box>
-  );
+  return <Box></Box>;
 }
 
 export default Home;
