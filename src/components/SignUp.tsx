@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "./firebase-conf";
 import Grid from "@mui/material/Grid";
@@ -22,6 +23,10 @@ export default function SignUp() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [emailError, setEmailError] = useState(false);
@@ -51,9 +56,26 @@ export default function SignUp() {
       } else {
         setEmailError(true);
       }
+      if (firstName.length == 0) {
+        setFirstNameError(true);
+      } else {
+        setFirstNameError(false);
+      }
+      if (lastName.length == 0) {
+        setLastNameError(true);
+      } else {
+        setLastNameError(false);
+      }
       if (password.length >= 6 && isValidEmail(email)) {
         await createUserWithEmailAndPassword(auth, email, password);
         if (auth.currentUser) {
+          updateProfile(auth.currentUser, {
+            displayName: firstName.concat("." + lastName),
+          })
+            .then()
+            .catch((error) => {
+              console.log(error.message);
+            });
           sendEmailVerification(auth.currentUser).then(() => {
             enqueueSnackbar("Email Verification Sent", { variant: "info" });
           });
@@ -95,6 +117,11 @@ export default function SignUp() {
                 required
                 fullWidth
                 id="firstName"
+                error={firstNameError}
+                helperText={firstNameError ? "Empty" : false}
+                onChange={(event) => {
+                  setFirstName(event.target.value);
+                }}
                 label="First Name"
               />
             </Grid>
@@ -105,6 +132,11 @@ export default function SignUp() {
                 id="lastName"
                 label="Last Name"
                 name="lastName"
+                error={lastNameError}
+                helperText={lastNameError ? "Empty" : false}
+                onChange={(event) => {
+                  setLastName(event.target.value);
+                }}
                 autoComplete="family-name"
               />
             </Grid>

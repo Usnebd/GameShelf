@@ -178,7 +178,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     color: "inherit",
                   }}
                 >
-                  <Avatar>{user?.displayName?.charAt(0)}</Avatar>
+                  <Avatar
+                    sx={{
+                      bgcolor: "secondary.main",
+                      color: "black",
+                    }}
+                  >
+                    {user.displayName?.charAt(0)}
+                  </Avatar>
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}

@@ -16,6 +16,7 @@ import {
 import SignIn from "./components/SignIn.tsx";
 import SignUp from "./components/SignUp.tsx";
 import Account from "./components/Account.tsx";
+import PasswordReset from "./components/PasswordReset.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
       <Route path="sign-in" element={<SignIn />} />
       <Route path="sign-up" element={<SignUp />} />
       <Route path="account" element={<Account />} />
+      <Route path="password-reset" element={<PasswordReset />} />
       <Route path="*" element={<Navigate to="/page-not-found" />} />
     </Route>
   )

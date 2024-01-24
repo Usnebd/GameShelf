@@ -135,7 +135,7 @@ export default function SignIn() {
           <Grid container>
             <Grid item xs>
               <Link
-                to="#"
+                to="/password-reset"
                 style={{ textDecoration: "none", color: "primary.main" }}
               >
                 <Typography
