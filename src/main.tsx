@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 import SignIn from "./components/SignIn.tsx";
 import SignUp from "./components/SignUp.tsx";
+import Account from "./components/Account.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,6 +26,7 @@ const router = createBrowserRouter(
       <Route path="page-not-found" element={<NotFound />} />
       <Route path="sign-in" element={<SignIn />} />
       <Route path="sign-up" element={<SignUp />} />
+      <Route path="account" element={<Account />} />
       <Route path="*" element={<Navigate to="/page-not-found" />} />
     </Route>
   )

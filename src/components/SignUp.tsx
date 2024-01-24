@@ -13,26 +13,49 @@ import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useContext, useState } from "react";
 import { SnackBarContext } from "../App";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUp() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
   const { handleSnackbarOpen, handleSnackMessage } =
     useContext(SnackBarContext);
+  const isValidEmail = (email: string) => {
+    const atIndex = email.indexOf("@");
+    const dotIndex = email.indexOf(".", atIndex);
+
+    // Verifica se "@" è presente e "." è dopo "@"
+    return atIndex !== -1 && dotIndex !== -1 && dotIndex > atIndex;
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      handleSnackMessage("Signed Up!");
-      handleSnackbarOpen();
+      if (password.length >= 6) {
+        setPasswordError(false);
+      } else {
+        setPasswordError(true);
+      }
+      if (isValidEmail(email)) {
+        setEmailError(false);
+      } else {
+        setEmailError(true);
+      }
+      if (password.length >= 6 && isValidEmail(email)) {
+        await createUserWithEmailAndPassword(auth, email, password);
+        handleSnackMessage("Signed Up!");
+        handleSnackbarOpen();
+        navigate("/");
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         handleSnackMessage("Error!");
@@ -43,7 +66,6 @@ export default function SignUp() {
       }
     }
   };
-
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -90,6 +112,8 @@ export default function SignUp() {
                 id="email"
                 label="Email Address"
                 name="email"
+                error={emailError}
+                helperText={emailError ? "Invalid mail format" : false}
                 autoComplete="email"
                 onChange={(event) => setEmail(event.target.value)}
               />
@@ -102,8 +126,12 @@ export default function SignUp() {
                 label="Password"
                 type={showPassword ? "text" : "password"}
                 id="password"
+                error={passwordError}
+                helperText={passwordError ? "At least 6 characters" : false}
                 autoComplete="new-password"
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">

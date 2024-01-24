@@ -17,7 +17,7 @@ import "./Navbar.css";
 import { AppBar, Button } from "@mui/material";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import { auth } from "./firebase-conf";
 import { useNavigate } from "react-router-dom";
@@ -70,6 +70,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleOpenMenu = (event: {
     currentTarget: React.SetStateAction<HTMLElement | null>;
   }) => {
+    if (window.innerWidth < 900) {
+      navigate("/account");
+    }
     setAnchorEl(event.currentTarget);
   };
 
@@ -98,11 +101,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Box
             component={Link}
             to="/"
+            pl={6}
             sx={{
               display: { xs: "flex", md: "none" },
               flexGrow: 1, // Fai espandere questo elemento per occupare lo spazio rimanente
               alignItems: "center",
               textDecoration: "none",
+              justifyContent: "center",
               color: "inherit",
             }}
           >
@@ -117,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }}
           >
             <Tabs
-              value={value}
+              value={useLocation().pathname.includes("/account") ? null : value}
               onChange={handleChange}
               textColor="secondary"
               indicatorColor="secondary"
@@ -169,7 +174,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <>
                 <IconButton
                   onClick={handleOpenMenu}
-                  sx={{ textTransform: "none", color: "inherit" }}
+                  sx={{
+                    textTransform: "none",
+                    color: "inherit",
+                  }}
                 >
                   <Avatar>{user?.displayName?.charAt(0)}</Avatar>
                 </IconButton>
@@ -180,9 +188,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   MenuListProps={{
                     "aria-labelledby": "basic-button",
                   }}
+                  sx={{ display: { xs: "none", md: "flex" } }}
                 >
-                  <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
                   <MenuItem
+                    onClick={() => {
+                      navigate("/account");
+                      handleCloseMenu();
+                    }}
+                    sx={{ display: { xs: "none", md: "flex" } }}
+                  >
+                    Account
+                  </MenuItem>
+                  <MenuItem
+                    sx={{ display: { xs: "none", md: "flex" } }}
                     onClick={() => {
                       handleCloseMenu();
                       handleSignOut();
@@ -200,6 +218,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 variant="outlined"
                 color="secondary"
                 sx={{
+                  display: { xs: "none", md: "flex" },
                   textTransform: "none",
                 }}
               >

@@ -29,6 +29,7 @@ export default function SignIn() {
   };
   const { handleSnackbarOpen, handleSnackMessage } =
     useContext(SnackBarContext);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -72,7 +73,6 @@ export default function SignIn() {
             label="Email Address"
             name="email"
             autoComplete="email"
-            autoFocus
             onChange={(event) => setEmail(event.target.value)}
           />
           <TextField
