@@ -15,7 +15,11 @@ import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { SnackBarContext } from "../App";
 import { auth } from "./firebase-conf";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  browserSessionPersistence,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
@@ -23,7 +27,11 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isChecked, setChecked] = useState(false);
 
+  const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -33,6 +41,13 @@ export default function SignIn() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      if (isChecked) {
+        setPersistence(auth, browserSessionPersistence)
+          .then()
+          .catch((error) => {
+            console.log(error.message);
+          });
+      }
       await signInWithEmailAndPassword(auth, email, password);
       handleSnackMessage("Signed in!");
       handleSnackbarOpen();
@@ -100,14 +115,21 @@ export default function SignIn() {
             onChange={(event) => setPassword(event.target.value)}
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={
+              <Checkbox
+                value="remember"
+                color="primary"
+                checked={isChecked}
+                onChange={handleCheckChange}
+              />
+            }
             label="Remember me"
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2, pt: 1.3, pb: 1.3 }}
           >
             Sign In
           </Button>
@@ -117,7 +139,12 @@ export default function SignIn() {
                 to="#"
                 style={{ textDecoration: "none", color: "primary.main" }}
               >
-                <Typography sx={{ color: "primary.main" }}>
+                <Typography
+                  sx={{
+                    textDecoration: "underline",
+                    color: "primary.contrastText",
+                  }}
+                >
                   Forgot password?
                 </Typography>
               </Link>
@@ -127,7 +154,12 @@ export default function SignIn() {
                 to="/sign-up"
                 style={{ textDecoration: "none", color: "primary.main" }}
               >
-                <Typography sx={{ color: "primary.main" }}>
+                <Typography
+                  sx={{
+                    textDecoration: "underline",
+                    color: "primary.contrastText",
+                  }}
+                >
                   Don't have an account? Sign Up
                 </Typography>
               </Link>

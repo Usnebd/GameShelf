@@ -105,6 +105,7 @@ function App() {
           </Box>
           <Dial mode={mode} toggleMode={toggleMode} setItem={setItem} />
           <Snackbar
+            disableWindowBlurListener
             open={snackbarOpen}
             autoHideDuration={3000}
             message={message}

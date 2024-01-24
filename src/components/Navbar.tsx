@@ -56,6 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       .then(() => {
         handleSnackMessage("Signed Out!");
         handleSnackbarOpen();
+        navigate("/");
       })
       .catch((error) => {
         console.error("Sign out error:", error);
@@ -101,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Box
             component={Link}
             to="/"
-            pl={6}
+            pl={user !== null ? 6 : 0}
             sx={{
               display: { xs: "flex", md: "none" },
               flexGrow: 1, // Fai espandere questo elemento per occupare lo spazio rimanente

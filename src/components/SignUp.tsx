@@ -2,7 +2,10 @@ import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { auth } from "./firebase-conf";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -52,6 +55,12 @@ export default function SignUp() {
       }
       if (password.length >= 6 && isValidEmail(email)) {
         await createUserWithEmailAndPassword(auth, email, password);
+        if (auth.currentUser) {
+          sendEmailVerification(auth.currentUser).then(() => {
+            handleSnackMessage("Email Verification Sent!");
+            handleSnackbarOpen();
+          });
+        }
         handleSnackMessage("Signed Up!");
         handleSnackbarOpen();
         navigate("/");
@@ -92,7 +101,6 @@ export default function SignUp() {
                 fullWidth
                 id="firstName"
                 label="First Name"
-                autoFocus
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -152,7 +160,7 @@ export default function SignUp() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2, pt: 1.3, pb: 1.3 }}
           >
             Sign Up
           </Button>
@@ -162,7 +170,12 @@ export default function SignUp() {
                 to="/sign-in"
                 style={{ textDecoration: "none", color: "primary.main" }}
               >
-                <Typography sx={{ color: "primary.main" }}>
+                <Typography
+                  sx={{
+                    textDecoration: "underline",
+                    color: "primary.contrastText",
+                  }}
+                >
                   Already have an account? Sign in
                 </Typography>
               </Link>

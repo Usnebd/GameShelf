@@ -46,6 +46,7 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
             .then(() => {
               handleSnackMessage("Signed Out!");
               handleSnackbarOpen();
+              navigate("/");
             })
             .catch((error) => {
               console.error("Sign out error:", error);
@@ -94,7 +95,6 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
               },
             }}
             onClick={() => {
-              handleClose();
               if (action.name !== "Theme") {
                 if (action.link !== undefined) {
                   navigate(action.link);
