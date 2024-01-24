@@ -1,18 +1,6 @@
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  Auth,
-  signOut,
-  createUserWithEmailAndPassword,
-  User,
-} from "firebase/auth";
+import { getAuth, Auth } from "firebase/auth";
 import "firebaseui/dist/firebaseui.css";
-import { useContext } from "react";
-import { SnackBarContext } from "../App";
 
 const firebaseConfig = {
   apiKey: "AIzaSyChoaAsbIA-XZVDmWE7DL0ahoh_5hCnQaI",
