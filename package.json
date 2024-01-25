@@ -35,6 +35,8 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "firebaseui": "^6.1.0",
     "typescript": "^5.2.2",
-    "vite": "^5.0.12"
+    "vite": "^5.0.12",
+    "vite-plugin-pwa": "^0.17.4",
+    "workbox-window": "^7.0.0"
   }
 }

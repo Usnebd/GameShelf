@@ -4,8 +4,6 @@ import {
   Menu,
   MenuItem,
   Switch,
-  Tab,
-  Tabs,
   Tooltip,
   styled,
 } from "@mui/material";
@@ -17,7 +15,7 @@ import "./Navbar.css";
 import { AppBar, Button } from "@mui/material";
 import ModeNightIcon from "@mui/icons-material/ModeNight";
 import React, { useContext, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import { auth } from "./firebase-conf";
 import { useNavigate } from "react-router-dom";
@@ -45,11 +43,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     whiteSpace: "nowrap",
     color: "inherit",
   }));
-  const [value, setValue] = useState(0);
-
-  const handleChange = (_: any, newValue: number) => {
-    setValue(newValue);
-  };
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
@@ -69,9 +62,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleOpenMenu = (event: {
     currentTarget: React.SetStateAction<HTMLElement | null>;
   }) => {
-    if (window.innerWidth < 900) {
-      navigate("/account");
-    }
     setAnchorEl(event.currentTarget);
   };
 
@@ -100,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Box
             component={Link}
             to="/"
-            pl={user !== null ? 6 : 0}
+            pl={user !== null ? 7 : 10}
             sx={{
               display: { xs: "flex", md: "none" },
               flexGrow: 1, // Fai espandere questo elemento per occupare lo spazio rimanente
@@ -114,39 +104,34 @@ export const Navbar: React.FC<NavbarProps> = ({
             <LunchDiningIcon fontSize="large"></LunchDiningIcon>
           </Box>
           <Box
-            ml={3}
+            ml={2}
             sx={{
               flexGrow: 1,
               display: { xs: "none", md: "flex" },
             }}
           >
-            <Tabs
-              value={useLocation().pathname.includes("/account") ? null : value}
-              onChange={handleChange}
-              textColor="secondary"
-              indicatorColor="secondary"
-            >
-              {pages.map((page) => (
-                <Tab
-                  key={page}
-                  label={page}
-                  component={Link}
-                  to={page != "Home" ? page : "/"}
-                  sx={{
-                    p: 1,
-                    fontSize: 17,
-                    color: "white",
-                  }}
-                />
-              ))}
-            </Tabs>
+            {pages.map((page) => (
+              <Button
+                key={page}
+                component={Link}
+                to={page != "Home" ? page : "/"}
+                sx={{
+                  mx: 0.5,
+                  py: 1.1,
+                  px: 2.5,
+                  fontSize: 17,
+                  color: "white",
+                }}
+              >
+                {page}
+              </Button>
+            ))}
           </Box>
           <Box
             sx={{
               display: "flex",
-              alignItems: "center", // Opzionale, per allineare verticalmente
+              alignItems: "center",
               justifyContent: "space-between",
-              // Altre proprietà di stile necessarie
             }}
           >
             <Tooltip
@@ -184,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       color: "black",
                     }}
                   >
-                    {user.displayName?.charAt(0)}
+                    {user ? user.displayName?.charAt(0) : null}
                   </Avatar>
                 </IconButton>
                 <Menu
@@ -194,19 +179,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                   MenuListProps={{
                     "aria-labelledby": "basic-button",
                   }}
-                  sx={{ display: { xs: "none", md: "flex" } }}
                 >
                   <MenuItem
                     onClick={() => {
                       navigate("/account");
                       handleCloseMenu();
                     }}
-                    sx={{ display: { xs: "none", md: "flex" } }}
                   >
                     Account
                   </MenuItem>
                   <MenuItem
-                    sx={{ display: { xs: "none", md: "flex" } }}
                     onClick={() => {
                       handleCloseMenu();
                       handleSignOut();
@@ -224,7 +206,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 variant="outlined"
                 color="secondary"
                 sx={{
-                  display: { xs: "none", md: "flex" },
                   textTransform: "none",
                 }}
               >

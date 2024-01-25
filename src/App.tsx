@@ -1,7 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { amber, indigo } from "@mui/material/colors";
-import { Box, Container, CssBaseline, useMediaQuery } from "@mui/material";
+import {
+  Backdrop,
+  Box,
+  CircularProgress,
+  Container,
+  CssBaseline,
+  useMediaQuery,
+} from "@mui/material";
 import { useMemo } from "react";
 import { Navbar } from "./components/Navbar";
 import { Outlet } from "react-router-dom";
@@ -20,6 +27,7 @@ function App() {
   const { setItem, getItem } = useLocalStorage("theme");
   const savedPreferences = getItem();
   const systemSetting = useMediaQuery("(prefers-color-scheme: dark)");
+  const [authLoaded, setAuthLoaded] = useState(false);
   const [mode, setMode] = useState(
     savedPreferences != undefined ? savedPreferences : systemSetting
   );
@@ -67,6 +75,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setAuthLoaded(true);
     });
 
     return () => unsubscribe();
@@ -78,6 +87,21 @@ function App() {
         <SnackbarProvider>
           <CssBaseline />
           <Navbar mode={mode} toggleMode={toggleMode} setItem={setItem} />
+          <Backdrop
+            open={!authLoaded}
+            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          >
+            <Container
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress color="inherit" />
+            </Container>
+          </Backdrop>
           <Box component="main" mt={5}>
             <Container>
               <Outlet />
