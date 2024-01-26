@@ -13,7 +13,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useState } from "react";
 import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { auth } from "./firebase-conf";
+import { auth } from "./firebase";
 import {
   browserSessionPersistence,
   setPersistence,

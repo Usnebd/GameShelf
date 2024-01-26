@@ -7,7 +7,7 @@ import {
   sendEmailVerification,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "./firebase-conf";
+import { auth } from "./firebase";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";

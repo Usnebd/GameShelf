@@ -17,7 +17,7 @@ import ModeNightIcon from "@mui/icons-material/ModeNight";
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
-import { auth } from "./firebase-conf";
+import { auth } from "./firebase";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { AuthContext } from "../App";
@@ -41,6 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     fontSize: theme.typography.h5.fontSize,
     marginRight: theme.spacing(0.7),
     whiteSpace: "nowrap",
+    userSelect: "none",
     color: "inherit",
   }));
   const handleSignOut = () => {

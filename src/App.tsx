@@ -14,7 +14,7 @@ import { Navbar } from "./components/Navbar";
 import { Outlet } from "react-router-dom";
 import { useLocalStorage } from "./custom_hook/useLocalStorage";
 import Dial from "./components/Dial";
-import { auth } from "./components/firebase-conf";
+import { auth } from "./components/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { SnackbarProvider } from "notistack";
 
@@ -54,6 +54,7 @@ function App() {
               },
             },
           },
+          MuiListItemButton: {},
           MuiSpeedDialAction: {
             styleOverrides: {
               staticTooltipLabel: {
@@ -102,10 +103,10 @@ function App() {
               <CircularProgress color="inherit" />
             </Container>
           </Backdrop>
-          <Box component="main" mt={5}>
-            <Container>
+          <Box component="main" mt={3}>
+            <Box>
               <Outlet />
-            </Container>
+            </Box>
           </Box>
           <Dial mode={mode} toggleMode={toggleMode} setItem={setItem} />
         </SnackbarProvider>
