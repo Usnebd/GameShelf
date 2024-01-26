@@ -11,10 +11,14 @@ import {
   ListItemButton,
   Stack,
   Collapse,
+  Button,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 interface Product {
   name: string;
@@ -67,7 +71,8 @@ interface SelectedItem {
 
 function Home() {
   const theme = useTheme();
-  const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -167,97 +172,163 @@ function Home() {
               <Typography variant="h5">{category}</Typography>
             </ListItemButton>
           ))}
+          <ListItemButton
+            onClick={() => {
+              setSelectedItems([]);
+            }}
+            sx={{
+              justifyContent: "start",
+              borderRadius: 1.5,
+              my: 1,
+              py: 2,
+              backgroundColor: "error.main",
+              "&.Mui-selected": {
+                backgroundColor: "error.main",
+                color: "error.contrastText",
+              },
+              "&:hover": {
+                backgroundColor: "error.main",
+                color: "error.contrastText",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "error.main",
+                color: "error.contrastText",
+              },
+            }}
+          >
+            <Typography variant="h5" display="flex" flexGrow={1}>
+              Delete
+            </Typography>
+            <DeleteIcon fontSize="large" />
+          </ListItemButton>
         </Stack>
       </List>
     ) : (
-      <List disablePadding sx={{ minWidth: 180 }}>
-        <Stack direction={"row"} spacing={2} mb={1}>
+      <>
+        <Grid container spacing={2}>
+          <Grid item xs>
+            <ListItemButton
+              onClick={() => {
+                setSelectedItems([]);
+              }}
+              sx={{
+                borderRadius: 1.5,
+                my: 1,
+                justifyContent: "center",
+                py: 2,
+                "&.Mui-selected": {
+                  backgroundColor: "error.main",
+                  color: "error.contrastText",
+                },
+                "&:hover": {
+                  backgroundColor: "error.main",
+                  color: "error.contrastText",
+                },
+                "&.Mui-selected:hover": {
+                  backgroundColor: "error.main",
+                  color: "error.contrastText",
+                },
+              }}
+            >
+              <Typography variant="h5">Delete</Typography>
+              <DeleteIcon fontSize="large" />
+            </ListItemButton>
+          </Grid>
+          <Grid item xs>
+            <ListItemButton
+              sx={{
+                justifyContent: "center",
+                borderRadius: 1.5,
+                my: 1,
+                py: 2,
+              }}
+              onClick={() => {
+                selectedItems.length == 0
+                  ? enqueueSnackbar("Empty Cart", { variant: "error" })
+                  : navigate("/checkout");
+              }}
+            >
+              <Typography variant="h5" display="flex" alignItems="center">
+                <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
+                Total: {findTotal(selectedItems) + " €"}
+              </Typography>
+            </ListItemButton>
+          </Grid>
+        </Grid>
+        <List disablePadding sx={{ minWidth: 180 }}>
           <ListItemButton
             onClick={handleClick}
             sx={{
               justifyContent: "center",
               borderRadius: 1.5,
-              my: 1,
               py: 2,
             }}
           >
             <Typography variant="h5">Categorie</Typography>
             {open ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
-          <ListItemButton
-            sx={{
-              justifyContent: "center",
-              borderRadius: 1.5,
-              my: 1,
-              py: 2,
-            }}
-          >
-            <Typography variant="h5" display="flex" alignItems="center">
-              <ShoppingCartIcon fontSize="large" />
-              Totale: {findTotal(selectedItems) + " €"}
-            </Typography>
-          </ListItemButton>
-        </Stack>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {categories.map((category) => (
-              <ListItemButton
-                key={category}
-                onClick={() => {
-                  setSelectedCategory((prevCategory) =>
-                    prevCategory === category ? null : category
-                  );
-                  handleListClose();
-                }}
-                selected={selectedCategory === category}
-                sx={{
-                  justifyContent: "center",
-                  borderRadius: 1.5,
-                  my: 1,
-                  py: 2,
-                  "&.Mui-selected": {
-                    backgroundColor:
-                      theme.palette.mode == "dark"
-                        ? "secondary.main"
-                        : "primary.main",
-                    color:
-                      theme.palette.mode == "dark"
-                        ? "secondary.contrastText"
-                        : "primary.contrastText",
-                  },
-                  "&:hover": {
-                    backgroundColor:
-                      theme.palette.mode == "dark"
-                        ? "secondary.main"
-                        : "primary.main",
-                    color:
-                      theme.palette.mode == "dark"
-                        ? "secondary.contrastText"
-                        : "primary.contrastText",
-                  },
-                  "&.Mui-selected:hover": {
-                    backgroundColor:
-                      theme.palette.mode == "dark"
-                        ? "secondary.main"
-                        : "primary.main",
-                    color:
-                      theme.palette.mode == "dark"
-                        ? "secondary.contrastText"
-                        : "primary.contrastText",
-                  },
-                }}
-              >
-                <Typography variant="h5">{category}</Typography>
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
-      </List>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {categories.map((category) => (
+                <ListItemButton
+                  key={category}
+                  onClick={() => {
+                    setSelectedCategory((prevCategory) =>
+                      prevCategory === category ? null : category
+                    );
+                    handleListClose();
+                  }}
+                  selected={selectedCategory === category}
+                  sx={{
+                    mx: 5,
+                    justifyContent: "center",
+                    borderRadius: 1.5,
+                    my: 1,
+                    py: 2,
+                    "&.Mui-selected": {
+                      backgroundColor:
+                        theme.palette.mode == "dark"
+                          ? "secondary.main"
+                          : "primary.main",
+                      color:
+                        theme.palette.mode == "dark"
+                          ? "secondary.contrastText"
+                          : "primary.contrastText",
+                    },
+                    "&:hover": {
+                      backgroundColor:
+                        theme.palette.mode == "dark"
+                          ? "secondary.main"
+                          : "primary.main",
+                      color:
+                        theme.palette.mode == "dark"
+                          ? "secondary.contrastText"
+                          : "primary.contrastText",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor:
+                        theme.palette.mode == "dark"
+                          ? "secondary.main"
+                          : "primary.main",
+                      color:
+                        theme.palette.mode == "dark"
+                          ? "secondary.contrastText"
+                          : "primary.contrastText",
+                    },
+                  }}
+                >
+                  <Typography variant="h5">{category}</Typography>
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
+        </List>
+      </>
     );
 
   const getProduct = (category: string) => {
     return (
-      <Grid container spacing={3.5}>
+      <Grid container rowSpacing={2} columnSpacing={2}>
         {products[category].map((product) => (
           <Grid item key={product.name} xs={12} sm={6} md={4} lg={3}>
             <Card
@@ -301,31 +372,36 @@ function Home() {
 
   return (
     <Box
-      ml={isMdScreen ? 10 : 2}
-      mr={isMdScreen ? 3 : 2}
+      mx={isSmScreen ? 5 : 0}
+      mb={5}
       textAlign={isSmScreen ? "start" : "center"}
     >
       <Stack
-        mt={5}
-        mr={1}
+        mt={6}
         direction={"row"}
         justifyContent="space-between"
-        alignItems={"flex-end"}
+        alignItems={"flex-start"}
         sx={{ display: { xs: "none", sm: "flex" } }}
       >
         <Typography variant="h3" sx={{ display: { xs: "none", sm: "block" } }}>
           {selectedCategory ? selectedCategory : "Place an order"}
         </Typography>
-        <Typography
-          variant={isMdScreen ? "h4" : "h5"}
-          display="flex"
-          alignItems="center"
+        <Button
+          color="inherit"
+          sx={{ borderRadius: 1.5, p: 2 }}
+          onClick={() => {
+            selectedItems.length == 0
+              ? enqueueSnackbar("Empty Cart", { variant: "error" })
+              : navigate("/checkout");
+          }}
         >
-          <ShoppingCartIcon fontSize="large" />
-          Totale: {findTotal(selectedItems) + " €"}
-        </Typography>
+          <Typography variant={"h5"} display="flex" alignItems="center">
+            <ShoppingCartIcon sx={{ mr: 1 }} />
+            {"Total: " + findTotal(selectedItems) + "€"}
+          </Typography>
+        </Button>
       </Stack>
-      <Stack direction={isSmScreen ? "row" : "column"} mt={6}>
+      <Stack direction={isSmScreen ? "row" : "column"} mt={isSmScreen ? 3 : 0}>
         <Box
           mr={isSmScreen ? 6 : 0}
           mb={3}
@@ -338,7 +414,9 @@ function Home() {
           {getCategoryList()}
         </Box>
         {selectedCategory && (
-          <Box flexGrow={1}>{getProduct(selectedCategory)}</Box>
+          <Box flexGrow={1} mx={isSmScreen ? 0 : 5}>
+            {getProduct(selectedCategory)}
+          </Box>
         )}
       </Stack>
     </Box>

@@ -103,7 +103,7 @@ function App() {
               <CircularProgress color="inherit" />
             </Container>
           </Backdrop>
-          <Box component="main" mt={3}>
+          <Box component="main" mt={2}>
             <Box>
               <Outlet />
             </Box>
