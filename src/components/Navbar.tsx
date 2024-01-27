@@ -20,7 +20,7 @@ import Avatar from "@mui/material/Avatar";
 import { auth } from "./firebase";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { AuthContext } from "../App";
+import { UserContext } from "../App";
 import { enqueueSnackbar } from "notistack";
 
 interface NavbarProps {
@@ -34,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   toggleMode,
   setItem,
 }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const pages = ["Home", "Menu", "Orders"];
   const LogoText = styled(Typography)(({ theme }) => ({
@@ -91,13 +91,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Box
             component={Link}
             to="/"
-            pl={user !== null ? 7 : 10}
             sx={{
               display: { xs: "flex", md: "none" },
               flexGrow: 1, // Fai espandere questo elemento per occupare lo spazio rimanente
               alignItems: "center",
               textDecoration: "none",
-              justifyContent: "center",
               color: "inherit",
             }}
           >

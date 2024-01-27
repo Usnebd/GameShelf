@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   Typography,
@@ -19,6 +19,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { UserContext } from "../App";
 
 interface Product {
   name: string;
@@ -72,9 +73,9 @@ interface SelectedItem {
 function Home() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { selectedItems, setSelectedItems } = useContext(UserContext);
   const { enqueueSnackbar } = useSnackbar();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
-  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [open, setOpen] = useState(true);
   const handleClick = () => {
@@ -106,7 +107,7 @@ function Home() {
         item.productName !== selectedItem.productName
     );
 
-    setSelectedItems((prevSelectedItems) =>
+    setSelectedItems((prevSelectedItems: SelectedItem[]) =>
       updatedSelectedItems.length === prevSelectedItems.length
         ? [...prevSelectedItems, selectedItem]
         : updatedSelectedItems
@@ -244,13 +245,15 @@ function Home() {
               }}
               onClick={() => {
                 selectedItems.length == 0
-                  ? enqueueSnackbar("Empty Cart", { variant: "error" })
+                  ? enqueueSnackbar("Empty Cart", {
+                      variant: "error",
+                    })
                   : navigate("/checkout");
               }}
             >
-              <Typography variant="h5" display="flex" alignItems="center">
-                <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
-                Total: {findTotal(selectedItems) + " €"}
+              <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
+              <Typography variant="h5">
+                {findTotal(selectedItems) + " €"}
               </Typography>
             </ListItemButton>
           </Grid>
@@ -388,15 +391,55 @@ function Home() {
         </Typography>
         <Button
           color="inherit"
-          sx={{ borderRadius: 1.5, p: 2 }}
+          sx={{
+            borderRadius: 1.5,
+            p: 1.7,
+            "&.Mui-selected": {
+              backgroundColor:
+                theme.palette.mode == "dark"
+                  ? "secondary.main"
+                  : "primary.main",
+              color:
+                theme.palette.mode == "dark"
+                  ? "secondary.contrastText"
+                  : "primary.contrastText",
+            },
+            "&:hover": {
+              backgroundColor:
+                theme.palette.mode == "dark"
+                  ? "secondary.main"
+                  : "primary.main",
+              color:
+                theme.palette.mode == "dark"
+                  ? "secondary.contrastText"
+                  : "primary.contrastText",
+            },
+            "&.Mui-selected:hover": {
+              backgroundColor:
+                theme.palette.mode == "dark"
+                  ? "secondary.main"
+                  : "primary.main",
+              color:
+                theme.palette.mode == "dark"
+                  ? "secondary.contrastText"
+                  : "primary.contrastText",
+            },
+          }}
           onClick={() => {
             selectedItems.length == 0
               ? enqueueSnackbar("Empty Cart", { variant: "error" })
               : navigate("/checkout");
           }}
         >
-          <Typography variant={"h5"} display="flex" alignItems="center">
-            <ShoppingCartIcon sx={{ mr: 1 }} />
+          <ShoppingCartIcon fontSize={"large"} />
+          <Typography
+            variant={"h4"}
+            display="flex"
+            alignItems="center"
+            sx={{
+              textTransform: "none",
+            }}
+          >
             {"Total: " + findTotal(selectedItems) + "€"}
           </Typography>
         </Button>

@@ -18,9 +18,18 @@ import { auth } from "./components/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { SnackbarProvider } from "notistack";
 
-export const AuthContext = createContext({
+interface SelectedItem {
+  category: string;
+  productName: string;
+}
+
+export const UserContext = createContext({
   user: auth.currentUser,
   handleUser: () => {},
+  selectedItems: [] as SelectedItem[],
+  setSelectedItems: (
+    _: SelectedItem[] | ((prevItems: SelectedItem[]) => SelectedItem[])
+  ) => {},
 });
 
 function App() {
@@ -28,9 +37,11 @@ function App() {
   const savedPreferences = getItem();
   const systemSetting = useMediaQuery("(prefers-color-scheme: dark)");
   const [authLoaded, setAuthLoaded] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [mode, setMode] = useState(
     savedPreferences != undefined ? savedPreferences : systemSetting
   );
+
   const theme = useMemo(
     () =>
       createTheme({
@@ -84,8 +95,10 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <AuthContext.Provider value={{ user, handleUser }}>
-        <SnackbarProvider>
+      <UserContext.Provider
+        value={{ user, handleUser, selectedItems, setSelectedItems }}
+      >
+        <SnackbarProvider disableWindowBlurListener={true}>
           <CssBaseline />
           <Navbar mode={mode} toggleMode={toggleMode} setItem={setItem} />
           <Backdrop
@@ -110,7 +123,7 @@ function App() {
           </Box>
           <Dial mode={mode} toggleMode={toggleMode} setItem={setItem} />
         </SnackbarProvider>
-      </AuthContext.Provider>
+      </UserContext.Provider>
     </ThemeProvider>
   );
 }
