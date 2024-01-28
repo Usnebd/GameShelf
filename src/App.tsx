@@ -14,23 +14,51 @@ import { Navbar } from "./components/Navbar";
 import { Outlet } from "react-router-dom";
 import { useLocalStorage } from "./custom_hook/useLocalStorage";
 import Dial from "./components/Dial";
-import { auth } from "./components/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "./components/firebase";
+import { User, onAuthStateChanged } from "firebase/auth";
 import { SnackbarProvider } from "notistack";
-
+import { DocumentData, collection, getDocs } from "firebase/firestore";
+import firebase from "firebase/compat/app";
 interface SelectedItem {
   category: string;
   productName: string;
 }
 
-export const UserContext = createContext({
+interface UserContextType {
+  products: Record<string, DocumentData[]>;
+  user: User | null;
+  handleUser: () => void;
+  selectedItems: SelectedItem[];
+  setSelectedItems: (
+    _: SelectedItem[] | ((prevItems: SelectedItem[]) => SelectedItem[])
+  ) => void;
+  findTotal: (_: SelectedItem[]) => void;
+}
+
+export const UserContext = createContext<UserContextType>({
+  products: {
+    Antipasti: [] as DocumentData[],
+    Primi: [] as DocumentData[],
+    Secondi: [] as DocumentData[],
+    Dessert: [] as DocumentData[],
+    Bevande: [] as DocumentData[],
+  },
   user: auth.currentUser,
   handleUser: () => {},
   selectedItems: [] as SelectedItem[],
   setSelectedItems: (
     _: SelectedItem[] | ((prevItems: SelectedItem[]) => SelectedItem[])
   ) => {},
+  findTotal: (_: SelectedItem[]) => {},
 });
+
+const categories: string[] = [
+  "antipasti",
+  "primi",
+  "secondi",
+  "dessert",
+  "bevande",
+];
 
 function App() {
   const { setItem, getItem } = useLocalStorage("theme");
@@ -38,10 +66,28 @@ function App() {
   const systemSetting = useMediaQuery("(prefers-color-scheme: dark)");
   const [authLoaded, setAuthLoaded] = useState(false);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const [docs, setDocs] = useState<firebase.firestore.DocumentData[][]>([]);
   const [mode, setMode] = useState(
     savedPreferences != undefined ? savedPreferences : systemSetting
   );
-
+  const products: Record<string, DocumentData[]> = {
+    Antipasti: docs[0],
+    Primi: docs[1],
+    Secondi: docs[2],
+    Dessert: docs[3],
+    Bevande: docs[4],
+  };
+  const findTotal = (selectedItems: SelectedItem[]) => {
+    return selectedItems
+      .reduce((total, item) => {
+        const product = products[item.category].find(
+          (p) => p.nome === item.productName
+        );
+        const productPrice = product ? product.prezzo : 0;
+        return total + productPrice;
+      }, 0)
+      .toFixed(2);
+  };
   const theme = useMemo(
     () =>
       createTheme({
@@ -85,6 +131,26 @@ function App() {
   const [user, setUser] = useState(auth.currentUser);
   const handleUser: () => void = () => setUser(auth.currentUser);
   useEffect(() => {
+    const fetchFirestoreData = async () => {
+      try {
+        const promises = categories.map(async (item) => {
+          const querySnapshot = await getDocs(collection(db, item));
+          return querySnapshot.docs.map((doc) => doc.data());
+        });
+        const data = await Promise.all(promises);
+        setDocs(data);
+      } catch (error) {
+        console.error("Errore durante la lettura dei documenti:", error);
+        // Gestisci l'errore in base alle tue esigenze
+      }
+    };
+
+    // Chiamata alla funzione di fetch solo quando il componente viene montato
+    if (authLoaded) {
+      fetchFirestoreData();
+    }
+  }, [authLoaded]);
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setAuthLoaded(true);
@@ -96,7 +162,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <UserContext.Provider
-        value={{ user, handleUser, selectedItems, setSelectedItems }}
+        value={{
+          products,
+          user,
+          handleUser,
+          selectedItems,
+          setSelectedItems,
+          findTotal,
+        }}
       >
         <SnackbarProvider disableWindowBlurListener={true}>
           <CssBaseline />

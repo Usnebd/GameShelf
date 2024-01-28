@@ -21,11 +21,6 @@ import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { UserContext } from "../App";
 
-interface Product {
-  name: string;
-  price: number;
-}
-
 const categories: string[] = [
   "Antipasti",
   "Primi",
@@ -33,37 +28,6 @@ const categories: string[] = [
   "Dessert",
   "Bevande",
 ];
-
-const products: Record<string, Product[]> = {
-  Antipasti: [
-    { name: "Bruschetta", price: 8.99 },
-    { name: "Mozzarella Sticks", price: 10.99 },
-    { name: "Ugga", price: 8.99 },
-    { name: "PUppa Sticks", price: 10.99 },
-    { name: "Ciccio Sticks", price: 10.99 },
-    // Aggiungi altri prodotti per gli antipasti
-  ],
-  Primi: [
-    { name: "Margherita Pizza", price: 12.99 },
-    { name: "Pizza napoletana", price: 15.99 },
-    // Aggiungi altri piatti principali
-  ],
-  Secondi: [
-    { name: "Maiale alla piastra", price: 12.99 },
-    { name: "Chicken Alfredo", price: 15.99 },
-    // Aggiungi altri piatti principali
-  ],
-  Bevande: [
-    { name: "CocaCola", price: 12.99 },
-    { name: "Acqua", price: 15.99 },
-    // Aggiungi altri piatti principali
-  ],
-  Dessert: [
-    { name: "Tiramisu", price: 7.99 },
-    { name: "Chocolate Cake", price: 9.99 },
-    // Aggiungi altri dessert
-  ],
-};
 
 interface SelectedItem {
   category: string;
@@ -73,7 +37,8 @@ interface SelectedItem {
 function Home() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { selectedItems, setSelectedItems } = useContext(UserContext);
+  const { selectedItems, setSelectedItems, findTotal, products } =
+    useContext(UserContext);
   const { enqueueSnackbar } = useSnackbar();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -83,18 +48,6 @@ function Home() {
   };
   const handleListClose = () => {
     setOpen(false);
-  };
-
-  const findTotal = (selectedItems: SelectedItem[]) => {
-    return selectedItems
-      .reduce((total, item) => {
-        const product = products[item.category].find(
-          (p) => p.name === item.productName
-        );
-        const productPrice = product ? product.price : 0;
-        return total + productPrice;
-      }, 0)
-      .toFixed(2);
   };
 
   const handleCardClick = (category: string, productName: string) => {
@@ -333,7 +286,7 @@ function Home() {
     return (
       <Grid container rowSpacing={2} columnSpacing={2}>
         {products[category].map((product) => (
-          <Grid item key={product.name} xs={12} sm={6} md={4} lg={3}>
+          <Grid item key={product.nome} xs={12} sm={6} md={4} lg={3}>
             <Card
               sx={{
                 width: "100%",
@@ -343,7 +296,7 @@ function Home() {
                 },
               }}
               elevation={theme.palette.mode == "dark" ? 7 : 10}
-              onClick={() => handleCardClick(category, product.name)}
+              onClick={() => handleCardClick(category, product.nome)}
             >
               <ButtonBase sx={{ width: "100%" }}>
                 <Card
@@ -357,13 +310,11 @@ function Home() {
                     },
                   }}
                   className={
-                    isItemSelected(category, product.name) ? "selected" : ""
+                    isItemSelected(category, product.nome) ? "selected" : ""
                   }
                 >
-                  <Typography variant="h6">{product.name}</Typography>
-                  <Typography variant="body1">
-                    ${product.price.toFixed(2)}
-                  </Typography>
+                  <Typography variant="h6">{product.nome}</Typography>
+                  <Typography variant="body1">${product.prezzo}</Typography>
                 </Card>
               </ButtonBase>
             </Card>
@@ -380,14 +331,14 @@ function Home() {
       textAlign={isSmScreen ? "start" : "center"}
     >
       <Stack
-        mt={6}
+        mt={5}
         direction={"row"}
         justifyContent="space-between"
         alignItems={"flex-start"}
         sx={{ display: { xs: "none", sm: "flex" } }}
       >
         <Typography variant="h3" sx={{ display: { xs: "none", sm: "block" } }}>
-          {selectedCategory ? selectedCategory : "Place an order"}
+          {selectedCategory ? selectedCategory : "Select Products"}
         </Typography>
         <Button
           color="inherit"
