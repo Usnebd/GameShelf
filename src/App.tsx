@@ -27,12 +27,17 @@ interface SelectedItem {
 interface UserContextType {
   products: Record<string, DocumentData[]>;
   user: User | null;
+  total: number;
+  setTotal: (_tot: number) => void;
   handleUser: () => void;
   selectedItems: SelectedItem[];
   setSelectedItems: (
     _: SelectedItem[] | ((prevItems: SelectedItem[]) => SelectedItem[])
   ) => void;
-  findTotal: (_: SelectedItem[]) => void;
+  quantitySelectedMap: Record<string, number>;
+  setQuantitySelectedMap: React.Dispatch<
+    React.SetStateAction<Record<string, number>>
+  >;
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -44,12 +49,19 @@ export const UserContext = createContext<UserContextType>({
     Bevande: [] as DocumentData[],
   },
   user: auth.currentUser,
+  total: 0,
+  setTotal: () => {},
   handleUser: () => {},
   selectedItems: [] as SelectedItem[],
   setSelectedItems: (
     _: SelectedItem[] | ((prevItems: SelectedItem[]) => SelectedItem[])
   ) => {},
-  findTotal: (_: SelectedItem[]) => {},
+  quantitySelectedMap: {} as Record<string, number>,
+  setQuantitySelectedMap: (
+    _:
+      | React.SetStateAction<Record<string, number>>
+      | ((prevMap: Record<string, number>) => Record<string, number>)
+  ) => {},
 });
 
 const categories: string[] = [
@@ -66,7 +78,11 @@ function App() {
   const systemSetting = useMediaQuery("(prefers-color-scheme: dark)");
   const [authLoaded, setAuthLoaded] = useState(false);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const [quantitySelectedMap, setQuantitySelectedMap] = useState<
+    Record<string, number>
+  >({});
   const [docs, setDocs] = useState<firebase.firestore.DocumentData[][]>([]);
+  const [total, setTotal] = useState(0);
   const [mode, setMode] = useState(
     savedPreferences != undefined ? savedPreferences : systemSetting
   );
@@ -77,17 +93,7 @@ function App() {
     Dessert: docs[3],
     Bevande: docs[4],
   };
-  const findTotal = (selectedItems: SelectedItem[]) => {
-    return selectedItems
-      .reduce((total, item) => {
-        const product = products[item.category].find(
-          (p) => p.nome === item.productName
-        );
-        const productPrice = product ? product.prezzo : 0;
-        return total + productPrice;
-      }, 0)
-      .toFixed(2);
-  };
+
   const theme = useMemo(
     () =>
       createTheme({
@@ -146,9 +152,7 @@ function App() {
     };
 
     // Chiamata alla funzione di fetch solo quando il componente viene montato
-    if (authLoaded) {
-      fetchFirestoreData();
-    }
+    fetchFirestoreData();
   }, [authLoaded]);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -163,19 +167,22 @@ function App() {
     <ThemeProvider theme={theme}>
       <UserContext.Provider
         value={{
+          total,
+          setTotal,
           products,
           user,
           handleUser,
           selectedItems,
           setSelectedItems,
-          findTotal,
+          quantitySelectedMap,
+          setQuantitySelectedMap,
         }}
       >
         <SnackbarProvider disableWindowBlurListener={true}>
           <CssBaseline />
           <Navbar mode={mode} toggleMode={toggleMode} setItem={setItem} />
           <Backdrop
-            open={!authLoaded}
+            open={!authLoaded || !docs.length}
             sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
           >
             <Container

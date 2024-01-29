@@ -1,11 +1,14 @@
 import {
+  Badge,
   Box,
   IconButton,
   Menu,
   MenuItem,
+  Stack,
   Switch,
   Tooltip,
   styled,
+  useTheme,
 } from "@mui/material";
 import { Toolbar } from "@mui/material";
 import { Typography } from "@mui/material";
@@ -21,6 +24,7 @@ import { auth } from "./firebase";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { UserContext } from "../App";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { enqueueSnackbar } from "notistack";
 
 interface NavbarProps {
@@ -35,6 +39,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setItem,
 }) => {
   const { user } = useContext(UserContext);
+  const { selectedItems } = useContext(UserContext);
+  const theme = useTheme();
   const navigate = useNavigate();
   const pages = ["Home", "Menu", "Orders"];
   const LogoText = styled(Typography)(({ theme }) => ({
@@ -126,16 +132,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               </Button>
             ))}
           </Box>
-          <Box
+          <Stack
+            direction={"row"}
+            spacing={1}
             sx={{
-              display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
             }}
           >
             <Tooltip
               title="Dark Mode"
-              sx={{ mr: 1, display: { xs: "none", md: "block" } }}
+              sx={{ display: { xs: "none", md: "block" } }}
             >
               <Box>
                 {mode ? (
@@ -152,6 +159,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 />
               </Box>
+            </Tooltip>
+            <Tooltip title="Go to Cart">
+              <IconButton color="inherit" onClick={() => navigate("/checkout")}>
+                <Badge badgeContent={selectedItems.length} color="secondary">
+                  <ShoppingCartIcon fontSize="large" />
+                </Badge>
+              </IconButton>
             </Tooltip>
             {user !== null ? (
               <>
@@ -203,7 +217,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   navigate("/sign-in");
                 }}
                 variant="outlined"
-                color="secondary"
+                color={theme.palette.mode == "dark" ? "secondary" : "inherit"}
                 sx={{
                   textTransform: "none",
                 }}
@@ -211,7 +225,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Typography>Sign In</Typography>
               </Button>
             )}
-          </Box>
+          </Stack>
         </Toolbar>
       </AppBar>
     </>

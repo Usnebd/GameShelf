@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -12,6 +12,8 @@ import {
   Stack,
   Collapse,
   Button,
+  ButtonGroup,
+  IconButton,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -20,6 +22,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { UserContext } from "../App";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import DoneIcon from "@mui/icons-material/Done";
 
 const categories: string[] = [
   "Antipasti",
@@ -37,8 +42,19 @@ interface SelectedItem {
 function Home() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { selectedItems, setSelectedItems, findTotal, products } =
-    useContext(UserContext);
+
+  const [showingQuantityButtons, setShowingQuantityButtons] = useState<
+    Record<string, boolean>
+  >({});
+  const {
+    selectedItems,
+    setSelectedItems,
+    products,
+    quantitySelectedMap,
+    setQuantitySelectedMap,
+    total,
+    setTotal,
+  } = useContext(UserContext);
   const { enqueueSnackbar } = useSnackbar();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -50,8 +66,28 @@ function Home() {
     setOpen(false);
   };
 
+  useEffect(() => {
+    const findTotal = (
+      selectedItems: SelectedItem[],
+      quantitySelectedMap: Record<string, number>
+    ) => {
+      return selectedItems.reduce((total, item) => {
+        const product = products[item.category].find(
+          (p) => p.nome === item.productName
+        );
+        const productPrice = product ? product.prezzo : 0;
+        return total + productPrice * quantitySelectedMap[product?.nome];
+      }, 0);
+    };
+
+    setTotal(findTotal(selectedItems, quantitySelectedMap));
+  }, [quantitySelectedMap, selectedItems]);
+
   const handleCardClick = (category: string, productName: string) => {
-    const selectedItem: SelectedItem = { category, productName };
+    const selectedItem: SelectedItem = {
+      category,
+      productName,
+    };
 
     // Rimuovi l'elemento selezionato se è già presente nella lista
     const updatedSelectedItems = selectedItems.filter(
@@ -70,6 +106,85 @@ function Home() {
   const isItemSelected = (category: string, productName: string) => {
     return selectedItems.some(
       (item) => item.category === category && item.productName === productName
+    );
+  };
+
+  const getQuantityButton = (category: string, productName: string) => {
+    if (quantitySelectedMap[productName] == undefined) {
+      setQuantitySelectedMap((prevMap) => ({
+        ...prevMap,
+        [productName]: 0,
+      }));
+    }
+    return (
+      <Stack direction={"column"} my={2}>
+        <ButtonGroup sx={{ justifyContent: "center" }}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setQuantitySelectedMap((prevMap) => ({
+                ...prevMap,
+                [productName]: prevMap[productName] + 1,
+              }));
+              if (quantitySelectedMap[productName] == 0) {
+                handleCardClick(category, productName);
+              }
+            }}
+          >
+            <AddIcon />
+          </Button>
+          <Button variant="outlined">
+            <Typography variant="h6">
+              {quantitySelectedMap[productName]}
+            </Typography>
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setQuantitySelectedMap((prevMap) =>
+                prevMap[productName] > 0
+                  ? {
+                      ...prevMap,
+                      [productName]: prevMap[productName] - 1,
+                    }
+                  : prevMap
+              );
+              if (
+                quantitySelectedMap[productName] == 1 &&
+                selectedItems.find((item) => item.productName == productName)
+              ) {
+                handleCardClick(category, productName);
+              }
+            }}
+          >
+            <RemoveIcon />
+          </Button>
+        </ButtonGroup>
+        <Box sx={{ display: "flex", justifyContent: "center" }} mt={1}>
+          <IconButton
+            size="large"
+            onClick={() => {
+              setShowingQuantityButtons((prev) => ({
+                ...prev,
+                [productName]: false,
+              }));
+              if (
+                quantitySelectedMap[productName] > 0 &&
+                !selectedItems.find((item) => item.productName == productName)
+              ) {
+                handleCardClick(category, productName);
+              } else if (
+                quantitySelectedMap[productName] == 0 &&
+                selectedItems.find((item) => item.productName == productName)
+              ) {
+                handleCardClick(category, productName);
+              }
+            }}
+          >
+            <DoneIcon />
+          </IconButton>
+        </Box>
+      </Stack>
     );
   };
 
@@ -196,18 +311,10 @@ function Home() {
                 my: 1,
                 py: 2,
               }}
-              onClick={() => {
-                selectedItems.length == 0
-                  ? enqueueSnackbar("Empty Cart", {
-                      variant: "error",
-                    })
-                  : navigate("/checkout");
-              }}
+              onClick={() => navigate("/checkout")}
             >
               <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
-              <Typography variant="h5">
-                {findTotal(selectedItems) + " €"}
-              </Typography>
+              <Typography variant="h5">{total.toFixed(2) + " €"}</Typography>
             </ListItemButton>
           </Grid>
         </Grid>
@@ -296,27 +403,36 @@ function Home() {
                 },
               }}
               elevation={theme.palette.mode == "dark" ? 7 : 10}
-              onClick={() => handleCardClick(category, product.nome)}
             >
-              <ButtonBase sx={{ width: "100%" }}>
-                <Card
-                  elevation={7}
-                  sx={{
-                    padding: 2,
-                    flex: 1,
-                    "&.selected": {
-                      backgroundColor: "green",
-                      color: "primary.contrastText",
-                    },
-                  }}
-                  className={
-                    isItemSelected(category, product.nome) ? "selected" : ""
-                  }
-                >
-                  <Typography variant="h6">{product.nome}</Typography>
-                  <Typography variant="body1">${product.prezzo}</Typography>
-                </Card>
-              </ButtonBase>
+              {!showingQuantityButtons[product.nome] ? (
+                <ButtonBase sx={{ width: "100%" }}>
+                  <Card
+                    elevation={7}
+                    sx={{
+                      padding: 2,
+                      flex: 1,
+                      "&.selected": {
+                        backgroundColor: "green",
+                        color: "primary.contrastText",
+                      },
+                    }}
+                    className={
+                      isItemSelected(category, product.nome) ? "selected" : ""
+                    }
+                    onClick={() => {
+                      setShowingQuantityButtons((prev) => ({
+                        ...prev,
+                        [product.nome]: true,
+                      }));
+                    }}
+                  >
+                    <Typography variant="h6">{product.nome}</Typography>
+                    <Typography variant="body1">${product.prezzo}</Typography>
+                  </Card>
+                </ButtonBase>
+              ) : (
+                getQuantityButton(category, product.nome)
+              )}
             </Card>
           </Grid>
         ))}
@@ -331,13 +447,19 @@ function Home() {
       textAlign={isSmScreen ? "start" : "center"}
     >
       <Stack
-        mt={5}
+        mt={4}
         direction={"row"}
         justifyContent="space-between"
         alignItems={"flex-start"}
         sx={{ display: { xs: "none", sm: "flex" } }}
       >
-        <Typography variant="h3" sx={{ display: { xs: "none", sm: "block" } }}>
+        <Typography
+          variant="h3"
+          sx={{
+            display: { xs: "none", sm: "block" },
+            userSelect: "none",
+          }}
+        >
           {selectedCategory ? selectedCategory : "Select Products"}
         </Typography>
         <Button
@@ -391,7 +513,7 @@ function Home() {
               textTransform: "none",
             }}
           >
-            {"Total: " + findTotal(selectedItems) + "€"}
+            {"Total: " + total.toFixed(2) + "€"}
           </Typography>
         </Button>
       </Stack>
