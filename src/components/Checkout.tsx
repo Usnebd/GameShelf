@@ -13,8 +13,15 @@ import { UserContext } from "../App";
 function checkout() {
   const theme = useTheme();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
-  const { selectedItems, setSelectedItems, findTotal, products } =
-    useContext(UserContext);
+  const {
+    selectedItems,
+    setSelectedItems,
+    products,
+    quantitySelectedMap,
+    setQuantitySelectedMap,
+    total,
+    setTotal,
+  } = useContext(UserContext);
 
   return (
     <Box
@@ -23,7 +30,7 @@ function checkout() {
       textAlign={isSmScreen ? "start" : "center"}
     >
       <Stack
-        mt={5}
+        mt={4}
         direction={"row"}
         justifyContent="space-between"
         alignItems={"flex-start"}
@@ -78,7 +85,7 @@ function checkout() {
               textTransform: "none",
             }}
           >
-            {"Total: " + findTotal(selectedItems) + "€"}
+            {"Total: " + total.toFixed(2) + "€"}
           </Typography>
         </Button>
       </Stack>

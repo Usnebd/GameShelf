@@ -50,6 +50,12 @@ export const Navbar: React.FC<NavbarProps> = ({
     userSelect: "none",
     color: "inherit",
   }));
+  const StyledBadge = styled(Badge)(() => ({
+    "& .MuiBadge-badge": {
+      top: 5,
+      padding: "0 4px",
+    },
+  }));
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
@@ -162,9 +168,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             </Tooltip>
             <Tooltip title="Go to Cart">
               <IconButton color="inherit" onClick={() => navigate("/checkout")}>
-                <Badge badgeContent={selectedItems.length} color="secondary">
+                <StyledBadge
+                  badgeContent={selectedItems.length}
+                  color="secondary"
+                >
                   <ShoppingCartIcon fontSize="large" />
-                </Badge>
+                </StyledBadge>
               </IconButton>
             </Tooltip>
             {user !== null ? (

@@ -162,7 +162,23 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+  useEffect(() => {
+    const findTotal = (
+      selectedItems: SelectedItem[],
+      quantitySelectedMap: Record<string, number>
+    ) => {
+      return selectedItems.reduce((total, item) => {
+        const product = products[item.category].find(
+          (p) => p.nome === item.productName
+        );
+        const productPrice = product ? product.prezzo : 0;
+        return total + productPrice * quantitySelectedMap[product?.nome];
+      }, 0);
+    };
 
+    // Aggiorna quantitySelectedMap
+    setTotal(findTotal(selectedItems, quantitySelectedMap));
+  }, [quantitySelectedMap, selectedItems]);
   return (
     <ThemeProvider theme={theme}>
       <UserContext.Provider

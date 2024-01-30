@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   Typography,
@@ -20,7 +20,6 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import { useSnackbar } from "notistack";
 import { UserContext } from "../App";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -53,35 +52,16 @@ function Home() {
     quantitySelectedMap,
     setQuantitySelectedMap,
     total,
-    setTotal,
   } = useContext(UserContext);
-  const { enqueueSnackbar } = useSnackbar();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const handleClick = () => {
     setOpen(!open);
   };
   const handleListClose = () => {
     setOpen(false);
   };
-
-  useEffect(() => {
-    const findTotal = (
-      selectedItems: SelectedItem[],
-      quantitySelectedMap: Record<string, number>
-    ) => {
-      return selectedItems.reduce((total, item) => {
-        const product = products[item.category].find(
-          (p) => p.nome === item.productName
-        );
-        const productPrice = product ? product.prezzo : 0;
-        return total + productPrice * quantitySelectedMap[product?.nome];
-      }, 0);
-    };
-
-    setTotal(findTotal(selectedItems, quantitySelectedMap));
-  }, [quantitySelectedMap, selectedItems]);
 
   const handleCardClick = (category: string, productName: string) => {
     const selectedItem: SelectedItem = {
@@ -110,27 +90,72 @@ function Home() {
   };
 
   const getQuantityButton = (category: string, productName: string) => {
-    if (quantitySelectedMap[productName] == undefined) {
+    const handleIncrement = () => {
+      setQuantitySelectedMap((prevMap) => ({
+        ...prevMap,
+        [productName]: prevMap[productName] + 1,
+      }));
+      if (quantitySelectedMap[productName] === 0) {
+        handleCardClick(category, productName);
+      }
+    };
+
+    const handleDecrement = () => {
+      setQuantitySelectedMap((prevMap) =>
+        prevMap[productName] > 0
+          ? {
+              ...prevMap,
+              [productName]: prevMap[productName] - 1,
+            }
+          : prevMap
+      );
+      if (
+        quantitySelectedMap[productName] === 1 &&
+        selectedItems.find((item) => item.productName === productName)
+      ) {
+        handleCardClick(category, productName);
+      }
+    };
+
+    const handleDone = () => {
+      setShowingQuantityButtons((prev) => ({
+        ...prev,
+        [productName]: false,
+      }));
+      if (
+        quantitySelectedMap[productName] > 0 &&
+        !selectedItems.find((item) => item.productName === productName)
+      ) {
+        handleCardClick(category, productName);
+      } else if (
+        quantitySelectedMap[productName] === 0 &&
+        selectedItems.find((item) => item.productName === productName)
+      ) {
+        handleCardClick(category, productName);
+      }
+    };
+
+    const handleDelete = () => {
+      setShowingQuantityButtons((prev) => ({
+        ...prev,
+        [productName]: false,
+      }));
       setQuantitySelectedMap((prevMap) => ({
         ...prevMap,
         [productName]: 0,
       }));
-    }
+      if (
+        quantitySelectedMap[productName] > 0 &&
+        selectedItems.find((item) => item.productName === productName)
+      ) {
+        handleCardClick(category, productName);
+      }
+    };
+
     return (
-      <Stack direction={"column"} my={2}>
-        <ButtonGroup sx={{ justifyContent: "center" }}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setQuantitySelectedMap((prevMap) => ({
-                ...prevMap,
-                [productName]: prevMap[productName] + 1,
-              }));
-              if (quantitySelectedMap[productName] == 0) {
-                handleCardClick(category, productName);
-              }
-            }}
-          >
+      <Stack direction={"column"} mb={1}>
+        <ButtonGroup sx={{ justifyContent: "center" }} fullWidth>
+          <Button variant="contained" onClick={handleIncrement}>
             <AddIcon />
           </Button>
           <Button variant="outlined">
@@ -138,50 +163,50 @@ function Home() {
               {quantitySelectedMap[productName]}
             </Typography>
           </Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setQuantitySelectedMap((prevMap) =>
-                prevMap[productName] > 0
-                  ? {
-                      ...prevMap,
-                      [productName]: prevMap[productName] - 1,
-                    }
-                  : prevMap
-              );
-              if (
-                quantitySelectedMap[productName] == 1 &&
-                selectedItems.find((item) => item.productName == productName)
-              ) {
-                handleCardClick(category, productName);
-              }
-            }}
-          >
+          <Button variant="contained" onClick={handleDecrement}>
             <RemoveIcon />
           </Button>
         </ButtonGroup>
-        <Box sx={{ display: "flex", justifyContent: "center" }} mt={1}>
+        <Box
+          mt={1}
+          mx={2}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "row",
+          }}
+        >
           <IconButton
             size="large"
-            onClick={() => {
-              setShowingQuantityButtons((prev) => ({
-                ...prev,
-                [productName]: false,
-              }));
-              if (
-                quantitySelectedMap[productName] > 0 &&
-                !selectedItems.find((item) => item.productName == productName)
-              ) {
-                handleCardClick(category, productName);
-              } else if (
-                quantitySelectedMap[productName] == 0 &&
-                selectedItems.find((item) => item.productName == productName)
-              ) {
-                handleCardClick(category, productName);
-              }
+            onClick={handleDone}
+            sx={{
+              "&:hover": {
+                color: "green",
+                backgroundColor: "lightgreen",
+              },
+              "&.Mui-selected:hover": {
+                color: "green",
+                backgroundColor: "lightgreen",
+              },
             }}
           >
-            <DoneIcon />
+            <DoneIcon fontSize="large" />
+          </IconButton>
+          <IconButton
+            size="large"
+            onClick={handleDelete}
+            sx={{
+              "&:hover": {
+                color: "red",
+                backgroundColor: "#FFCCCB",
+              },
+              "&.Mui-selected:hover": {
+                color: "red",
+                backgroundColor: "#FFCCCB",
+              },
+            }}
+          >
+            <DeleteIcon fontSize="large" />
           </IconButton>
         </Box>
       </Stack>
@@ -424,6 +449,16 @@ function Home() {
                         ...prev,
                         [product.nome]: true,
                       }));
+                      if (
+                        quantitySelectedMap[product.nome] == 0 ||
+                        quantitySelectedMap[product.nome] == undefined
+                      ) {
+                        setQuantitySelectedMap((prevMap) => ({
+                          ...prevMap,
+                          [product.nome]: 1,
+                        }));
+                        handleCardClick(category, product.nome);
+                      }
                     }}
                   >
                     <Typography variant="h6">{product.nome}</Typography>
@@ -499,9 +534,7 @@ function Home() {
             },
           }}
           onClick={() => {
-            selectedItems.length == 0
-              ? enqueueSnackbar("Empty Cart", { variant: "error" })
-              : navigate("/checkout");
+            navigate("/checkout");
           }}
         >
           <ShoppingCartIcon fontSize={"large"} />
@@ -530,7 +563,7 @@ function Home() {
           {getCategoryList()}
         </Box>
         {selectedCategory && (
-          <Box flexGrow={1} mx={isSmScreen ? 0 : 5}>
+          <Box flexGrow={1} mx={isSmScreen ? 0 : 11}>
             {getProduct(selectedCategory)}
           </Box>
         )}
