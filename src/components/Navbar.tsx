@@ -131,7 +131,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   py: 1.1,
                   px: 2.5,
                   fontSize: 17,
-                  color: "white",
+                  color:
+                    theme.palette.mode == "dark" ? "secondary.main" : "white",
                 }}
               >
                 {page}
@@ -157,6 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <LightModeIcon sx={{ verticalAlign: "middle" }} />
                 )}
                 <Switch
+                  aria-label="toggleMode"
                   color="secondary"
                   checked={mode}
                   onChange={() => {

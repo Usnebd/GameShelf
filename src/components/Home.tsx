@@ -14,12 +14,12 @@ import {
   Button,
   ButtonGroup,
   IconButton,
+  ListItem,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -40,7 +40,6 @@ interface SelectedItem {
 
 function Home() {
   const theme = useTheme();
-  const navigate = useNavigate();
 
   const [showingQuantityButtons, setShowingQuantityButtons] = useState<
     Record<string, boolean>
@@ -216,10 +215,9 @@ function Home() {
   const getCategoryList = () =>
     isSmScreen ? (
       <List disablePadding sx={{ minWidth: 180 }}>
-        <Stack direction="column" spacing={2}>
-          {categories.map((category) => (
+        {categories.map((category) => (
+          <ListItem disablePadding key={category}>
             <ListItemButton
-              key={category}
               onClick={() => {
                 setSelectedCategory((prevCategory) =>
                   prevCategory === category ? null : category
@@ -265,7 +263,9 @@ function Home() {
             >
               <Typography variant="h5">{category}</Typography>
             </ListItemButton>
-          ))}
+          </ListItem>
+        ))}
+        <ListItem disablePadding>
           <ListItemButton
             onClick={() => {
               setSelectedItems([]);
@@ -295,11 +295,11 @@ function Home() {
             </Typography>
             <DeleteIcon fontSize="large" />
           </ListItemButton>
-        </Stack>
+        </ListItem>
       </List>
     ) : (
       <>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="center">
           <Grid item xs>
             <ListItemButton
               onClick={() => {
@@ -329,18 +329,16 @@ function Home() {
             </ListItemButton>
           </Grid>
           <Grid item xs>
-            <ListItemButton
-              sx={{
-                justifyContent: "center",
-                borderRadius: 1.5,
-                my: 1,
-                py: 2,
-              }}
-              onClick={() => navigate("/checkout")}
+            <Box
+              color="inherit"
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent="center"
             >
               <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
               <Typography variant="h5">{total.toFixed(2) + " €"}</Typography>
-            </ListItemButton>
+            </Box>
           </Grid>
         </Grid>
         <List disablePadding sx={{ minWidth: 180 }}>
@@ -462,7 +460,7 @@ function Home() {
                     }}
                   >
                     <Typography variant="h6">{product.nome}</Typography>
-                    <Typography variant="body1">${product.prezzo}</Typography>
+                    <Typography variant="body1">{product.prezzo} €</Typography>
                   </Card>
                 </ButtonBase>
               ) : (
@@ -497,45 +495,11 @@ function Home() {
         >
           {selectedCategory ? selectedCategory : "Select Products"}
         </Typography>
-        <Button
+        <Box
           color="inherit"
-          sx={{
-            borderRadius: 1.5,
-            p: 1.7,
-            "&.Mui-selected": {
-              backgroundColor:
-                theme.palette.mode == "dark"
-                  ? "secondary.main"
-                  : "primary.main",
-              color:
-                theme.palette.mode == "dark"
-                  ? "secondary.contrastText"
-                  : "primary.contrastText",
-            },
-            "&:hover": {
-              backgroundColor:
-                theme.palette.mode == "dark"
-                  ? "secondary.main"
-                  : "primary.main",
-              color:
-                theme.palette.mode == "dark"
-                  ? "secondary.contrastText"
-                  : "primary.contrastText",
-            },
-            "&.Mui-selected:hover": {
-              backgroundColor:
-                theme.palette.mode == "dark"
-                  ? "secondary.main"
-                  : "primary.main",
-              color:
-                theme.palette.mode == "dark"
-                  ? "secondary.contrastText"
-                  : "primary.contrastText",
-            },
-          }}
-          onClick={() => {
-            navigate("/checkout");
-          }}
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
         >
           <ShoppingCartIcon fontSize={"large"} />
           <Typography
@@ -548,7 +512,7 @@ function Home() {
           >
             {"Total: " + total.toFixed(2) + "€"}
           </Typography>
-        </Button>
+        </Box>
       </Stack>
       <Stack direction={isSmScreen ? "row" : "column"} mt={isSmScreen ? 3 : 0}>
         <Box

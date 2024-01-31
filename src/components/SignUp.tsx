@@ -108,7 +108,13 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box
+          component="form"
+          id="signUpForm"
+          noValidate
+          onSubmit={handleSubmit}
+          sx={{ mt: 3 }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -144,9 +150,9 @@ export default function SignUp() {
               <TextField
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
+                id="email-signUp"
+                label="Email Address-signUp"
+                name="email-signUp"
                 error={emailError}
                 helperText={emailError ? "Invalid mail format" : false}
                 autoComplete="email"
@@ -157,10 +163,10 @@ export default function SignUp() {
               <TextField
                 required
                 fullWidth
-                name="password"
-                label="Password"
+                name="password-signUp"
+                label="Password-signUp"
                 type={showPassword ? "text" : "password"}
-                id="password"
+                id="password-signUp"
                 error={passwordError}
                 helperText={passwordError ? "At least 6 characters" : false}
                 autoComplete="new-password"
@@ -187,6 +193,7 @@ export default function SignUp() {
             type="submit"
             fullWidth
             variant="contained"
+            aria-label="submit button"
             sx={{ mt: 3, mb: 2, pt: 1.3, pb: 1.3 }}
           >
             Sign Up

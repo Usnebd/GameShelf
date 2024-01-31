@@ -78,14 +78,20 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box
+          component="form"
+          id="signInForm"
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{ mt: 1 }}
+        >
           <TextField
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
+            id="email-signIn"
+            label="Email Address-signIn"
+            name="email-signIn"
             autoComplete="email"
             onChange={(event) => setEmail(event.target.value)}
           />
@@ -93,10 +99,10 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
-            name="password"
-            label="Password"
+            name="password-signIn"
+            label="Password-signIn"
             type={showPassword ? "text" : "password"}
-            id="password"
+            id="password-signIn"
             autoComplete="current-password"
             InputProps={{
               endAdornment: (

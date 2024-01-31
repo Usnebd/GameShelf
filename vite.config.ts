@@ -1,32 +1,50 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import { VitePWA } from "vite-plugin-pwa";
+import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
+
 // https://vitejs.dev/config/
 
-const manifest = {
-  registerType: "prompt" as const,
-  includeAssests: ["favicon.ico", "apple-touc-icon.png", "masked-icon.svg"],
+const manifestForPlugin: Partial<VitePWAOptions> = {
+  registerType: "autoUpdate",
+  devOptions: {
+    enabled: true,
+  },
+  includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
   manifest: {
-    name: "My-Chiosco",
-    short_name: "My-Chiosco",
-    description: "react web app for food",
+    name: "My Chiosco",
+    short_name: "My Chiosco",
     icons: [
       {
-        src: "src/assets/favicon.png",
-        sizes: "16x16",
+        src: "/assets/pwa-192x192.png",
+        sizes: "192x192",
         type: "image/png",
-        purpose: "favicon",
+      },
+      {
+        src: "/assets/pwa-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+      {
+        src: "/assets/pwa-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/assets/pwa-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
-    theme_color: "#171717",
-    background_color: "#f0e7db",
-    display: "standalone",
-    scope: "/",
     start_url: "/",
-    orientation: "portrait" as const,
+    display: "standalone",
+    background_color: "#FFFFFF",
+    theme_color: "#FFFFFF",
+    description: "React web app for ordering food",
   },
 };
 
 export default defineConfig({
-  plugins: [react(), VitePWA(manifest as any)],
+  plugins: [react(), VitePWA(manifestForPlugin)],
 });
