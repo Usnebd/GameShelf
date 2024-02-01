@@ -89,9 +89,9 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
-            id="email-signIn"
-            label="Email Address-signIn"
-            name="email-signIn"
+            id="email"
+            label="Email Address"
+            name="email"
             autoComplete="email"
             onChange={(event) => setEmail(event.target.value)}
           />
@@ -99,10 +99,10 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
-            name="password-signIn"
-            label="Password-signIn"
+            name="password"
+            label="Password"
             type={showPassword ? "text" : "password"}
-            id="password-signIn"
+            id="password"
             autoComplete="current-password"
             InputProps={{
               endAdornment: (

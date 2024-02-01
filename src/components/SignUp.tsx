@@ -150,9 +150,9 @@ export default function SignUp() {
               <TextField
                 required
                 fullWidth
-                id="email-signUp"
-                label="Email Address-signUp"
-                name="email-signUp"
+                id="email"
+                label="Email Address"
+                name="email"
                 error={emailError}
                 helperText={emailError ? "Invalid mail format" : false}
                 autoComplete="email"
@@ -163,10 +163,10 @@ export default function SignUp() {
               <TextField
                 required
                 fullWidth
-                name="password-signUp"
-                label="Password-signUp"
+                name="password"
+                label="Password"
                 type={showPassword ? "text" : "password"}
-                id="password-signUp"
+                id="password"
                 error={passwordError}
                 helperText={passwordError ? "At least 6 characters" : false}
                 autoComplete="new-password"

@@ -154,7 +154,11 @@ function Home() {
     return (
       <Stack direction={"column"} mb={1}>
         <ButtonGroup sx={{ justifyContent: "center" }} fullWidth>
-          <Button variant="contained" onClick={handleIncrement}>
+          <Button
+            variant="contained"
+            onClick={handleIncrement}
+            disableElevation
+          >
             <AddIcon />
           </Button>
           <Button variant="outlined">
@@ -162,7 +166,11 @@ function Home() {
               {quantitySelectedMap[productName]}
             </Typography>
           </Button>
-          <Button variant="contained" onClick={handleDecrement}>
+          <Button
+            variant="contained"
+            onClick={handleDecrement}
+            disableElevation
+          >
             <RemoveIcon />
           </Button>
         </ButtonGroup>

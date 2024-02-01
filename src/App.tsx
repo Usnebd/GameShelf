@@ -28,6 +28,8 @@ interface UserContextType {
   products: Record<string, DocumentData[]>;
   user: User | null;
   total: number;
+  textNote: string;
+  setTextNote: (_text: string) => void;
   setTotal: (_tot: number) => void;
   handleUser: () => void;
   selectedItems: SelectedItem[];
@@ -50,6 +52,8 @@ export const UserContext = createContext<UserContextType>({
   },
   user: auth.currentUser,
   total: 0,
+  textNote: "",
+  setTextNote: () => {},
   setTotal: () => {},
   handleUser: () => {},
   selectedItems: [] as SelectedItem[],
@@ -77,6 +81,8 @@ function App() {
   const savedPreferences = getItem();
   const systemSetting = useMediaQuery("(prefers-color-scheme: dark)");
   const [authLoaded, setAuthLoaded] = useState(false);
+  const [user, setUser] = useState(auth.currentUser);
+  const [textNote, setTextNote] = useState<string>("");
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [quantitySelectedMap, setQuantitySelectedMap] = useState<
     Record<string, number>
@@ -117,7 +123,6 @@ function App() {
               },
             },
           },
-          MuiListItemButton: {},
           MuiSpeedDialAction: {
             styleOverrides: {
               staticTooltipLabel: {
@@ -134,7 +139,6 @@ function App() {
   const toggleMode = () => {
     setMode((prevMode: boolean) => !prevMode);
   };
-  const [user, setUser] = useState(auth.currentUser);
   const handleUser: () => void = () => setUser(auth.currentUser);
   useEffect(() => {
     const fetchFirestoreData = async () => {
@@ -183,6 +187,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <UserContext.Provider
         value={{
+          textNote,
+          setTextNote,
           total,
           setTotal,
           products,
