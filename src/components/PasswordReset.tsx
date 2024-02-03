@@ -3,10 +3,12 @@ import { auth } from "./firebase";
 import { Container, Typography, TextField, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useSnackbar } from "notistack";
 
 function PasswordReset() {
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const isValidEmail = (email: string) => {
@@ -22,6 +24,7 @@ function PasswordReset() {
         await sendPasswordResetEmail(auth, email);
         setError(false);
         setEmailSent(true);
+        enqueueSnackbar("Email Sent", { variant: "success" });
       } catch (error) {
         setEmailSent(false);
       }

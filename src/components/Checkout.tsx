@@ -180,7 +180,7 @@ function Checkout() {
             }}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
-              Delete Order
+              Delete
             </Typography>
             <DeleteIcon fontSize="large" />
           </Button>

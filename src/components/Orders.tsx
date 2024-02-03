@@ -190,9 +190,11 @@ function Orders() {
                                 justifyContent="space-between"
                               >
                                 <Typography>• {prodotto.nome}</Typography>
-                                <Typography>
-                                  Quantity: {prodotto.quantità}
-                                </Typography>
+                                <Box display={"flex"} flexDirection={"row"}>
+                                  <Typography>
+                                    Quantity: {prodotto.quantità}
+                                  </Typography>
+                                </Box>
                               </Box>
                             )
                           )}

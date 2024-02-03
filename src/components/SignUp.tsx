@@ -27,8 +27,8 @@ export default function SignUp() {
   const [lastName, setLastName] = useState("");
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState(false);
 
   const handleClickShowPassword = () => {
