@@ -26,7 +26,7 @@ import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import NotesIcon from "@mui/icons-material/Notes";
 import DoneIcon from "@mui/icons-material/Done";
 import { useSnackbar } from "notistack";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "./firebase";
 
 function Checkout() {
@@ -56,17 +56,30 @@ function Checkout() {
     if (!user) {
       enqueueSnackbar("Not Logged", { variant: "error" });
     } else {
-      const ordersCollectionRef = collection(db, `users/${user.email}/ordini`);
+      const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
 
       // Il documento che vuoi aggiungere
-      const order = {
-        prodotti: selectedItems.map((item) => ({
-          nome: item.productName,
-          quantità: quantitySelectedMap[item.productName],
-        })),
-        nota: textNote,
-        totale: Number(total.toFixed(2)),
-      };
+      let order;
+      if (textNote !== "") {
+        order = {
+          prodotti: selectedItems.map((item) => ({
+            nome: item.productName,
+            quantità: quantitySelectedMap[item.productName],
+          })),
+          nota: textNote,
+          timestamp: serverTimestamp(),
+          totale: Number(total.toFixed(2)),
+        };
+      } else {
+        order = {
+          prodotti: selectedItems.map((item) => ({
+            nome: item.productName,
+            quantità: quantitySelectedMap[item.productName],
+          })),
+          timestamp: serverTimestamp(),
+          totale: Number(total.toFixed(2)),
+        };
+      }
 
       // Aggiungi il documento utilizzando addDoc
       try {
@@ -95,7 +108,7 @@ function Checkout() {
         sx={{ display: { xs: "none", sm: "flex" } }}
       >
         <Typography variant="h3" sx={{ display: { xs: "none", sm: "block" } }}>
-          Your order
+          Checkout
         </Typography>
       </Stack>
       <Stack
@@ -124,7 +137,6 @@ function Checkout() {
             aria-label="Add a note"
             sx={{ py: 1 }}
             onClick={handleNote}
-            disabled={selectedItems.length == 0}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
               Add note
@@ -175,7 +187,6 @@ function Checkout() {
                 label="Add a note for your order..."
                 multiline
                 rows={6}
-                maxRows={4}
                 autoFocus
                 sx={{
                   width: isSmScreen ? "90%" : "100%",
@@ -292,13 +303,12 @@ function Checkout() {
               elevation={10}
               sx={{
                 borderRadius: 6,
-                minHeight: "20vh",
                 mt: 5,
                 maxWidth: "700px",
                 mx: "auto", // Aggiunto per centrare orizzontalmente
               }}
             >
-              <Box py={4} px={4}>
+              <Box py={3} px={4}>
                 <Typography
                   variant="h4"
                   fontWeight={"bold"}

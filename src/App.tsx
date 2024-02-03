@@ -18,7 +18,6 @@ import { auth, db } from "./components/firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { SnackbarProvider } from "notistack";
 import { DocumentData, collection, getDocs } from "firebase/firestore";
-import firebase from "firebase/compat/app";
 interface SelectedItem {
   category: string;
   productName: string;
@@ -31,7 +30,6 @@ interface UserContextType {
   textNote: string;
   setTextNote: (_text: string) => void;
   setTotal: (_tot: number) => void;
-  handleUser: () => void;
   selectedItems: SelectedItem[];
   setSelectedItems: (
     _: SelectedItem[] | ((prevItems: SelectedItem[]) => SelectedItem[])
@@ -55,7 +53,6 @@ export const UserContext = createContext<UserContextType>({
   textNote: "",
   setTextNote: () => {},
   setTotal: () => {},
-  handleUser: () => {},
   selectedItems: [] as SelectedItem[],
   setSelectedItems: (
     _: SelectedItem[] | ((prevItems: SelectedItem[]) => SelectedItem[])
@@ -87,7 +84,7 @@ function App() {
   const [quantitySelectedMap, setQuantitySelectedMap] = useState<
     Record<string, number>
   >({});
-  const [docs, setDocs] = useState<firebase.firestore.DocumentData[][]>([]);
+  const [docs, setDocs] = useState<DocumentData[][]>([]);
   const [total, setTotal] = useState(0);
   const [mode, setMode] = useState(
     savedPreferences != undefined ? savedPreferences : systemSetting
@@ -123,6 +120,9 @@ function App() {
               },
             },
           },
+          MuiAccordion: {
+            styleOverrides: {},
+          },
           MuiSpeedDialAction: {
             styleOverrides: {
               staticTooltipLabel: {
@@ -139,7 +139,6 @@ function App() {
   const toggleMode = () => {
     setMode((prevMode: boolean) => !prevMode);
   };
-  const handleUser: () => void = () => setUser(auth.currentUser);
   useEffect(() => {
     const fetchFirestoreData = async () => {
       try {
@@ -193,7 +192,6 @@ function App() {
           setTotal,
           products,
           user,
-          handleUser,
           selectedItems,
           setSelectedItems,
           quantitySelectedMap,

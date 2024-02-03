@@ -80,6 +80,7 @@ export default function SignIn() {
         </Typography>
         <Box
           component="form"
+          autoComplete="on"
           id="signInForm"
           onSubmit={handleSubmit}
           noValidate
@@ -92,7 +93,7 @@ export default function SignIn() {
             id="email"
             label="Email Address"
             name="email"
-            autoComplete="email"
+            autoComplete="email" // Specify autocomplete type for email
             onChange={(event) => setEmail(event.target.value)}
           />
           <TextField
@@ -103,7 +104,7 @@ export default function SignIn() {
             label="Password"
             type={showPassword ? "text" : "password"}
             id="password"
-            autoComplete="current-password"
+            autoComplete="current-password" // Specify autocomplete type for password
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
