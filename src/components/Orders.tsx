@@ -59,7 +59,7 @@ function Orders() {
           setOrders(data);
           setRetrievedData(true);
           const maxTotal = Math.max(...data.map((order) => order.totale));
-          setMax(maxTotal);
+          setMax(maxTotal > 0 ? maxTotal : 0);
           setFilteredPrice([0, maxTotal]);
         });
 
@@ -127,9 +127,16 @@ function Orders() {
               <Typography variant="h4">Please, Sign In !</Typography>
             </Box>
           ) : !retrievedData ? (
-            <Skeleton variant="rounded" width={"100%"} height={35} />
+            <Stack direction={"row"} spacing={2}>
+              <Skeleton variant="rounded" width={"100%"} height={50} />
+              <Skeleton variant="rounded" width={"100%"} height={50} />
+              <Skeleton variant="rounded" width={"100%"} height={50} />
+              <Skeleton variant="rounded" width={"100%"} height={50} />
+            </Stack>
           ) : orders.length == 0 ? (
-            <Box>sad</Box>
+            <Box display={"flex"} justifyContent={"center"}>
+              <Typography variant="h4">No orders Found !</Typography>
+            </Box>
           ) : (
             <List sx={{ width: "100%" }}>
               {orders

@@ -277,6 +277,7 @@ function Home() {
           <ListItemButton
             onClick={() => {
               setSelectedItems([]);
+              setQuantitySelectedMap({});
             }}
             sx={{
               justifyContent: "start",

@@ -25,6 +25,7 @@ import SendIcon from "@mui/icons-material/Send";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import NotesIcon from "@mui/icons-material/Notes";
 import DoneIcon from "@mui/icons-material/Done";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from "notistack";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "./firebase";
@@ -117,17 +118,23 @@ function Checkout() {
         mt={isSmScreen ? 10 : 0}
         mx={isSmScreen ? 0 : 5}
       >
-        <Stack direction={"column"} spacing={3} mt={isSmScreen ? 0 : 5}>
+        <Stack
+          direction={"column"}
+          spacing={isSmScreen ? 3 : 2}
+          mt={isSmScreen ? 0 : 5}
+        >
           <Button
             sx={{ py: 1 }}
             variant="contained"
-            aria-label="Modify Order"
+            aria-label={
+              selectedItems.length == 0 ? "Create Order" : "Modify Order"
+            }
             color={"warning"}
             onClick={() => navigate("/")}
             disabled={showNoteInput}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
-              Modify Order
+              {selectedItems.length == 0 ? "Create Order" : "Modify Order"}
             </Typography>
             <EditIcon fontSize="large" />
           </Button>
@@ -159,6 +166,23 @@ function Checkout() {
               Place Order
             </Typography>
             <SendIcon fontSize="large" />
+          </Button>
+          <Button
+            variant="contained"
+            color={"error"}
+            aria-label="Delete Order"
+            sx={{ py: 1 }}
+            disabled={selectedItems.length == 0 || showNoteInput ? true : false}
+            onClick={() => {
+              setSelectedItems([]);
+              setQuantitySelectedMap({});
+              setTextNote("");
+            }}
+          >
+            <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
+              Delete Order
+            </Typography>
+            <DeleteIcon fontSize="large" />
           </Button>
           <Box
             display={"flex"}
@@ -302,7 +326,7 @@ function Checkout() {
             <Paper
               elevation={10}
               sx={{
-                borderRadius: 6,
+                borderRadius: 2.5,
                 mt: 5,
                 maxWidth: "700px",
                 mx: "auto", // Aggiunto per centrare orizzontalmente
@@ -318,7 +342,7 @@ function Checkout() {
                 </Typography>
                 <Typography
                   variant="h6"
-                  pt={2.7}
+                  pt={2.5}
                   fontWeight={"bold"}
                   sx={{ wordBreak: "break-word" }}
                 >

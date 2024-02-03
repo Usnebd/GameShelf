@@ -193,7 +193,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       color: "black",
                     }}
                   >
-                    {user ? user.displayName?.charAt(0) : null}
+                    {user ? user.displayName?.charAt(0).toUpperCase() : null}
                   </Avatar>
                 </IconButton>
                 <Menu
