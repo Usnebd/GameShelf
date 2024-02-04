@@ -127,11 +127,13 @@ function Orders() {
               <Typography variant="h4">Please, Sign In !</Typography>
             </Box>
           ) : !retrievedData ? (
-            <Stack direction={"row"} spacing={2}>
-              <Skeleton variant="rounded" width={"100%"} height={50} />
-              <Skeleton variant="rounded" width={"100%"} height={50} />
-              <Skeleton variant="rounded" width={"100%"} height={50} />
-              <Skeleton variant="rounded" width={"100%"} height={50} />
+            <Stack direction={"column"} spacing={2} width={"100%"}>
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
             </Stack>
           ) : orders.length == 0 ? (
             <Box display={"flex"} justifyContent={"center"}>
@@ -183,9 +185,13 @@ function Orders() {
                       <AccordionDetails>
                         <Box width="100%">
                           {order.prodotti.map(
-                            (prodotto: { nome: string; quantità: number }) => (
+                            (prodotto: {
+                              id: number;
+                              nome: string;
+                              quantità: number;
+                            }) => (
                               <Box
-                                key={prodotto.nome}
+                                key={prodotto.id}
                                 display="flex"
                                 justifyContent="space-between"
                               >

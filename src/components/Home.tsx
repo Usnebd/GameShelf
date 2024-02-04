@@ -15,6 +15,7 @@ import {
   ButtonGroup,
   IconButton,
   ListItem,
+  Skeleton,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -24,12 +25,23 @@ import { UserContext } from "../App";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DoneIcon from "@mui/icons-material/Done";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+  addDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 const categories: string[] = [
   "Antipasti",
   "Primi",
   "Secondi",
-  "Dessert",
+  "Desserts",
   "Bevande",
 ];
 
@@ -51,6 +63,11 @@ function Home() {
     quantitySelectedMap,
     setQuantitySelectedMap,
     total,
+    authLoaded,
+    productsLoaded,
+    docs,
+    handleDeleteCart,
+    user,
   } = useContext(UserContext);
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -62,24 +79,20 @@ function Home() {
     setOpen(false);
   };
 
-  const handleCardClick = (category: string, productName: string) => {
-    const selectedItem: SelectedItem = {
-      category,
-      productName,
-    };
-
-    // Rimuovi l'elemento selezionato se è già presente nella lista
-    const updatedSelectedItems = selectedItems.filter(
-      (item) =>
-        item.category !== selectedItem.category ||
-        item.productName !== selectedItem.productName
-    );
-
-    setSelectedItems((prevSelectedItems: SelectedItem[]) =>
-      updatedSelectedItems.length === prevSelectedItems.length
-        ? [...prevSelectedItems, selectedItem]
-        : updatedSelectedItems
-    );
+  const handleCardClick = (productName: string) => {
+    setShowingQuantityButtons((prev) => ({
+      ...prev,
+      [productName]: !showingQuantityButtons[productName],
+    }));
+    if (
+      quantitySelectedMap[productName] == 0 ||
+      quantitySelectedMap[productName] == undefined
+    ) {
+      setQuantitySelectedMap((prevMap) => ({
+        ...prevMap,
+        [productName]: 1,
+      }));
+    }
   };
 
   const isItemSelected = (category: string, productName: string) => {
@@ -94,9 +107,6 @@ function Home() {
         ...prevMap,
         [productName]: prevMap[productName] + 1,
       }));
-      if (quantitySelectedMap[productName] === 0) {
-        handleCardClick(category, productName);
-      }
     };
 
     const handleDecrement = () => {
@@ -108,33 +118,79 @@ function Home() {
             }
           : prevMap
       );
-      if (
-        quantitySelectedMap[productName] === 1 &&
-        selectedItems.find((item) => item.productName === productName)
-      ) {
-        handleCardClick(category, productName);
-      }
     };
 
-    const handleDone = () => {
+    const handleDone = async (category: string, productName: string) => {
       setShowingQuantityButtons((prev) => ({
         ...prev,
         [productName]: false,
       }));
-      if (
-        quantitySelectedMap[productName] > 0 &&
-        !selectedItems.find((item) => item.productName === productName)
-      ) {
-        handleCardClick(category, productName);
-      } else if (
-        quantitySelectedMap[productName] === 0 &&
-        selectedItems.find((item) => item.productName === productName)
-      ) {
-        handleCardClick(category, productName);
+      if (user !== null) {
+        const selectedItem: SelectedItem = {
+          category,
+          productName,
+        };
+        if (
+          selectedItems.find((x) => x.productName == productName) ==
+            undefined &&
+          quantitySelectedMap[productName]
+        ) {
+          setSelectedItems((prevSelectedItems: SelectedItem[]) => [
+            ...prevSelectedItems,
+            selectedItem,
+          ]);
+          try {
+            const q = query(
+              collection(db, `users/${user.email}/cart`),
+              where("productName", "==", productName)
+            );
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.docs.length > 0) {
+              const docRef = doc(
+                db,
+                `users/${user.email}/cart`,
+                querySnapshot.docs[0].id
+              );
+              updateDoc(docRef, {
+                quantità: quantitySelectedMap[productName],
+              });
+            } else {
+              await addDoc(collection(db, `users/${user.email}/cart`), {
+                category: category,
+                productName: productName,
+                quantità: quantitySelectedMap[productName],
+              });
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          if (quantitySelectedMap[productName]) {
+            try {
+              const q = query(
+                collection(db, `users/${user.email}/cart`),
+                where("productName", "==", productName)
+              );
+              const querySnapshot = await getDocs(q);
+              const docRef = doc(
+                db,
+                `users/${user.email}/cart`,
+                querySnapshot.docs[0].id
+              );
+              updateDoc(docRef, {
+                quantità: quantitySelectedMap[productName],
+              });
+            } catch (error) {
+              console.log(error);
+            }
+          } else {
+            handleDelete();
+          }
+        }
       }
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
       setShowingQuantityButtons((prev) => ({
         ...prev,
         [productName]: false,
@@ -143,11 +199,31 @@ function Home() {
         ...prevMap,
         [productName]: 0,
       }));
-      if (
-        quantitySelectedMap[productName] > 0 &&
-        selectedItems.find((item) => item.productName === productName)
-      ) {
-        handleCardClick(category, productName);
+      if (user !== null) {
+        if (selectedItems.find((x) => x.productName == productName)) {
+          setSelectedItems((prevSelectedItems: SelectedItem[]) => {
+            return prevSelectedItems.filter(
+              (item) => item.productName !== productName
+            );
+          });
+          try {
+            const q = query(
+              collection(db, `users/${user.email}/cart`),
+              where("productName", "==", productName)
+            );
+            const querySnapshot = await getDocs(q);
+            querySnapshot.docs.forEach((docSnapshot) => {
+              const docRef = doc(
+                db,
+                `users/${user.email}/cart`,
+                docSnapshot.id
+              );
+              deleteDoc(docRef);
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
       }
     };
 
@@ -185,7 +261,7 @@ function Home() {
         >
           <IconButton
             size="large"
-            onClick={handleDone}
+            onClick={() => handleDone(category, productName)}
             sx={{
               "&:hover": {
                 color: "green",
@@ -275,10 +351,7 @@ function Home() {
         ))}
         <ListItem disablePadding>
           <ListItemButton
-            onClick={() => {
-              setSelectedItems([]);
-              setQuantitySelectedMap({});
-            }}
+            onClick={handleDeleteCart}
             sx={{
               justifyContent: "start",
               borderRadius: 1.5,
@@ -311,9 +384,7 @@ function Home() {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
             <ListItemButton
-              onClick={() => {
-                setSelectedItems([]);
-              }}
+              onClick={handleDeleteCart}
               sx={{
                 borderRadius: 1.5,
                 my: 1,
@@ -338,16 +409,20 @@ function Home() {
             </ListItemButton>
           </Grid>
           <Grid item xs>
-            <Box
-              color="inherit"
-              display={"flex"}
-              flexDirection={"row"}
-              alignItems={"center"}
-              justifyContent="center"
-            >
-              <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
-              <Typography variant="h5">{total.toFixed(2) + " €"}</Typography>
-            </Box>
+            {!productsLoaded ? (
+              <Skeleton variant="rounded" width={"300px"} height={"50px"} />
+            ) : (
+              <Box
+                color="inherit"
+                display={"flex"}
+                flexDirection={"row"}
+                alignItems={"center"}
+                justifyContent="center"
+              >
+                <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
+                <Typography variant="h5">{total.toFixed(2) + " €"}</Typography>
+              </Box>
+            )}
           </Grid>
         </Grid>
         <List disablePadding sx={{ minWidth: 180 }}>
@@ -425,7 +500,7 @@ function Home() {
     return (
       <Grid container rowSpacing={2} columnSpacing={2}>
         {products[category].map((product) => (
-          <Grid item key={product.nome} xs={12} sm={6} md={4} lg={3}>
+          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
             <Card
               sx={{
                 width: "100%",
@@ -452,20 +527,7 @@ function Home() {
                       isItemSelected(category, product.nome) ? "selected" : ""
                     }
                     onClick={() => {
-                      setShowingQuantityButtons((prev) => ({
-                        ...prev,
-                        [product.nome]: true,
-                      }));
-                      if (
-                        quantitySelectedMap[product.nome] == 0 ||
-                        quantitySelectedMap[product.nome] == undefined
-                      ) {
-                        setQuantitySelectedMap((prevMap) => ({
-                          ...prevMap,
-                          [product.nome]: 1,
-                        }));
-                        handleCardClick(category, product.nome);
-                      }
+                      handleCardClick(product.nome);
                     }}
                   >
                     <Typography variant="h6">{product.nome}</Typography>
@@ -533,7 +595,23 @@ function Home() {
             maxHeight: isSmScreen ? "180px" : "inherit",
           }}
         >
-          {getCategoryList()}
+          {!authLoaded || docs.length == 0 ? (
+            <Stack
+              direction={"column"}
+              spacing={2}
+              width={isSmScreen ? "300px" : "100%"}
+            >
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
+            </Stack>
+          ) : (
+            getCategoryList()
+          )}
         </Box>
         {selectedCategory && (
           <Box flexGrow={1} mx={isSmScreen ? 0 : 11}>

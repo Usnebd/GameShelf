@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
@@ -23,8 +22,14 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index element={<Home />} />
-      <Route path="Menu" element={<Menu />} />
-      <Route path="Orders" element={<Orders />} />
+      <Route path="menu" element={<Menu />}>
+        <Route path=":category" element={<Menu />}>
+          <Route path=":id" element={<Menu />} />
+        </Route>
+      </Route>
+      <Route path="orders" element={<Orders />}>
+        <Route path=":id" element={<Orders />} />
+      </Route>
       <Route path="page-not-found" element={<NotFound />} />
       <Route path="sign-in" element={<SignIn />} />
       <Route path="sign-up" element={<SignUp />} />
@@ -37,7 +42,5 @@ const router = createBrowserRouter(
 );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <RouterProvider router={router} />
 );

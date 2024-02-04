@@ -47,6 +47,8 @@ function Checkout() {
     textNote,
     setTextNote,
     setSelectedItems,
+    productsLoaded,
+    handleDeleteCart,
   } = useContext(UserContext);
 
   const handleNote = () => {
@@ -173,11 +175,7 @@ function Checkout() {
             aria-label="Delete Order"
             sx={{ py: 1 }}
             disabled={selectedItems.length == 0 || showNoteInput ? true : false}
-            onClick={() => {
-              setSelectedItems([]);
-              setQuantitySelectedMap({});
-              setTextNote("");
-            }}
+            onClick={handleDeleteCart}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
               Delete
@@ -276,12 +274,14 @@ function Checkout() {
                       <TableCell align="right">
                         <Typography variant="h6">
                           {" "}
-                          {(
-                            quantitySelectedMap[item.productName] *
-                            products[item.category].find(
-                              (prod) => prod["nome"] === item.productName
-                            )?.prezzo
-                          ).toFixed(2) + "€"}
+                          {!productsLoaded
+                            ? "0.00 €"
+                            : (
+                                quantitySelectedMap[item.productName] *
+                                products[item.category].find(
+                                  (prod) => prod["nome"] === item.productName
+                                )?.prezzo
+                              ).toFixed(2) + "€"}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -309,13 +309,14 @@ function Checkout() {
                       {item.productName}
                     </Typography>
                     <Typography variant="h6">
-                      {/* Aggiungi altre informazioni o personalizzazioni qui */}
-                      {(
-                        quantitySelectedMap[item.productName] *
-                        products[item.category].find(
-                          (prod) => prod["nome"] === item.productName
-                        )?.prezzo
-                      ).toFixed(2) + "€"}
+                      {!productsLoaded
+                        ? "0.00 €"
+                        : (
+                            quantitySelectedMap[item.productName] *
+                            products[item.category].find(
+                              (prod) => prod["nome"] === item.productName
+                            )?.prezzo
+                          ).toFixed(2) + "€"}
                     </Typography>
                   </ListItem>
                 ))}

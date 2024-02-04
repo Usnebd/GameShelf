@@ -40,7 +40,7 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
       position="fixed"
       sx={{
         bottom: 20,
-        right: 30,
+        right: 20,
         display: { xs: "block", md: "none" },
       }}
     >
@@ -63,6 +63,7 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
             icon={action.icon}
             tooltipTitle={action.name}
             FabProps={{
+              size: "large",
               sx: {
                 color: mode ? "primary.contrastText" : "secondary.contrastText",
               },
