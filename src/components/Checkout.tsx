@@ -86,11 +86,12 @@ function Checkout() {
 
       // Aggiungi il documento utilizzando addDoc
       try {
-        await addDoc(ordersCollectionRef, order);
+        addDoc(ordersCollectionRef, order);
         enqueueSnackbar("Order Sent", { variant: "success" });
         setSelectedItems([]);
         setQuantitySelectedMap({});
         setTextNote("");
+        handleDeleteCart();
       } catch (error) {
         enqueueSnackbar("Error", { variant: "error" });
       }
