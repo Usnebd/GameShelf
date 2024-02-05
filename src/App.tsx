@@ -194,7 +194,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const fetchFirestoreData = async () => {
+    const fetchCartData = async () => {
       try {
         const cartRef = collection(db, `users/${user?.email}/cart`);
         const querySnapshot = await getDocs(cartRef);
@@ -220,8 +220,8 @@ function App() {
     };
 
     // Chiamata alla funzione di fetch solo quando il componente viene montato
-    fetchFirestoreData();
-  }, [authLoaded]);
+    fetchCartData();
+  }, [user]);
 
   useEffect(() => {
     const findTotal = (

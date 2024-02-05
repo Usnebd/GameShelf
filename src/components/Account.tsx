@@ -85,123 +85,139 @@ function Account() {
         mb={5}
         textAlign={isSmScreen ? "start" : "center"}
       >
-        <Stack
-          mt={4}
-          direction={isSmScreen ? "row" : "column"}
-          spacing={3}
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ display: { xs: "none", sm: "flex" } }}
-        >
-          <Typography
-            variant="h3"
-            sx={{ display: { xs: "none", sm: "block" } }}
+        {!user ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            mt={20}
           >
-            Account
-          </Typography>
-          {/* Aggiungi eventuali altri elementi nella barra superiore */}
-        </Stack>
-        <Stack
-          direction={isSmScreen ? "row" : "column"}
-          mt={isSmScreen ? 10 : 5}
-          mx={isSmScreen ? 0 : 5}
-          spacing={2}
-        >
-          {/* Informazioni sull'utente */}
-          <Stack direction={"column"} spacing={2}>
-            <Typography variant={isSmScreen ? "h5" : "h6"} mt={2}>
-              Username:{" "}
-              {modifiedProfile !== "" ? modifiedProfile : user?.displayName}
+            <Typography variant="h5">
+              Effettua l'accesso per visualizzare/modificare le informazioni sul
+              tuo profilo.
             </Typography>
-            <Typography variant={isSmScreen ? "h5" : "h6"}>
-              Email: {user?.email}
-            </Typography>
-          </Stack>
-
-          {/* Altri elementi, ad esempio: */}
-          <Divider orientation="vertical" flexItem sx={{ mx: 3 }} />
-
-          {/* Lista delle opzioni/account */}
-          <List sx={{ mt: isMdScreen ? 0 : 5 }}>
-            <ListItemButton
-              sx={{ borderRadius: 1 }}
-              onClick={() => {
-                setChangePassword(false);
-                setChangeName(true);
-              }}
+          </Box>
+        ) : (
+          <>
+            <Stack
+              mt={4}
+              direction={isSmScreen ? "row" : "column"}
+              spacing={3}
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ display: { xs: "none", sm: "flex" } }}
             >
-              <ListItemText primary="Change First Name/Last Name" />
-            </ListItemButton>
-            <ListItemButton
-              sx={{ borderRadius: 1 }}
-              onClick={() => {
-                setChangePassword(true);
-                setChangeName(false);
-              }}
+              <Typography
+                variant="h3"
+                sx={{ display: { xs: "none", sm: "block" } }}
+              >
+                Account
+              </Typography>
+              {/* Aggiungi eventuali altri elementi nella barra superiore */}
+            </Stack>
+            <Stack
+              direction={isSmScreen ? "row" : "column"}
+              mt={isSmScreen ? 10 : 5}
+              mx={isSmScreen ? 0 : 5}
+              spacing={2}
             >
-              <ListItemText primary="Change Password" />
-            </ListItemButton>
-            {/* Aggiungi altre opzioni in base alle necessità */}
-          </List>
-        </Stack>
-        <Box width={"100%"} display={"flex"} justifyContent={"center"}>
-          {/* Form per il cambio del nome utente */}
-          {changeName && (
-            <Box mt={2}>
-              <TextField
-                label="New First Name"
-                variant="outlined"
-                fullWidth
-                value={newFirstName}
-                error={firstNameError}
-                helperText={firstNameError ? "Empty" : false}
-                onChange={(e) => setNewFirstName(e.target.value)}
-              />
-              <TextField
-                label="New Last Name"
-                variant="outlined"
-                fullWidth
-                value={newLastName}
-                error={lastNameError}
-                helperText={lastNameError ? "Empty" : false}
-                onChange={(e) => setNewLastName(e.target.value)}
-                sx={{ mt: 2 }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveChanges}
-                sx={{ mt: 2 }}
-              >
-                Save Changes
-              </Button>
-            </Box>
-          )}
+              {/* Informazioni sull'utente */}
+              <Stack direction={"column"} spacing={2}>
+                <Typography variant={isSmScreen ? "h5" : "body1"} mt={2}>
+                  Username:{" "}
+                  {modifiedProfile !== "" ? modifiedProfile : user?.displayName}
+                </Typography>
+                <Typography variant={isSmScreen ? "h5" : "body1"}>
+                  Email: {user?.email}
+                </Typography>
+              </Stack>
 
-          {/* Form per il cambio della password */}
-          {changePassword && (
-            <Box mt={5}>
-              <TextField
-                label="New Password"
-                variant="outlined"
-                type="password"
-                fullWidth
-                value={newPassword}
-                error={passwordError}
-                helperText={passwordError ? "At least 6 characters" : false}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveChanges}
-                sx={{ mt: 2 }}
-              >
-                Save Changes
-              </Button>
+              {/* Altri elementi, ad esempio: */}
+              <Divider orientation="vertical" flexItem sx={{ mx: 3 }} />
+
+              {/* Lista delle opzioni/account */}
+              <List sx={{ mt: isMdScreen ? 0 : 5 }}>
+                <ListItemButton
+                  sx={{ borderRadius: 1 }}
+                  onClick={() => {
+                    setChangePassword(false);
+                    setChangeName(true);
+                  }}
+                >
+                  <ListItemText primary="Change First Name/Last Name" />
+                </ListItemButton>
+                <ListItemButton
+                  sx={{ borderRadius: 1 }}
+                  onClick={() => {
+                    setChangePassword(true);
+                    setChangeName(false);
+                  }}
+                >
+                  <ListItemText primary="Change Password" />
+                </ListItemButton>
+                {/* Aggiungi altre opzioni in base alle necessità */}
+              </List>
+            </Stack>
+            <Box width={"100%"} display={"flex"} justifyContent={"center"}>
+              {/* Form per il cambio del nome utente */}
+              {changeName && (
+                <Box mt={2}>
+                  <TextField
+                    label="New First Name"
+                    variant="outlined"
+                    fullWidth
+                    value={newFirstName}
+                    error={firstNameError}
+                    helperText={firstNameError ? "Empty" : false}
+                    onChange={(e) => setNewFirstName(e.target.value)}
+                  />
+                  <TextField
+                    label="New Last Name"
+                    variant="outlined"
+                    fullWidth
+                    value={newLastName}
+                    error={lastNameError}
+                    helperText={lastNameError ? "Empty" : false}
+                    onChange={(e) => setNewLastName(e.target.value)}
+                    sx={{ mt: 2 }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSaveChanges}
+                    sx={{ mt: 2 }}
+                  >
+                    Save Changes
+                  </Button>
+                </Box>
+              )}
+
+              {/* Form per il cambio della password */}
+              {changePassword && (
+                <Box mt={5}>
+                  <TextField
+                    label="New Password"
+                    variant="outlined"
+                    type="password"
+                    fullWidth
+                    value={newPassword}
+                    error={passwordError}
+                    helperText={passwordError ? "At least 6 characters" : false}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSaveChanges}
+                    sx={{ mt: 2 }}
+                  >
+                    Save Changes
+                  </Button>
+                </Box>
+              )}
             </Box>
-          )}
-        </Box>
+          </>
+        )}
       </Box>
     </>
   );

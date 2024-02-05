@@ -93,8 +93,11 @@ export default function SignIn() {
             id="email"
             label="Email Address"
             name="email"
-            autoComplete="email" // Specify autocomplete type for email
+            type="email"
             onChange={(event) => setEmail(event.target.value)}
+            InputProps={{
+              autoComplete: "email", // Specify autocomplete type for email
+            }}
           />
           <TextField
             margin="normal"
@@ -104,8 +107,8 @@ export default function SignIn() {
             label="Password"
             type={showPassword ? "text" : "password"}
             id="password"
-            autoComplete="current-password" // Specify autocomplete type for password
             InputProps={{
+              autoComplete: "current-password", // Specify autocomplete type for password
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton

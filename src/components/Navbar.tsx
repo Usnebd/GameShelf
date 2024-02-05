@@ -38,8 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   toggleMode,
   setItem,
 }) => {
-  const { user } = useContext(UserContext);
-  const { selectedItems } = useContext(UserContext);
+  const { user, selectedItems, setSelectedItems, setQuantitySelectedMap } =
+    useContext(UserContext);
   const theme = useTheme();
   const navigate = useNavigate();
   const pages = ["Home", "Menu", "Orders"];
@@ -57,6 +57,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     },
   }));
   const handleSignOut = () => {
+    setSelectedItems([]);
+    setQuantitySelectedMap({});
     signOut(auth)
       .then(() => {
         enqueueSnackbar("Signed Out", { variant: "info" });
@@ -210,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       handleCloseMenu();
                     }}
                   >
-                    Account
+                    <Typography variant="h6">Account</Typography>
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
@@ -218,7 +220,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       handleSignOut();
                     }}
                   >
-                    Logout
+                    <Typography variant="h6">Logout</Typography>
                   </MenuItem>
                 </Menu>
               </>
