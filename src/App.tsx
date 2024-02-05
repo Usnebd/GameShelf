@@ -13,10 +13,11 @@ import { SnackbarProvider } from "notistack";
 import {
   DocumentData,
   collection,
-  deleteDoc,
   doc,
   getDocs,
+  onSnapshot,
   query,
+  writeBatch,
 } from "firebase/firestore";
 interface SelectedItem {
   category: string;
@@ -155,12 +156,16 @@ function App() {
       try {
         const q = query(collection(db, `users/${user.email}/cart`));
         const querySnapshot = await getDocs(q);
-        querySnapshot.docs.forEach((docSnapshot) => {
-          const docRef = doc(db, `users/${user.email}/cart`, docSnapshot.id);
-          deleteDoc(docRef);
-        });
         setSelectedItems([]);
         setQuantitySelectedMap({});
+        // Get a new write batch
+        const batch = writeBatch(db);
+        querySnapshot.docs.forEach((docSnapshot) => {
+          const docRef = doc(db, `users/${user.email}/cart`, docSnapshot.id);
+          batch.delete(docRef);
+        });
+        // Commit the batch
+        await batch.commit();
       } catch (error) {
         console.log(error);
       }
@@ -194,33 +199,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const fetchCartData = async () => {
-      try {
-        const cartRef = collection(db, `users/${user?.email}/cart`);
-        const querySnapshot = await getDocs(cartRef);
-        const promises = querySnapshot.docs.map((doc) => doc.data());
-        const data = await Promise.all(promises);
-        data.map((item: DocumentData) => {
-          const selectedItem: SelectedItem = {
-            category: item.category,
-            productName: item.productName,
-          };
-          setSelectedItems((prevSelectedItems: SelectedItem[]) => {
-            return [...prevSelectedItems, selectedItem];
-          });
-          setQuantitySelectedMap((prevMap) => ({
-            ...prevMap,
-            [selectedItem.productName]: item.quantità,
-          }));
+    const q = query(collection(db, `users/${user?.email}/cart`));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const data = querySnapshot.docs.map((doc) => doc.data());
+      setSelectedItems([]);
+      data.map((item: DocumentData) => {
+        const selectedItem: SelectedItem = {
+          category: item.category,
+          productName: item.productName,
+        };
+        setSelectedItems((prevSelectedItems: SelectedItem[]) => {
+          return [...prevSelectedItems, selectedItem];
         });
-      } catch (error) {
-        console.error("Errore durante la lettura dei documenti:", error);
-        // Gestisci l'errore in base alle tue esigenze
-      }
-    };
+        setQuantitySelectedMap((prevMap) => ({
+          ...prevMap,
+          [selectedItem.productName]: item.quantità,
+        }));
+      });
+    });
 
-    // Chiamata alla funzione di fetch solo quando il componente viene montato
-    fetchCartData();
+    return () => unsubscribe();
   }, [user]);
 
   useEffect(() => {
@@ -236,14 +234,8 @@ function App() {
         return total + productPrice * quantitySelectedMap[product?.nome];
       }, 0);
     };
-
-    if (!productsLoaded) {
-      setTotal(0);
-    } else {
-      // Aggiorna quantitySelectedMap
-      setTotal(findTotal(selectedItems, quantitySelectedMap));
-    }
-  }, [selectedItems, quantitySelectedMap, productsLoaded]);
+    setTotal(findTotal(selectedItems, quantitySelectedMap));
+  }, [selectedItems, quantitySelectedMap]);
 
   return (
     <ThemeProvider theme={theme}>
