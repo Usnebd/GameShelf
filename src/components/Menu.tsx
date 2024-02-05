@@ -17,7 +17,12 @@ import {
 } from "@mui/material";
 import { UserContext } from "../App";
 import { ReactNode, useContext, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLoaderData } from "react-router-dom";
+import getMenuData, { MenuData } from "./getMenuData.ts";
+
+export function loader() {
+  return getMenuData("../public/assets/data.json");
+}
 
 function Menu() {
   const theme = useTheme();
@@ -25,6 +30,7 @@ function Menu() {
   const navigate = useNavigate();
   let { category, id } = useParams();
   const { products, productsLoaded } = useContext(UserContext);
+  const menuData: MenuData = useLoaderData() as MenuData;
   if (category !== undefined) {
     category =
       category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
@@ -54,12 +60,8 @@ function Menu() {
   }
 
   return (
-    <Box
-      mx={isSmScreen ? 5 : 2}
-      mb={5}
-      textAlign={isSmScreen ? "start" : "center"}
-    >
-      <Stack mt={4} direction={"row"} justifyContent={"space-between"}>
+    <Box mx={isSmScreen ? 5 : 2} textAlign={isSmScreen ? "start" : "center"}>
+      <Stack mt={3} direction={"row"} justifyContent={"space-between"}>
         <Typography variant="h3">Menu</Typography>
         <FormControl sx={{ minWidth: "180px" }}>
           <InputLabel id="Category">Category</InputLabel>
@@ -91,7 +93,7 @@ function Menu() {
       <Stack
         direction={isSmScreen ? "row" : "column"}
         spacing={5}
-        mt={isSmScreen ? 10 : 3}
+        mt={2.4}
         mx={isSmScreen ? 0 : 5}
       >
         <Box flexGrow={1} display="flex" justifyContent={"center"}>
@@ -103,16 +105,30 @@ function Menu() {
               <Skeleton variant="rounded" width={"100%"} height={50} />
             </Stack>
           ) : (
-            <Grid container spacing={3}>
+            <Grid container spacing={2.5}>
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
-                  <Grid item key={item.id} xs={12} sm={6} md={4} lg={3}>
+                  <Grid
+                    item
+                    key={item.id}
+                    xs={6}
+                    sm={4}
+                    md={4}
+                    lg={2.8}
+                    xl={2.4}
+                  >
                     <Card elevation={6} sx={{ borderRadius: 3 }}>
                       <CardMedia
                         component="img"
-                        alt={item.name}
-                        height="140"
-                        src={item.imageUrl}
+                        alt={item.nome}
+                        height="138"
+                        src={
+                          "../public/assets/images/" +
+                          `${categorySelected}/` +
+                          menuData[categorySelected].find(
+                            (x) => x.name == item.nome
+                          )?.src
+                        }
                       />
                       <CardContent>
                         <Typography variant="h5">{item.nome}</Typography>

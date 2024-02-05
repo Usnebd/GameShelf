@@ -1,0 +1,45 @@
+{
+  "Antipasti": [
+    { "name": "Antipasto toscano", "src": "antipasto-toscano.jpg" },
+    { "name": "Crostini misti", "src": "crostini-misti.webp" },
+    { "name": "Bruschette", "src": "bruschette.jpg" },
+    { "name": "Focaccia", "src": "focaccia.jpg" },
+    { "name": "Formaggi misti", "src": "formaggi-misti.jpg" },
+    { "name": "Cocktail gamberetti", "src": "cocktail-gamberetti.jpg" },
+    { "name": "Olive ascolane", "src": "olive-ascolane.jpg" }
+  ],
+  "Desserts": [
+    { "name": "Strudel", "src": "strudel.jpg" },
+    { "name": "Tartufo bianco", "src": "tartufo_bianco.jpg" },
+    { "name": "Tartufo nero", "src": "tartufo_nero.jpg" },
+    { "name": "Tiramisù", "src": "tiramisù.jpg" },
+    { "name": "Torta di mele", "src": "torta_mele.webp" },
+    { "name": "Cheesecake", "src": "cheesecake.jpg" },
+    { "name": "Muffin", "src": "muffin.jpg" },
+    { "name": "Cupcake", "src": "cupcake.jpg" }
+  ],
+  "Primi": [
+    { "name": "Spaghetti", "src": "spaghetti-carbonara.jpg" },
+    { "name": "Ravioli", "src": "ravioli.jpg" },
+    { "name": "Risotto ai funghi", "src": "risotto-funghi.jpg" },
+    { "name": "Pici al sugo", "src": "pigi-sugo.jpg" },
+    { "name": "Tagliatelle", "src": "tagliatelle.webp" }
+  ],
+  "Bevande": [
+    { "name": "Acqua", "src": "acqua.jpg" },
+    { "name": "Pepsi", "src": "pepsi.jpg" },
+    { "name": "Coca Cola", "src": "coca-cola.jpg" },
+    { "name": "Sprite", "src": "sprite.webp" },
+    { "name": "Red Bull", "src": "red-bull.jpg" },
+    { "name": "Monster", "src": "monster.jpg" },
+    { "name": "Birra Moretti", "src": "birra-moretti.jpg" }
+  ],
+  "Secondi": [
+    { "name": "Alette di pollo", "src": "alette-pollo.jpg" },
+    { "name": "Bistecca fiorentina", "src": "bistecca-fiorentina.jpg" },
+    { "name": "Tacchino arrosto", "src": "tacchino-arrosto.jpg" },
+    { "name": "Hamburger", "src": "hamburger.webp" },
+    { "name": "Roast Beef", "src": "roastbeef.webp" },
+    { "name": "Maiale arrosto", "src": "maiale-arrosto.webp" }
+  ]
+}

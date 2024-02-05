@@ -46,6 +46,9 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
     >
       <Backdrop open={open} />
       <SpeedDial
+        FabProps={{
+          size: "large",
+        }}
         ariaLabel="SpeedDial basic example"
         sx={{
           position: "absolute",

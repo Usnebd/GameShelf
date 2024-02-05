@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 import Home from "./components/Home";
 import Orders from "./components/Orders";
-import Menu from "./components/Menu";
+import Menu, { loader as menuLoader } from "./components/Menu";
 import NotFound from "./components/NotFound";
 import {
   createBrowserRouter,
@@ -22,7 +22,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index element={<Home />} />
-      <Route path="menu" element={<Menu />}>
+      <Route path="menu" element={<Menu />} loader={menuLoader}>
         <Route path=":category" element={<Menu />}>
           <Route path=":id" element={<Menu />} />
         </Route>

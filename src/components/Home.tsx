@@ -420,7 +420,9 @@ function Home() {
                 justifyContent="center"
               >
                 <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
-                <Typography variant="h5">{total.toFixed(2) + " €"}</Typography>
+                <Typography variant="h5" fontWeight={"bold"}>
+                  {total.toFixed(2) + " €"}
+                </Typography>
               </Box>
             )}
           </Grid>
@@ -500,7 +502,7 @@ function Home() {
     return (
       <Grid container rowSpacing={2} columnSpacing={2}>
         {products[category].map((product) => (
-          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3} xl={2}>
             <Card
               sx={{
                 width: "100%",
@@ -531,7 +533,9 @@ function Home() {
                     }}
                   >
                     <Typography variant="h6">{product.nome}</Typography>
-                    <Typography variant="body1">{product.prezzo} €</Typography>
+                    <Typography variant="body1" fontWeight={"bold"}>
+                      {product.prezzo} €
+                    </Typography>
                   </Card>
                 </ButtonBase>
               ) : (
@@ -551,7 +555,7 @@ function Home() {
       textAlign={isSmScreen ? "start" : "center"}
     >
       <Stack
-        mt={4}
+        mt={3}
         direction={"row"}
         justifyContent="space-between"
         alignItems={"flex-start"}
