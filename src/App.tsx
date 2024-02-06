@@ -4,7 +4,7 @@ import { amber, indigo } from "@mui/material/colors";
 import { Box, CssBaseline, useMediaQuery } from "@mui/material";
 import { useMemo } from "react";
 import { Navbar } from "./components/Navbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLoaderData } from "react-router-dom";
 import { useLocalStorage } from "./custom_hook/useLocalStorage";
 import Dial from "./components/Dial";
 import { auth, db } from "./components/firebase";
@@ -27,7 +27,6 @@ interface SelectedItem {
 interface UserContextType {
   products: Record<string, DocumentData[]>;
   user: User | null;
-  productsLoaded: boolean;
   total: number;
   authLoaded: boolean;
   handleDeleteCart: () => void;
@@ -54,7 +53,6 @@ export const UserContext = createContext<UserContextType>({
     Bevande: [] as DocumentData[],
   },
   user: auth.currentUser,
-  productsLoaded: false,
   docs: [],
   authLoaded: false,
   total: 0,
@@ -82,15 +80,23 @@ const categories: string[] = [
   "bevande",
 ];
 
+export async function loader() {
+  const promises = categories.map(async (item) => {
+    const querySnapshot = await getDocs(collection(db, item));
+    return querySnapshot.docs.map((doc) => doc.data());
+  });
+  const data = await Promise.all(promises);
+  return data;
+}
+
 function App() {
   const { setItem, getItem } = useLocalStorage("theme");
   const savedPreferences = getItem();
   const systemSetting = useMediaQuery("(prefers-color-scheme: dark)");
   const [authLoaded, setAuthLoaded] = useState(false);
-  const [productsLoaded, setProductsLoaded] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
   const [textNote, setTextNote] = useState<string>("");
-  const [docs, setDocs] = useState<DocumentData[][]>([]);
+  const docs: DocumentData[][] = useLoaderData() as DocumentData[][];
   const [total, setTotal] = useState(0);
   const [mode, setMode] = useState(
     savedPreferences != undefined ? savedPreferences : systemSetting
@@ -173,24 +179,6 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchProductsData = async () => {
-      try {
-        const promises = categories.map(async (item) => {
-          const querySnapshot = await getDocs(collection(db, item));
-          return querySnapshot.docs.map((doc) => doc.data());
-        });
-        const data = await Promise.all(promises);
-        setDocs(data);
-        setProductsLoaded(true);
-      } catch (error) {
-        console.error("Errore durante la lettura dei documenti:", error);
-      }
-    };
-
-    fetchProductsData();
-  }, []);
-
-  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setAuthLoaded(true);
@@ -244,7 +232,6 @@ function App() {
           handleDeleteCart,
           docs,
           authLoaded,
-          productsLoaded,
           textNote,
           setTextNote,
           total,

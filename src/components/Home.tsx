@@ -15,7 +15,6 @@ import {
   ButtonGroup,
   IconButton,
   ListItem,
-  Skeleton,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -63,9 +62,6 @@ function Home() {
     quantitySelectedMap,
     setQuantitySelectedMap,
     total,
-    authLoaded,
-    productsLoaded,
-    docs,
     handleDeleteCart,
     user,
   } = useContext(UserContext);
@@ -409,22 +405,18 @@ function Home() {
             </ListItemButton>
           </Grid>
           <Grid item xs>
-            {!productsLoaded ? (
-              <Skeleton variant="rounded" width={"300px"} height={"50px"} />
-            ) : (
-              <Box
-                color="inherit"
-                display={"flex"}
-                flexDirection={"row"}
-                alignItems={"center"}
-                justifyContent="center"
-              >
-                <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
-                <Typography variant="h5" fontWeight={"bold"}>
-                  {total.toFixed(2) + " €"}
-                </Typography>
-              </Box>
-            )}
+            <Box
+              color="inherit"
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent="center"
+            >
+              <ShoppingCartIcon fontSize="large" sx={{ mr: 1 }} />
+              <Typography variant="h5" fontWeight={"bold"}>
+                {total.toFixed(2) + " €"}
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
         <List disablePadding sx={{ minWidth: 180 }}>
@@ -599,23 +591,7 @@ function Home() {
             maxHeight: isSmScreen ? "180px" : "inherit",
           }}
         >
-          {!authLoaded || docs.length == 0 ? (
-            <Stack
-              direction={"column"}
-              spacing={2}
-              width={isSmScreen ? "300px" : "100%"}
-            >
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-            </Stack>
-          ) : (
-            getCategoryList()
-          )}
+          {getCategoryList()}
         </Box>
         {selectedCategory && (
           <Box flexGrow={1} mx={isSmScreen ? 0 : 11}>

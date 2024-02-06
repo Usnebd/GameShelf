@@ -7,7 +7,6 @@ import {
   Divider,
   List,
   ListItem,
-  Skeleton,
   Slider,
   Stack,
   Typography,
@@ -29,7 +28,7 @@ import { db } from "./firebase";
 function Orders() {
   const theme = useTheme();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
-  const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
+  const isLgScreen = useMediaQuery(theme.breakpoints.up("lg"));
   const [orders, setOrders] = useState<DocumentData[]>([]);
   const [ascending, setAscending] = useState(true);
   const [retrievedData, setRetrievedData] = useState(false);
@@ -76,29 +75,20 @@ function Orders() {
       mb={5}
       textAlign={isSmScreen ? "start" : "center"}
     >
-      <Stack
+      <Typography
+        variant="h3"
         mt={3}
-        direction={"row"}
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ display: { xs: "none", sm: "flex" } }}
+        sx={{ display: { xs: "none", sm: "block" } }}
       >
-        <Typography variant="h3" sx={{ display: { xs: "none", sm: "block" } }}>
-          Orders
-        </Typography>
-      </Stack>
+        Orders
+      </Typography>
       <Stack
         direction={isSmScreen ? "row" : "column"}
-        mt={isSmScreen ? 10 : 0}
+        spacing={7}
+        mt={5}
         mx={isSmScreen ? 0 : 5}
       >
-        <Stack
-          direction={"column"}
-          spacing={3}
-          mr={isSmScreen ? 6 : 0}
-          mb={12}
-          mt={isSmScreen ? 0 : 5}
-        >
+        <Stack direction={"column"} spacing={3} mb={12} mt={isSmScreen ? 0 : 5}>
           <Button
             variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
             sx={{ py: 1.3, minWidth: "190px" }}
@@ -126,16 +116,7 @@ function Orders() {
             <Box>
               <Typography variant="h4">Please, Sign In !</Typography>
             </Box>
-          ) : !retrievedData ? (
-            <Stack direction={"column"} spacing={2} width={"100%"}>
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-              <Skeleton variant="rounded" width={"100%"} height={"50px"} />
-            </Stack>
-          ) : orders.length == 0 ? (
+          ) : orders.length == 0 && retrievedData ? (
             <Box display={"flex"} justifyContent={"center"}>
               <Typography variant="h4">No orders Found !</Typography>
             </Box>
@@ -152,7 +133,7 @@ function Orders() {
                     <Accordion
                       elevation={6}
                       sx={{
-                        width: isMdScreen ? "80%" : "100%",
+                        width: isLgScreen ? "80%" : "100%",
                       }}
                     >
                       <AccordionSummary
@@ -191,7 +172,7 @@ function Orders() {
                               quantità: number;
                             }) => (
                               <Box
-                                key={prodotto.id}
+                                key={prodotto.nome}
                                 display="flex"
                                 justifyContent="space-between"
                               >

@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import App, { loader as appLoader } from "./App.tsx";
 import "./index.css";
 import Home from "./components/Home";
 import Orders from "./components/Orders";
@@ -20,7 +20,7 @@ import Checkout from "./components/Checkout.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<App />}>
+    <Route path="/" element={<App />} loader={appLoader}>
       <Route index element={<Home />} />
       <Route path="menu" element={<Menu />} loader={menuLoader}>
         <Route path=":category" element={<Menu />}>

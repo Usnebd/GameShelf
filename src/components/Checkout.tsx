@@ -47,7 +47,6 @@ function Checkout() {
     textNote,
     setTextNote,
     setSelectedItems,
-    productsLoaded,
     handleDeleteCart,
   } = useContext(UserContext);
 
@@ -274,15 +273,12 @@ function Checkout() {
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="h6">
-                          {" "}
-                          {!productsLoaded
-                            ? "0.00 €"
-                            : (
-                                quantitySelectedMap[item.productName] *
-                                products[item.category].find(
-                                  (prod) => prod["nome"] === item.productName
-                                )?.prezzo
-                              ).toFixed(2) + "€"}
+                          {(
+                            quantitySelectedMap[item.productName] *
+                            products[item.category].find(
+                              (prod) => prod["nome"] === item.productName
+                            )?.prezzo
+                          ).toFixed(2) + " €"}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -310,14 +306,12 @@ function Checkout() {
                       {item.productName}
                     </Typography>
                     <Typography variant="h6">
-                      {!productsLoaded
-                        ? "0.00 €"
-                        : (
-                            quantitySelectedMap[item.productName] *
-                            products[item.category].find(
-                              (prod) => prod["nome"] === item.productName
-                            )?.prezzo
-                          ).toFixed(2) + "€"}
+                      {(
+                        quantitySelectedMap[item.productName] *
+                        products[item.category].find(
+                          (prod) => prod["nome"] === item.productName
+                        )?.prezzo
+                      ).toFixed(2) + "€"}
                     </Typography>
                   </ListItem>
                 ))}
