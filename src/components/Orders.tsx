@@ -24,25 +24,46 @@ import {
   query,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { useSearchParams } from "react-router-dom";
 
 function Orders() {
   const theme = useTheme();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const isLgScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState<DocumentData[]>([]);
-  const [ascending, setAscending] = useState(true);
-  const [retrievedData, setRetrievedData] = useState(false);
   const [max, setMax] = useState(0);
-  const [filteredPrice, setFilteredPrice] = useState([0, 0]); // Valori di default per lo slider
+  const [sortOrder, setSortOrder] = useState(
+    searchParams.get("sort_by") == "asc(date)" ? true : false
+  );
+  const [retrievedData, setRetrievedData] = useState(false);
+  const [filteredPrice, setFilteredPrice] = useState([
+    parseInt(searchParams.get("offset") || "0", 10),
+    parseInt(searchParams.get("limit") || "0", 10),
+  ]); // Valori di default per lo slider
   const { user } = useContext(UserContext);
 
   const handleSort = () => {
-    setAscending((prev) => !prev);
+    const sortByValue = sortOrder ? "asc(date)" : "desc(date)";
+    const params = new URLSearchParams(searchParams);
+    params.set("sort_by", encodeURIComponent(sortByValue));
+    setSearchParams(params.toString());
+    setSortOrder((prev) => !prev);
     setOrders((prev) => [...prev].reverse());
   };
 
   const handleSliderChange = (_event: Event, newValue: number | number[]) => {
-    setFilteredPrice(newValue as number[]);
+    const params = new URLSearchParams(searchParams);
+    if (Array.isArray(newValue)) {
+      setFilteredPrice(newValue);
+      params.set("offset", newValue[0].toString());
+      params.set("limit", newValue[1].toString());
+    } else {
+      const newOffset = newValue;
+      setFilteredPrice([newOffset, filteredPrice[1]]);
+      params.set("offset", newOffset.toString());
+    }
+    setSearchParams(params.toString());
   };
 
   useEffect(() => {
@@ -57,9 +78,15 @@ function Orders() {
           const data = querySnapshot.docs.map((doc) => doc.data());
           setOrders(data);
           setRetrievedData(true);
-          const maxTotal = Math.max(...data.map((order) => order.totale));
-          setMax(maxTotal > 0 ? maxTotal : 0);
-          setFilteredPrice([0, maxTotal]);
+          // Calcolo del massimo totale degli ordini
+          const maxTotal = Math.max(
+            ...data.map((order) => Math.round(order.totale * 100))
+          );
+          setMax(maxTotal / 100); // Arrotonda e imposta il massimo totale
+          setFilteredPrice([
+            parseInt(searchParams.get("offset") || "0", 10),
+            parseInt(searchParams.get("limit") || maxTotal.toString(), 10),
+          ]);
         });
 
         return () => unsubscribe();
@@ -96,7 +123,7 @@ function Orders() {
             onClick={handleSort}
           >
             <Typography>
-              {ascending ? "Sort Ascending" : "Sort Descending"}
+              {sortOrder ? "Sort Ascending" : "Sort Descending"}
             </Typography>
           </Button>
           <Typography variant="h6" display="flex" justifyContent={"center"}>
@@ -123,7 +150,11 @@ function Orders() {
           ) : (
             <List sx={{ width: "100%" }}>
               {orders
-                .filter((order) => order.totale <= filteredPrice[1])
+                .filter(
+                  (order) =>
+                    order.totale <= filteredPrice[1] &&
+                    order.totale >= filteredPrice[0]
+                )
                 .map((order) => (
                   <ListItem
                     key={order.timestamp}

@@ -5,7 +5,6 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Skeleton,
   Stack,
   useMediaQuery,
   useTheme,
@@ -14,11 +13,13 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Skeleton,
 } from "@mui/material";
 import { UserContext } from "../App";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams, useLoaderData } from "react-router-dom";
 import getMenuData, { MenuData } from "./getMenuData.ts";
+import images from "./Images.ts";
 
 export function loader() {
   return getMenuData("/assets/data.json");
@@ -30,6 +31,7 @@ function Menu() {
   const navigate = useNavigate();
   let { category, id } = useParams();
   const { products } = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(true);
   const menuData: MenuData = useLoaderData() as MenuData;
   if (category !== undefined) {
     category =
@@ -44,29 +46,23 @@ function Menu() {
   if (!isValidCategory) {
     navigate("/page-not-found");
   }
-  const [loading, setLoading] = useState(products[categorySelected].length);
 
   const handleChange = (
     event: SelectChangeEvent<String>,
     _child: ReactNode
   ) => {
+    setIsLoading(true);
     setCategory(event.target.value as string);
     navigate(`/menu/${event.target.value.toLowerCase()}`);
   };
-  useEffect(() => {
-    const resetLoad = () => {
-      if (id) {
-        setLoading(1);
-      } else {
-        setLoading(products[categorySelected].length);
-      }
-    };
-    return () => resetLoad();
-  }, [categorySelected]);
 
-  const handleLoad = () => {
-    setLoading((prev) => prev - 1);
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [categorySelected]);
 
   return (
     <Box mx={isSmScreen ? 5 : 2} textAlign={isSmScreen ? "start" : "center"}>
@@ -133,33 +129,32 @@ function Menu() {
                       xl={2.4}
                     >
                       <Card elevation={6} sx={{ borderRadius: 3 }}>
-                        {loading > 0 ? (
-                          <Skeleton width={"100%"} height={140} />
-                        ) : (
-                          <CardMedia
-                            component="img"
-                            loading="lazy"
-                            alt={item.nome}
-                            onLoad={handleLoad}
-                            height="140"
-                            src={
-                              "/assets/images/" +
-                              `${categorySelected}/` +
+                        {isLoading && <Skeleton width="100%" height={140} />}
+                        <CardMedia
+                          component="img"
+                          loading="lazy"
+                          alt={item.nome}
+                          height="140"
+                          sx={{
+                            userSelect: "none",
+                            display: isLoading ? "none" : "block",
+                          }}
+                          src={
+                            images[
                               menuData[categorySelected].find(
-                                (x) => x.name == item.nome
-                              )?.src
-                            }
-                            sx={{ userSelect: "none" }}
-                          />
-                        )}
+                                (x) => x.name === item.nome
+                              )?.src || ""
+                            ]
+                          }
+                        />
                         <CardContent>
-                          {loading > 0 ? (
+                          {isLoading ? (
                             <>
-                              <Typography variant="h5">
-                                <Skeleton width={"100%"} />
+                              <Typography variant="h5" width={"70%"}>
+                                <Skeleton />
                               </Typography>
-                              <Typography variant="h6" mt={0.5}>
-                                <Skeleton width={"40%"} />
+                              <Typography variant="h6" mt={0.5} width={"30%"}>
+                                <Skeleton />
                               </Typography>
                             </>
                           ) : (
@@ -187,33 +182,32 @@ function Menu() {
                   xl={2.4}
                 >
                   <Card elevation={6} sx={{ borderRadius: 3 }}>
-                    {loading > 0 ? (
-                      <Skeleton width={"100%"} height={140} />
-                    ) : (
-                      <CardMedia
-                        component="img"
-                        loading="lazy"
-                        alt={item.nome}
-                        onLoad={handleLoad}
-                        height="140"
-                        src={
-                          "/assets/images/" +
-                          `${categorySelected}/` +
+                    {isLoading && <Skeleton width="100%" height={140} />}
+                    <CardMedia
+                      component="img"
+                      loading="lazy"
+                      alt={item.nome}
+                      height="140"
+                      sx={{
+                        userSelect: "none",
+                        display: isLoading ? "none" : "block",
+                      }}
+                      src={
+                        images[
                           menuData[categorySelected].find(
-                            (x) => x.name == item.nome
-                          )?.src
-                        }
-                        sx={{ userSelect: "none" }}
-                      />
-                    )}
+                            (x) => x.name === item.nome
+                          )?.src || ""
+                        ]
+                      }
+                    />
                     <CardContent>
-                      {loading > 0 ? (
+                      {isLoading ? (
                         <>
-                          <Typography variant="h5">
-                            <Skeleton width={"100%"} />
+                          <Typography variant="h5" width={"70%"}>
+                            <Skeleton />
                           </Typography>
-                          <Typography variant="h6" mt={0.5}>
-                            <Skeleton width={"40%"} />
+                          <Typography variant="h6" mt={0.5} width={"30%"}>
+                            <Skeleton />
                           </Typography>
                         </>
                       ) : (

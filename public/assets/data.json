@@ -1,45 +1,49 @@
 {
   "Antipasti": [
-    { "name": "Antipasto toscano", "src": "antipasto-toscano.jpg" },
-    { "name": "Crostini misti", "src": "crostini-misti.webp" },
-    { "name": "Bruschette", "src": "bruschette.jpg" },
-    { "name": "Focaccia", "src": "focaccia.jpg" },
-    { "name": "Formaggi misti", "src": "formaggi-misti.jpg" },
-    { "name": "Cocktail gamberetti", "src": "cocktail-gamberetti.jpg" },
-    { "name": "Olive ascolane", "src": "olive-ascolane.jpg" }
+    {
+      "name": "Antipasto toscano",
+      "src": "AntipastoToscano",
+      "blur": "LKJG~QxBcaRkI-McH?Rl%%M_b_tQ"
+    },
+    { "name": "Crostini misti", "src": "CrostiniMisti" },
+    { "name": "Bruschette", "src": "Bruschette" },
+    { "name": "Focaccia", "src": "Focaccia" },
+    { "name": "Formaggi misti", "src": "FormaggiMisti" },
+    { "name": "Cocktail gamberetti", "src": "CocktailGamberetti" },
+    { "name": "Olive ascolane", "src": "OliveAscolane" }
   ],
   "Desserts": [
-    { "name": "Strudel", "src": "strudel.jpg" },
-    { "name": "Tartufo bianco", "src": "tartufo_bianco.jpg" },
-    { "name": "Tartufo nero", "src": "tartufo_nero.jpg" },
-    { "name": "Tiramisù", "src": "tiramisù.jpg" },
-    { "name": "Torta di mele", "src": "torta_mele.webp" },
-    { "name": "Cheesecake", "src": "cheesecake.jpg" },
-    { "name": "Muffin", "src": "muffin.jpg" },
-    { "name": "Cupcake", "src": "cupcake.jpg" }
+    { "name": "Strudel", "src": "Strudel" },
+    { "name": "Tartufo bianco", "src": "TartufoBianco" },
+    { "name": "Tartufo nero", "src": "TartufoNero" },
+    { "name": "Tiramisù", "src": "Tiramisu" },
+    { "name": "Torta di mele", "src": "TortaMele" },
+    { "name": "Cheesecake", "src": "Cheesecake" },
+    { "name": "Muffin", "src": "Muffin" },
+    { "name": "Cupcake", "src": "Cupcake" }
   ],
   "Primi": [
-    { "name": "Spaghetti", "src": "spaghetti-carbonara.jpg" },
-    { "name": "Ravioli", "src": "ravioli.jpg" },
-    { "name": "Risotto ai funghi", "src": "risotto-funghi.jpg" },
-    { "name": "Pici al sugo", "src": "pigi-sugo.jpg" },
-    { "name": "Tagliatelle", "src": "tagliatelle.webp" }
+    { "name": "Spaghetti", "src": "Spaghetti" },
+    { "name": "Ravioli", "src": "Ravioli" },
+    { "name": "Risotto ai funghi", "src": "RisottoFunghi" },
+    { "name": "Pici al sugo", "src": "PigiSugo" },
+    { "name": "Tagliatelle", "src": "Tagliatelle" }
   ],
   "Bevande": [
-    { "name": "Acqua", "src": "acqua.jpg" },
-    { "name": "Pepsi", "src": "pepsi.jpg" },
-    { "name": "Coca Cola", "src": "coca-cola.jpg" },
-    { "name": "Sprite", "src": "sprite.webp" },
-    { "name": "Red Bull", "src": "red-bull.jpg" },
-    { "name": "Monster", "src": "monster.jpg" },
-    { "name": "Birra Moretti", "src": "birra-moretti.jpg" }
+    { "name": "Acqua", "src": "Acqua" },
+    { "name": "Pepsi", "src": "Pepsi" },
+    { "name": "Coca Cola", "src": "CocaCola" },
+    { "name": "Sprite", "src": "Sprite" },
+    { "name": "Red Bull", "src": "RedBull" },
+    { "name": "Monster", "src": "Monster" },
+    { "name": "Birra Moretti", "src": "BirraMoretti" }
   ],
   "Secondi": [
-    { "name": "Alette di pollo", "src": "alette-pollo.jpg" },
-    { "name": "Bistecca fiorentina", "src": "bistecca-fiorentina.jpg" },
-    { "name": "Tacchino arrosto", "src": "tacchino-arrosto.jpg" },
-    { "name": "Hamburger", "src": "hamburger.webp" },
-    { "name": "Roast Beef", "src": "roastbeef.webp" },
-    { "name": "Maiale arrosto", "src": "maiale-arrosto.webp" }
+    { "name": "Alette di pollo", "src": "AlettePollo" },
+    { "name": "Bistecca fiorentina", "src": "BisteccaFiorentina" },
+    { "name": "Tacchino arrosto", "src": "TacchinoArrosto" },
+    { "name": "Hamburger", "src": "Hamburger" },
+    { "name": "Roast Beef", "src": "RoastBeef" },
+    { "name": "Maiale arrosto", "src": "MaialeArrosto" }
   ]
 }
