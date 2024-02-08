@@ -160,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <LightModeIcon sx={{ verticalAlign: "middle" }} />
                 )}
                 <Switch
-                  aria-label="toggleMode"
+                  inputProps={{ "aria-label": "toggleMode" }}
                   color="secondary"
                   checked={mode}
                   onChange={() => {

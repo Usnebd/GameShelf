@@ -5,6 +5,7 @@ import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
 // https://vitejs.dev/config/
 
 const manifestForPlugin: Partial<VitePWAOptions> = {
+  registerType: "autoUpdate",
   includeAssets: [
     "favicon.ico",
     "apple-touch-icon.png",
@@ -12,6 +13,22 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
     "assets/data.json",
     "assets/not_available.jpg",
   ],
+  workbox: {
+    runtimeCaching: [
+      {
+        urlPattern: ({ url }) => {
+          return url.pathname.startsWith("/");
+        },
+        handler: "CacheFirst",
+        options: {
+          cacheName: "api-cache",
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+    ],
+  },
   manifest: {
     name: "My Chiosco",
     short_name: "My Chiosco",
@@ -49,4 +66,7 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
 
 export default defineConfig({
   plugins: [react(), VitePWA(manifestForPlugin)],
+  build: {
+    emptyOutDir: true,
+  },
 });

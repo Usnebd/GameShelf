@@ -40,7 +40,7 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
       position="fixed"
       sx={{
         bottom: 20,
-        right: 15,
+        right: 12,
         display: { xs: "block", md: "none" },
       }}
     >

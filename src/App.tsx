@@ -158,12 +158,13 @@ function App() {
   };
 
   const handleDeleteCart = async () => {
-    if (user !== null) {
+    setSelectedItems([]);
+    setQuantitySelectedMap({});
+    setTextNote("");
+    if (user) {
       try {
         const q = query(collection(db, `users/${user.email}/cart`));
         const querySnapshot = await getDocs(q);
-        setSelectedItems([]);
-        setQuantitySelectedMap({});
         // Get a new write batch
         const batch = writeBatch(db);
         querySnapshot.docs.forEach((docSnapshot) => {

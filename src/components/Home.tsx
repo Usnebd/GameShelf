@@ -117,24 +117,23 @@ function Home() {
     };
 
     const handleDone = async (category: string, productName: string) => {
+      const selectedItem: SelectedItem = {
+        category,
+        productName,
+      };
       setShowingQuantityButtons((prev) => ({
         ...prev,
         [productName]: false,
       }));
-      if (user !== null) {
-        const selectedItem: SelectedItem = {
-          category,
-          productName,
-        };
-        if (
-          selectedItems.find((x) => x.productName == productName) ==
-            undefined &&
-          quantitySelectedMap[productName]
-        ) {
-          setSelectedItems((prevSelectedItems: SelectedItem[]) => [
-            ...prevSelectedItems,
-            selectedItem,
-          ]);
+      if (
+        selectedItems.find((x) => x.productName == productName) == undefined &&
+        quantitySelectedMap[productName]
+      ) {
+        setSelectedItems((prevSelectedItems: SelectedItem[]) => [
+          ...prevSelectedItems,
+          selectedItem,
+        ]);
+        if (user) {
           try {
             const q = query(
               collection(db, `users/${user.email}/cart`),
@@ -161,7 +160,10 @@ function Home() {
             console.log(error);
           }
         } else {
-          if (quantitySelectedMap[productName]) {
+        }
+      } else {
+        if (quantitySelectedMap[productName]) {
+          if (user) {
             try {
               const q = query(
                 collection(db, `users/${user.email}/cart`),
@@ -179,9 +181,9 @@ function Home() {
             } catch (error) {
               console.log(error);
             }
-          } else {
-            handleDelete();
           }
+        } else {
+          handleDelete();
         }
       }
     };
@@ -195,13 +197,14 @@ function Home() {
         ...prevMap,
         [productName]: 0,
       }));
-      if (user !== null) {
-        if (selectedItems.find((x) => x.productName == productName)) {
-          setSelectedItems((prevSelectedItems: SelectedItem[]) => {
-            return prevSelectedItems.filter(
-              (item) => item.productName !== productName
-            );
-          });
+
+      if (selectedItems.find((x) => x.productName == productName)) {
+        setSelectedItems((prevSelectedItems: SelectedItem[]) => {
+          return prevSelectedItems.filter(
+            (item) => item.productName !== productName
+          );
+        });
+        if (user) {
           try {
             const q = query(
               collection(db, `users/${user.email}/cart`),
@@ -494,7 +497,7 @@ function Home() {
     return (
       <Grid container rowSpacing={2} columnSpacing={2}>
         {products[category].map((product) => (
-          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3} xl={2.5}>
             <Card
               sx={{
                 width: "100%",
@@ -541,11 +544,7 @@ function Home() {
   };
 
   return (
-    <Box
-      mx={isSmScreen ? 5 : 0}
-      mb={5}
-      textAlign={isSmScreen ? "start" : "center"}
-    >
+    <Box mx={4} mb={5} textAlign={isSmScreen ? "start" : "center"}>
       <Stack
         mt={3}
         direction={"row"}
@@ -560,7 +559,7 @@ function Home() {
             userSelect: "none",
           }}
         >
-          {selectedCategory ? selectedCategory : "Select Products"}
+          {selectedCategory || "Select Products"}
         </Typography>
         <Box
           color="inherit"
@@ -594,7 +593,7 @@ function Home() {
           {getCategoryList()}
         </Box>
         {selectedCategory && (
-          <Box flexGrow={1} mx={isSmScreen ? 0 : 11}>
+          <Box flexGrow={1} mx={isSmScreen ? 0 : 3}>
             {getProduct(selectedCategory)}
           </Box>
         )}

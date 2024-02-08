@@ -97,11 +97,7 @@ function Checkout() {
   };
 
   return (
-    <Box
-      mx={isSmScreen ? 5 : 0}
-      mb={5}
-      textAlign={isSmScreen ? "start" : "center"}
-    >
+    <Box mx={5} mb={3} textAlign={isSmScreen ? "start" : "center"}>
       <Stack
         mt={3}
         direction={"row"}
@@ -115,15 +111,11 @@ function Checkout() {
       </Stack>
       <Stack
         direction={isSmScreen ? "row" : "column"}
-        spacing={8}
-        mt={isSmScreen ? 10 : 0}
-        mx={isSmScreen ? 0 : 5}
+        spacing={isSmScreen ? 8 : 5}
+        mt={isSmScreen ? 10 : 3}
+        mx={isSmScreen ? 0 : 2}
       >
-        <Stack
-          direction={"column"}
-          spacing={isSmScreen ? 3 : 2}
-          mt={isSmScreen ? 0 : 5}
-        >
+        <Stack direction={"column"} spacing={isSmScreen ? 3 : 2}>
           <Button
             sx={{ py: 1 }}
             variant="contained"
@@ -173,7 +165,6 @@ function Checkout() {
             color={"error"}
             aria-label="Delete Order"
             sx={{ py: 1 }}
-            disabled={selectedItems.length == 0 || showNoteInput ? true : false}
             onClick={handleDeleteCart}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
@@ -286,36 +277,33 @@ function Checkout() {
               </Table>
             </TableContainer>
           ) : (
-            <Box>
-              <List>
-                {selectedItems.map((item) => (
-                  <ListItem
-                    disablePadding
-                    key={item.productName}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderBottom: "1px solid #ddd", // Aggiunge una linea divisoria tra gli elementi
-                      py: 2, // Padding verticale
-                    }}
-                  >
-                    <Typography variant="h5">
-                      {quantitySelectedMap[item.productName]}x{" "}
-                      {item.productName}
-                    </Typography>
-                    <Typography variant="h6">
-                      {(
-                        quantitySelectedMap[item.productName] *
-                        products[item.category].find(
-                          (prod) => prod["nome"] === item.productName
-                        )?.prezzo
-                      ).toFixed(2) + "€"}
-                    </Typography>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
+            <List>
+              {selectedItems.map((item) => (
+                <ListItem
+                  disablePadding
+                  key={item.productName}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom: "1px solid #ddd", // Aggiunge una linea divisoria tra gli elementi
+                    py: 2, // Padding verticale
+                  }}
+                >
+                  <Typography variant="h5">
+                    {quantitySelectedMap[item.productName]}x {item.productName}
+                  </Typography>
+                  <Typography variant="h6">
+                    {(
+                      quantitySelectedMap[item.productName] *
+                      products[item.category].find(
+                        (prod) => prod["nome"] === item.productName
+                      )?.prezzo
+                    ).toFixed(2) + "€"}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
           )}
           {!showNoteInput && textNote !== "" ? (
             <Paper
@@ -325,14 +313,11 @@ function Checkout() {
                 mt: 5,
                 maxWidth: "700px",
                 mx: "auto", // Aggiunto per centrare orizzontalmente
+                bgcolor: "orange",
               }}
             >
               <Box py={3} px={4}>
-                <Typography
-                  variant="h4"
-                  fontWeight={"bold"}
-                  color={theme.palette.mode == "dark" ? "secondary" : "primary"}
-                >
+                <Typography variant="h4" fontWeight={"bold"} color="black">
                   Note
                 </Typography>
                 <Typography
@@ -340,6 +325,7 @@ function Checkout() {
                   pt={2.5}
                   fontWeight={"bold"}
                   sx={{ wordBreak: "break-word" }}
+                  color="black"
                 >
                   {textNote}
                 </Typography>
