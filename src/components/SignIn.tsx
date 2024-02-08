@@ -21,6 +21,7 @@ import {
 } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { FirebaseError } from "firebase/app";
 
 export default function SignIn() {
   const { enqueueSnackbar } = useSnackbar();
@@ -52,12 +53,16 @@ export default function SignIn() {
       await signInWithEmailAndPassword(auth, email, password);
       enqueueSnackbar("Signed In", { variant: "success" });
       navigate("/");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        enqueueSnackbar("Wrong Credentials", { variant: "error" });
-        return {
-          message: `(${error.message})`,
-        };
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/network-request-failed") {
+          enqueueSnackbar("Network error", { variant: "error" });
+        } else {
+          enqueueSnackbar("Wrong Credentials", { variant: "error" });
+        }
+      } else {
+        enqueueSnackbar("Unknown error", { variant: "error" });
+        console.error("Unknown error:", error);
       }
     }
   };

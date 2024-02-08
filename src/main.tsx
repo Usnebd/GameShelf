@@ -17,6 +17,7 @@ import SignUp from "./components/SignUp.tsx";
 import Account from "./components/Account.tsx";
 import PasswordReset from "./components/PasswordReset.tsx";
 import Checkout from "./components/Checkout.tsx";
+import { registerSW } from "virtual:pwa-register";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -38,6 +39,14 @@ const router = createBrowserRouter(
     </Route>
   )
 );
+
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm("New App version available. Reload?")) {
+      updateSW(true);
+    }
+  },
+});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <RouterProvider router={router} />

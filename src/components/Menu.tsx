@@ -59,7 +59,7 @@ function Menu() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [categorySelected]);
@@ -199,6 +199,13 @@ function Menu() {
                           )?.src || ""
                         ]
                       }
+                      onError={(
+                        e: React.SyntheticEvent<HTMLImageElement, Event>
+                      ) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/assets/not_available.jpg";
+                        target.onerror = null; // Rimuove l'evento onError per evitare il loop
+                      }}
                     />
                     <CardContent>
                       {isLoading ? (

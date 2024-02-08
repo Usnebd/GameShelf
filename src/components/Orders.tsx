@@ -17,7 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import {
-  DocumentData,
+  QueryDocumentSnapshot,
   collection,
   onSnapshot,
   orderBy,
@@ -31,7 +31,7 @@ function Orders() {
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const isLgScreen = useMediaQuery(theme.breakpoints.up("lg"));
   const [searchParams, setSearchParams] = useSearchParams();
-  const [orders, setOrders] = useState<DocumentData[]>([]);
+  const [orders, setOrders] = useState<QueryDocumentSnapshot[]>([]);
   const [max, setMax] = useState(0);
   const [sortOrder, setSortOrder] = useState(
     searchParams.get("sort_by") == "asc(date)" ? true : false
@@ -74,22 +74,27 @@ function Orders() {
           orderBy("timestamp", "desc")
         );
 
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        onSnapshot(q, (querySnapshot) => {
           const data = querySnapshot.docs.map((doc) => doc.data());
-          setOrders(data);
-          setRetrievedData(true);
-          // Calcolo del massimo totale degli ordini
-          const maxTotal = Math.max(
-            ...data.map((order) => Math.round(order.totale * 100))
-          );
-          setMax(maxTotal / 100); // Arrotonda e imposta il massimo totale
-          setFilteredPrice([
-            parseInt(searchParams.get("offset") || "0", 10),
-            parseInt(searchParams.get("limit") || maxTotal.toString(), 10),
-          ]);
+          if (data.length > 0) {
+            setOrders(querySnapshot.docs);
+            setRetrievedData(true);
+            // Calcolo del massimo totale degli ordini
+            const maxTotal = Math.max(
+              ...data.map((order) => Math.round(order.totale * 100))
+            );
+            setMax(maxTotal / 100); // Arrotonda e imposta il massimo totale
+            setFilteredPrice([
+              parseInt(searchParams.get("offset") || "0", 10),
+              parseInt(
+                searchParams.get("limit") || maxTotal.toString() || "0",
+                10
+              ),
+            ]);
+          } else {
+            setFilteredPrice([0, 0]);
+          }
         });
-
-        return () => unsubscribe();
       }
     };
 
@@ -152,12 +157,12 @@ function Orders() {
               {orders
                 .filter(
                   (order) =>
-                    order.totale <= filteredPrice[1] &&
-                    order.totale >= filteredPrice[0]
+                    order.data().totale <= filteredPrice[1] &&
+                    order.data().totale >= filteredPrice[0]
                 )
                 .map((order) => (
                   <ListItem
-                    key={order.timestamp}
+                    key={order.data().timestamp}
                     sx={{ justifyContent: "center" }}
                     disableGutters
                   >
@@ -165,10 +170,21 @@ function Orders() {
                       elevation={6}
                       sx={{
                         width: isLgScreen ? "80%" : "100%",
+                        bgcolor: order.metadata.hasPendingWrites
+                          ? "warning.main"
+                          : "inherit",
                       }}
                     >
                       <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
+                        expandIcon={
+                          <ExpandMoreIcon
+                            sx={{
+                              color: order.metadata.hasPendingWrites
+                                ? "black"
+                                : "inherit",
+                            }}
+                          />
+                        }
                         aria-controls="panel2-content"
                         id="panel2-header"
                       >
@@ -176,13 +192,18 @@ function Orders() {
                           display="flex"
                           justifyContent="space-between"
                           width="100%"
+                          color={
+                            order.metadata.hasPendingWrites
+                              ? "black"
+                              : "inherit"
+                          }
                         >
                           <Typography variant="h5">
-                            Total: {order.totale.toFixed(2)}€
+                            Total: {order.data().totale.toFixed(2)}€
                           </Typography>
                           <Typography variant="h6">
                             {new Date(
-                              order.timestamp.seconds * 1000
+                              order.data().timestamp.seconds * 1000
                             ).toLocaleString("en-GB", {
                               day: "numeric",
                               month: "numeric",
@@ -195,37 +216,57 @@ function Orders() {
                         </Box>
                       </AccordionSummary>
                       <AccordionDetails>
-                        <Box width="100%">
-                          {order.prodotti.map(
-                            (prodotto: {
-                              id: number;
-                              nome: string;
-                              quantità: number;
-                            }) => (
-                              <Box
-                                key={prodotto.nome}
-                                display="flex"
-                                justifyContent="space-between"
-                              >
-                                <Typography>• {prodotto.nome}</Typography>
-                                <Box display={"flex"} flexDirection={"row"}>
-                                  <Typography>
-                                    Quantity: {prodotto.quantità}
-                                  </Typography>
+                        <Box
+                          width="100%"
+                          color={
+                            order.metadata.hasPendingWrites
+                              ? "black"
+                              : "inherit"
+                          }
+                        >
+                          {order
+                            .data()
+                            .prodotti.map(
+                              (prodotto: {
+                                id: number;
+                                nome: string;
+                                quantità: number;
+                              }) => (
+                                <Box
+                                  key={prodotto.nome}
+                                  display="flex"
+                                  justifyContent="space-between"
+                                >
+                                  <Typography>• {prodotto.nome}</Typography>
+                                  <Box display={"flex"} flexDirection={"row"}>
+                                    <Typography>
+                                      Quantity: {prodotto.quantità}
+                                    </Typography>
+                                  </Box>
                                 </Box>
-                              </Box>
-                            )
-                          )}
-                          {order.nota && (
+                              )
+                            )}
+                          {order.data().nota && (
                             <>
                               <Divider sx={{ mt: 2, mb: 1 }} />
                               <Typography variant="h6">
-                                Note: {order.nota}
+                                Note: {order.data().nota}
                               </Typography>
                             </>
                           )}
                         </Box>
                       </AccordionDetails>
+                      {order.metadata.hasPendingWrites && (
+                        <Box textAlign="center" py={1}>
+                          <Typography
+                            variant="h6"
+                            fontWeight="bold"
+                            color={"black"}
+                          >
+                            Pending
+                          </Typography>
+                        </Box>
+                      )}
                     </Accordion>
                   </ListItem>
                 ))}

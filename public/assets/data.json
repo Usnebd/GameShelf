@@ -2,8 +2,7 @@
   "Antipasti": [
     {
       "name": "Antipasto toscano",
-      "src": "AntipastoToscano",
-      "blur": "LKJG~QxBcaRkI-McH?Rl%%M_b_tQ"
+      "src": "AntipastoToscano"
     },
     { "name": "Crostini misti", "src": "CrostiniMisti" },
     { "name": "Bruschette", "src": "Bruschette" },

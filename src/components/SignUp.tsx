@@ -18,6 +18,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { enqueueSnackbar } from "notistack";
+import { FirebaseError } from "firebase/app";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -83,12 +84,16 @@ export default function SignUp() {
         enqueueSnackbar("Signed Up", { variant: "success" });
         navigate("/");
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        enqueueSnackbar("Invalid Credentials", { variant: "error" });
-        return {
-          message: `(${error.message})`,
-        };
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/network-request-failed") {
+          enqueueSnackbar("Network error", { variant: "error" });
+        } else {
+          enqueueSnackbar("User already exists", { variant: "error" });
+        }
+      } else {
+        enqueueSnackbar("Unknown error", { variant: "error" });
+        console.error("Unknown error:", error);
       }
     }
   };

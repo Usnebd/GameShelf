@@ -5,11 +5,13 @@ import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
 // https://vitejs.dev/config/
 
 const manifestForPlugin: Partial<VitePWAOptions> = {
-  registerType: "autoUpdate",
-  devOptions: {
-    enabled: true,
-  },
-  includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+  includeAssets: [
+    "favicon.ico",
+    "apple-touch-icon.png",
+    "masked-icon.svg",
+    "assets/data.json",
+    "assets/not_available.jpg",
+  ],
   manifest: {
     name: "My Chiosco",
     short_name: "My Chiosco",

@@ -27,7 +27,7 @@ import NotesIcon from "@mui/icons-material/Notes";
 import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from "notistack";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "./firebase";
 
 function Checkout() {
@@ -59,9 +59,8 @@ function Checkout() {
       enqueueSnackbar("Not Logged", { variant: "error" });
     } else {
       const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
-
-      // Il documento che vuoi aggiungere
       let order;
+      const timestamp = new Date();
       if (textNote !== "") {
         order = {
           prodotti: selectedItems.map((item) => ({
@@ -69,7 +68,7 @@ function Checkout() {
             quantità: quantitySelectedMap[item.productName],
           })),
           nota: textNote,
-          timestamp: serverTimestamp(),
+          timestamp: timestamp,
           totale: Number(total.toFixed(2)),
         };
       } else {
@@ -78,7 +77,7 @@ function Checkout() {
             nome: item.productName,
             quantità: quantitySelectedMap[item.productName],
           })),
-          timestamp: serverTimestamp(),
+          timestamp: timestamp,
           totale: Number(total.toFixed(2)),
         };
       }
