@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonProps,
   List,
   ListItem,
   Paper,
@@ -13,6 +14,7 @@ import {
   TableRow,
   TextField,
   Typography,
+  styled,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -27,8 +29,14 @@ import NotesIcon from "@mui/icons-material/Notes";
 import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from "notistack";
+import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "./firebase";
+import { purple } from "@mui/material/colors";
+import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 function Checkout() {
   const theme = useTheme();
@@ -37,21 +45,27 @@ function Checkout() {
   const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [showTimerInput, setShowTimerInput] = useState(false);
   const {
     selectedItems,
     products,
     quantitySelectedMap,
-    setQuantitySelectedMap,
     total,
     user,
     textNote,
     setTextNote,
-    setSelectedItems,
     handleDeleteCart,
+    selectedTime,
+    setSelectedTime,
   } = useContext(UserContext);
 
   const handleNote = () => {
+    setShowTimerInput(false);
     setShowNoteInput((prev) => !prev);
+  };
+  const handleTimer = () => {
+    setShowNoteInput(false);
+    setShowTimerInput((prev) => !prev);
   };
 
   const handleOrder = async () => {
@@ -67,6 +81,7 @@ function Checkout() {
             nome: item.productName,
             quantità: quantitySelectedMap[item.productName],
           })),
+          delivery: [selectedTime?.hour(), selectedTime?.minute()],
           nota: textNote,
           timestamp: timestamp,
           totale: Number(total.toFixed(2)),
@@ -77,6 +92,7 @@ function Checkout() {
             nome: item.productName,
             quantità: quantitySelectedMap[item.productName],
           })),
+          delivery: [selectedTime?.hour(), selectedTime?.minute()],
           timestamp: timestamp,
           totale: Number(total.toFixed(2)),
         };
@@ -86,15 +102,20 @@ function Checkout() {
       try {
         addDoc(ordersCollectionRef, order);
         enqueueSnackbar("Order Sent", { variant: "success" });
-        setSelectedItems([]);
-        setQuantitySelectedMap({});
-        setTextNote("");
         handleDeleteCart();
       } catch (error) {
         enqueueSnackbar("Error", { variant: "error" });
       }
     }
   };
+
+  const PurpleButton = styled(Button)<ButtonProps>(({ theme }) => ({
+    color: theme.palette.getContrastText(purple[500]),
+    backgroundColor: purple[500],
+    "&:hover": {
+      backgroundColor: purple[700],
+    },
+  }));
 
   return (
     <Box mx={5} mb={3} textAlign={isSmScreen ? "start" : "center"}>
@@ -108,6 +129,24 @@ function Checkout() {
         <Typography variant="h3" sx={{ display: { xs: "none", sm: "block" } }}>
           Checkout
         </Typography>
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          sx={{ userSelect: "none", alignItems: "center" }}
+          justifyContent={"center"}
+        >
+          <ShoppingCartIcon fontSize={"large"} />
+          <Typography
+            variant="h4"
+            display="flex"
+            alignItems="center"
+            sx={{
+              textTransform: "none",
+            }}
+          >
+            {"Total: " + total.toFixed(2) + "€"}
+          </Typography>
+        </Box>
       </Stack>
       <Stack
         direction={isSmScreen ? "row" : "column"}
@@ -115,16 +154,16 @@ function Checkout() {
         mt={isSmScreen ? 10 : 3}
         mx={isSmScreen ? 0 : 2}
       >
-        <Stack direction={"column"} spacing={isSmScreen ? 3 : 2}>
+        <Stack direction={"column"} spacing={2}>
           <Button
             sx={{ py: 1 }}
             variant="contained"
             aria-label={
               selectedItems.length == 0 ? "Create Order" : "Modify Order"
             }
-            color={"warning"}
+            color={showNoteInput ? "success" : "info"}
             onClick={() => navigate("/")}
-            disabled={showNoteInput}
+            disabled={showNoteInput || showTimerInput}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
               {selectedItems.length == 0 ? "Create Order" : "Modify Order"}
@@ -133,10 +172,11 @@ function Checkout() {
           </Button>
           <Button
             variant="contained"
-            color={showNoteInput ? "success" : "info"}
+            color={"warning"}
             aria-label="Add a note"
             sx={{ py: 1 }}
             onClick={handleNote}
+            disabled={showTimerInput}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
               Add note
@@ -147,12 +187,35 @@ function Checkout() {
               <NotesIcon fontSize="large" />
             )}
           </Button>
+          <PurpleButton
+            variant="contained"
+            color="primary"
+            aria-label="SetDelivery"
+            sx={{ py: 1 }}
+            onClick={handleTimer}
+          >
+            <Typography variant="h6" fontWeight="bold" flex={1} flexGrow={1}>
+              {selectedTime
+                ? `${selectedTime.hour()}:${selectedTime.minute()}`
+                : "Set Timer"}
+            </Typography>
+            {showTimerInput ? (
+              <DoneIcon fontSize="large" />
+            ) : (
+              <AccessAlarmsIcon fontSize="large" />
+            )}
+          </PurpleButton>
           <Button
             variant="contained"
             color={"success"}
             aria-label="Place Order"
             sx={{ py: 1 }}
-            disabled={selectedItems.length == 0 || showNoteInput ? true : false}
+            disabled={
+              selectedItems.length == 0 ||
+              showNoteInput ||
+              showTimerInput ||
+              selectedTime == null
+            }
             onClick={handleOrder}
           >
             <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
@@ -175,7 +238,11 @@ function Checkout() {
           <Box
             display={"flex"}
             flexDirection={"row"}
-            sx={{ userSelect: "none", alignItems: "center" }}
+            sx={{
+              userSelect: "none",
+              alignItems: "center",
+              display: { xs: "flex", sm: "none" },
+            }}
             justifyContent={"center"}
           >
             <ShoppingCartIcon fontSize={"large"} />
@@ -192,23 +259,58 @@ function Checkout() {
           </Box>
         </Stack>
         <Box mx={isSmScreen ? 0 : 5} flexGrow={1}>
-          {showNoteInput ? (
-            <Box display="flex" justifyContent="center">
-              <TextField
-                id="note"
-                label="Add a note for your order..."
-                multiline
-                rows={6}
-                autoFocus
+          {showNoteInput || showTimerInput ? (
+            showNoteInput ? (
+              <Box display="flex" justifyContent="center">
+                <TextField
+                  id="note"
+                  label="Add a note for your order..."
+                  multiline
+                  rows={6}
+                  autoFocus
+                  sx={{
+                    width: isSmScreen ? "90%" : "100%",
+                    borderRadius: 1,
+                  }}
+                  value={textNote}
+                  inputProps={{ style: { fontSize: 23 } }}
+                  onChange={(event) => setTextNote(event.target.value)}
+                />
+              </Box>
+            ) : (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
                 sx={{
-                  width: isSmScreen ? "90%" : "100%",
-                  borderRadius: 1,
+                  borderRadius: 2,
                 }}
-                value={textNote}
-                inputProps={{ style: { fontSize: 23 } }}
-                onChange={(event) => setTextNote(event.target.value)}
-              />
-            </Box>
+              >
+                <Paper
+                  sx={{ width: "100%" }}
+                  elevation={theme.palette.mode == "dark" ? 4 : 14}
+                >
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DigitalClock
+                      timeStep={15}
+                      skipDisabled
+                      minTime={dayjs("2024-04-17T08:00")}
+                      maxTime={dayjs("2024-04-17T18:00")}
+                      ampm={false}
+                      value={selectedTime || null}
+                      onChange={(newValue) => setSelectedTime(newValue)}
+                      sx={{
+                        scrolBehavior: "smooth",
+                        scrollbarColor:
+                          theme.palette.mode == "dark"
+                            ? `#777 #121212`
+                            : `#777 #fff`,
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Paper>
+              </Box>
+            )
           ) : selectedItems.length == 0 ? (
             <Box
               display="flex"

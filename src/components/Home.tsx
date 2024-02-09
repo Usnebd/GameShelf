@@ -159,7 +159,6 @@ function Home() {
           } catch (error) {
             console.log(error);
           }
-        } else {
         }
       } else {
         if (quantitySelectedMap[productName]) {

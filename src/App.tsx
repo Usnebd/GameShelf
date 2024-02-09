@@ -17,8 +17,10 @@ import {
   getDocs,
   onSnapshot,
   query,
+  where,
   writeBatch,
 } from "firebase/firestore";
+import { Dayjs } from "dayjs";
 interface SelectedItem {
   category: string;
   productName: string;
@@ -28,10 +30,11 @@ interface UserContextType {
   products: Record<string, DocumentData[]>;
   user: User | null;
   total: number;
-  authLoaded: boolean;
   handleDeleteCart: () => void;
   docs: DocumentData[][];
   textNote: string;
+  selectedTime: Dayjs | null;
+  setSelectedTime: (_time: Dayjs | null) => void;
   setTextNote: (_text: string) => void;
   setTotal: (_tot: number) => void;
   selectedItems: SelectedItem[];
@@ -54,8 +57,9 @@ export const UserContext = createContext<UserContextType>({
   },
   user: auth.currentUser,
   docs: [],
-  authLoaded: false,
   total: 0,
+  selectedTime: null,
+  setSelectedTime: () => {},
   handleDeleteCart: () => {},
   textNote: "",
   setTextNote: () => {},
@@ -93,9 +97,10 @@ function App() {
   const { setItem, getItem } = useLocalStorage("theme");
   const savedPreferences = getItem();
   const systemSetting = useMediaQuery("(prefers-color-scheme: dark)");
-  const [authLoaded, setAuthLoaded] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
   const [textNote, setTextNote] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<Dayjs | null>(null);
+  const [guestUser, setGuestUser] = useState(true);
   const docs: DocumentData[][] = useLoaderData() as DocumentData[][];
   const [total, setTotal] = useState(0);
   const [mode, setMode] = useState(
@@ -145,6 +150,7 @@ function App() {
               staticTooltipLabel: {
                 color: mode ? "white" : "black",
                 fontWeight: 600,
+                fontSize: 20,
               },
             },
           },
@@ -161,6 +167,7 @@ function App() {
     setSelectedItems([]);
     setQuantitySelectedMap({});
     setTextNote("");
+    setSelectedTime(null);
     if (user) {
       try {
         const q = query(collection(db, `users/${user.email}/cart`));
@@ -182,14 +189,51 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setAuthLoaded(true);
+      setGuestUser(true);
     });
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
     const q = query(collection(db, `users/${user?.email}/cart`));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    if (guestUser && user) {
+      selectedItems.map(async (item) => {
+        const transactionGuest = writeBatch(db);
+        try {
+          const q = query(
+            collection(db, `users/${user.email}/cart`),
+            where("productName", "==", item.productName)
+          );
+          const querySnapshot = await getDocs(q);
+          if (querySnapshot.docs.length > 0) {
+            const docRef = doc(
+              db,
+              `users/${user.email}/cart`,
+              querySnapshot.docs[0].id
+            );
+            transactionGuest.update(docRef, {
+              quantità: quantitySelectedMap[item.productName],
+            });
+          } else {
+            let docRef = doc(
+              db,
+              `users/${user.email}/cart`,
+              item.productName.substring(0, 19)
+            );
+            transactionGuest.set(docRef, {
+              category: item.category,
+              productName: item.productName,
+              quantità: quantitySelectedMap[item.productName],
+            });
+          }
+          await transactionGuest.commit();
+        } catch (error) {
+          console.log(error);
+        }
+      });
+      setGuestUser(false);
+    }
+    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
       const data = querySnapshot.docs.map((doc) => doc.data());
       setSelectedItems([]);
       data.map((item: DocumentData) => {
@@ -198,12 +242,21 @@ function App() {
           productName: item.productName,
         };
         setSelectedItems((prevSelectedItems: SelectedItem[]) => {
-          return [...prevSelectedItems, selectedItem];
+          if (
+            prevSelectedItems.find((x) => x.productName == item.product) ==
+            undefined
+          ) {
+            return [...prevSelectedItems, selectedItem];
+          }
+          return prevSelectedItems;
         });
-        setQuantitySelectedMap((prevMap) => ({
-          ...prevMap,
-          [selectedItem.productName]: item.quantità,
-        }));
+        setQuantitySelectedMap((prevMap) => {
+          if (prevMap[selectedItem.productName]) {
+            return prevMap;
+          } else {
+            return { ...prevMap, [selectedItem.productName]: item.quantità };
+          }
+        });
       });
     });
 
@@ -230,9 +283,10 @@ function App() {
     <ThemeProvider theme={theme}>
       <UserContext.Provider
         value={{
+          selectedTime,
+          setSelectedTime,
           handleDeleteCart,
           docs,
-          authLoaded,
           textNote,
           setTextNote,
           total,
