@@ -6,23 +6,40 @@ import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
 
 const manifestForPlugin: Partial<VitePWAOptions> = {
   registerType: "autoUpdate",
+  includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+  devOptions: {
+    enabled: true,
+  },
   strategies: "injectManifest",
-  includeAssets: [
-    "favicon.ico",
-    "apple-touch-icon.png",
-    "masked-icon.svg",
-    "assets/data.json",
-    "assets/not_available.jpg",
-  ],
+  srcDir: "src",
+  filename: "sw.ts",
   workbox: {
+    globPatterns: ["**/*.{js,json,css,html,ico,png,jpg,avif,webp,svg}"],
+    cleanupOutdatedCaches: true,
     runtimeCaching: [
       {
-        urlPattern: ({ url }) => {
-          return url.pathname.startsWith("/");
-        },
+        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
         handler: "CacheFirst",
         options: {
-          cacheName: "api-cache",
+          cacheName: "google-fonts-cache",
+          expiration: {
+            maxEntries: 10,
+            maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+      {
+        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "gstatic-fonts-cache",
+          expiration: {
+            maxEntries: 10,
+            maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
+          },
           cacheableResponse: {
             statuses: [0, 200],
           },

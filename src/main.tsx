@@ -18,6 +18,7 @@ import Account from "./components/Account.tsx";
 import PasswordReset from "./components/PasswordReset.tsx";
 import Checkout from "./components/Checkout.tsx";
 import { registerSW } from "virtual:pwa-register";
+import Test from "./components/test.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,6 +33,7 @@ const router = createBrowserRouter(
       <Route path="page-not-found" element={<NotFound />} />
       <Route path="sign-in" element={<SignIn />} />
       <Route path="sign-up" element={<SignUp />} />
+      <Route path="test" element={<Test />} />
       <Route path="account" element={<Account />} />
       <Route path="checkout" element={<Checkout />} />
       <Route path="password-reset" element={<PasswordReset />} />

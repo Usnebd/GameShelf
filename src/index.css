@@ -6,7 +6,7 @@ body,
   margin: 0;
   padding: 0;
   scroll-behavior: smooth;
-  scrollbar-width: thin;
+  scrollbar-color: #777 #121212;
 }
 
 #root {

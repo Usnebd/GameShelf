@@ -20,6 +20,9 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Fab from "@mui/material/Fab";
+import SendIcon from "@mui/icons-material/Send";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -65,6 +68,7 @@ function Home() {
     handleDeleteCart,
     user,
   } = useContext(UserContext);
+  const navigate = useNavigate();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -73,6 +77,13 @@ function Home() {
   };
   const handleListClose = () => {
     setOpen(false);
+  };
+
+  const handleCheckout = () => {
+    // Aggiungi un ritardo prima di navigare
+    setTimeout(() => {
+      navigate("/checkout");
+    }, 210); // 200 millisecondi di ritardo prima della navigazione
   };
 
   const handleCardClick = (productName: string) => {
@@ -548,7 +559,7 @@ function Home() {
         mt={3}
         direction={"row"}
         justifyContent="space-between"
-        alignItems={"flex-start"}
+        alignItems={"center"}
         sx={{ display: { xs: "none", sm: "flex" } }}
       >
         <Typography
@@ -597,6 +608,24 @@ function Home() {
           </Box>
         )}
       </Stack>
+      <Fab
+        onClick={handleCheckout}
+        variant="extended"
+        color={theme.palette.mode == "dark" ? "secondary" : "primary"}
+        sx={{
+          display: { xs: "none", md: "flex" },
+          bottom: 40,
+          right: 30,
+          position: "absolute",
+          py: 4,
+          px: 3,
+        }}
+      >
+        <Typography variant="h6" fontWeight={"bold"}>
+          Checkout
+        </Typography>
+        <SendIcon sx={{ ml: 1 }} />
+      </Fab>
     </Box>
   );
 }

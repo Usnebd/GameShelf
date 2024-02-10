@@ -39,7 +39,7 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
     <Box
       position="fixed"
       sx={{
-        bottom: 20,
+        bottom: 30,
         right: 20,
         display: { xs: "block", md: "none" },
       }}
@@ -48,6 +48,12 @@ export const Dial: React.FC<DialProps> = ({ mode, toggleMode, setItem }) => {
       <SpeedDial
         FabProps={{
           size: "large",
+          sx: { padding: 4 },
+        }}
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
         }}
         ariaLabel="SpeedDial basic example"
         icon={<SpeedDialIcon />}

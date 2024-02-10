@@ -33,6 +33,9 @@ interface UserContextType {
   handleDeleteCart: () => void;
   docs: DocumentData[][];
   textNote: string;
+  showTimerInput: boolean;
+  setShowTimerInput: (_flag: boolean) => void;
+  sendNotification: (_message: string) => void;
   selectedTime: Dayjs | null;
   setSelectedTime: (_time: Dayjs | null) => void;
   setTextNote: (_text: string) => void;
@@ -59,9 +62,12 @@ export const UserContext = createContext<UserContextType>({
   docs: [],
   total: 0,
   selectedTime: null,
+  showTimerInput: false,
+  setShowTimerInput: () => {},
   setSelectedTime: () => {},
   handleDeleteCart: () => {},
   textNote: "",
+  sendNotification: () => {},
   setTextNote: () => {},
   setTotal: () => {},
   selectedItems: [] as SelectedItem[],
@@ -100,6 +106,7 @@ function App() {
   const [user, setUser] = useState(auth.currentUser);
   const [textNote, setTextNote] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<Dayjs | null>(null);
+  const [showTimerInput, setShowTimerInput] = useState(false);
   const [guestUser, setGuestUser] = useState(true);
   const docs: DocumentData[][] = useLoaderData() as DocumentData[][];
   const [total, setTotal] = useState(0);
@@ -168,6 +175,7 @@ function App() {
     setQuantitySelectedMap({});
     setTextNote("");
     setSelectedTime(null);
+    setShowTimerInput(false);
     if (user) {
       try {
         const q = query(collection(db, `users/${user.email}/cart`));
@@ -263,6 +271,25 @@ function App() {
     return () => unsubscribe();
   }, [user]);
 
+  const sendNotification = (message: string) => {
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notification");
+    } else if (Notification.permission === "granted") {
+      new Notification("MyChiosco", {
+        lang: "en",
+        body: message,
+        icon: "/assets/pwa-192x192.png",
+        vibrate: [200, 100, 200], //200ms pausa, 200ms,
+      });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification("Notification Activated!");
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     const findTotal = (
       selectedItems: SelectedItem[],
@@ -283,7 +310,10 @@ function App() {
     <ThemeProvider theme={theme}>
       <UserContext.Provider
         value={{
+          sendNotification,
           selectedTime,
+          showTimerInput,
+          setShowTimerInput,
           setSelectedTime,
           handleDeleteCart,
           docs,

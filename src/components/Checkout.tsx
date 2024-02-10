@@ -45,7 +45,6 @@ function Checkout() {
   const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const [showNoteInput, setShowNoteInput] = useState(false);
-  const [showTimerInput, setShowTimerInput] = useState(false);
   const {
     selectedItems,
     products,
@@ -57,6 +56,8 @@ function Checkout() {
     handleDeleteCart,
     selectedTime,
     setSelectedTime,
+    showTimerInput,
+    setShowTimerInput,
   } = useContext(UserContext);
 
   const handleNote = () => {
@@ -65,7 +66,7 @@ function Checkout() {
   };
   const handleTimer = () => {
     setShowNoteInput(false);
-    setShowTimerInput((prev) => !prev);
+    setShowTimerInput(!showTimerInput);
   };
 
   const handleOrder = async () => {
@@ -75,34 +76,30 @@ function Checkout() {
       const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
       let order;
       const timestamp = new Date();
-      if (textNote !== "") {
-        order = {
-          prodotti: selectedItems.map((item) => ({
-            nome: item.productName,
-            quantità: quantitySelectedMap[item.productName],
-          })),
-          delivery: [selectedTime?.hour(), selectedTime?.minute()],
-          nota: textNote,
-          timestamp: timestamp,
-          totale: Number(total.toFixed(2)),
-        };
-      } else {
-        order = {
-          prodotti: selectedItems.map((item) => ({
-            nome: item.productName,
-            quantità: quantitySelectedMap[item.productName],
-          })),
-          delivery: [selectedTime?.hour(), selectedTime?.minute()],
-          timestamp: timestamp,
-          totale: Number(total.toFixed(2)),
-        };
-      }
+      order = {
+        prodotti: selectedItems.map((item) => ({
+          nome: item.productName,
+          quantità: quantitySelectedMap[item.productName],
+        })),
+        delivery: {
+          hour: selectedTime?.hour(),
+          minute: selectedTime?.minute(),
+        },
+        nota: textNote,
+        timestamp: timestamp,
+        totale: Number(total.toFixed(2)),
+      };
 
-      // Aggiungi il documento utilizzando addDoc
       try {
         addDoc(ordersCollectionRef, order);
         enqueueSnackbar("Order Sent", { variant: "success" });
         handleDeleteCart();
+        navigator.serviceWorker.controller?.postMessage({
+          hour: selectedTime?.hour(),
+          minute: selectedTime?.minute(),
+          order: order,
+          nota: textNote,
+        });
       } catch (error) {
         enqueueSnackbar("Error", { variant: "error" });
       }
@@ -118,7 +115,7 @@ function Checkout() {
   }));
 
   return (
-    <Box mx={5} mb={3} textAlign={isSmScreen ? "start" : "center"}>
+    <Box mx={4} mb={3} textAlign={isSmScreen ? "start" : "center"}>
       <Stack
         mt={3}
         direction={"row"}
@@ -165,7 +162,7 @@ function Checkout() {
             onClick={() => navigate("/")}
             disabled={showNoteInput || showTimerInput}
           >
-            <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
+            <Typography variant="h6" fontWeight={"bold"} flexGrow={1}>
               {selectedItems.length == 0 ? "Create Order" : "Modify Order"}
             </Typography>
             <EditIcon fontSize="large" />
@@ -178,7 +175,7 @@ function Checkout() {
             onClick={handleNote}
             disabled={showTimerInput}
           >
-            <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
+            <Typography variant="h6" fontWeight={"bold"} flexGrow={1}>
               Add note
             </Typography>
             {showNoteInput ? (
@@ -194,9 +191,15 @@ function Checkout() {
             sx={{ py: 1 }}
             onClick={handleTimer}
           >
-            <Typography variant="h6" fontWeight="bold" flex={1} flexGrow={1}>
+            <Typography variant="h6" fontWeight="bold" flexGrow={1}>
               {selectedTime
-                ? `${selectedTime.hour()}:${selectedTime.minute()}`
+                ? `${selectedTime
+                    .hour()
+                    .toString()
+                    .padStart(2, "0")}:${selectedTime
+                    .minute()
+                    .toString()
+                    .padStart(2, "0")}`
                 : "Set Timer"}
             </Typography>
             {showTimerInput ? (
@@ -218,7 +221,7 @@ function Checkout() {
             }
             onClick={handleOrder}
           >
-            <Typography variant="h6" fontWeight={"bold"} flex={1} flexGrow={1}>
+            <Typography variant="h6" fontWeight={"bold"} flexGrow={1}>
               Place Order
             </Typography>
             <SendIcon fontSize="large" />
@@ -292,7 +295,7 @@ function Checkout() {
                 >
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DigitalClock
-                      timeStep={15}
+                      timeStep={5}
                       skipDisabled
                       minTime={dayjs("2024-04-17T08:00")}
                       maxTime={dayjs("2024-04-17T18:00")}
