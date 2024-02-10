@@ -93,13 +93,13 @@ function Checkout() {
       try {
         addDoc(ordersCollectionRef, order);
         enqueueSnackbar("Order Sent", { variant: "success" });
-        handleDeleteCart();
         navigator.serviceWorker.controller?.postMessage({
           hour: selectedTime?.hour(),
           minute: selectedTime?.minute(),
           order: order,
           nota: textNote,
         });
+        handleDeleteCart();
       } catch (error) {
         enqueueSnackbar("Error", { variant: "error" });
       }
@@ -297,8 +297,12 @@ function Checkout() {
                     <DigitalClock
                       timeStep={5}
                       skipDisabled
-                      minTime={dayjs("2024-04-17T08:00")}
-                      maxTime={dayjs("2024-04-17T18:00")}
+                      minTime={
+                        dayjs().isBefore(dayjs().hour(8).minute(0))
+                          ? dayjs("08:00")
+                          : dayjs()
+                      }
+                      maxTime={dayjs().hour(21).minute(0)}
                       ampm={false}
                       value={selectedTime || null}
                       onChange={(newValue) => setSelectedTime(newValue)}
