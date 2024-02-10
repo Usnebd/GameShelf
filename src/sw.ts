@@ -28,7 +28,7 @@ self.addEventListener("message", (event) => {
         .padStart(2, "0")}\n${buildOrderText(order.prodotti)}`;
       sendNotification(nota == "" ? bodyText : bodyText + `\nNote: ${nota}`);
     }
-  }, 50000);
+  }, 60000);
 });
 
 const sendNotification = (messageBody: string) => {
