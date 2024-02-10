@@ -83,7 +83,7 @@ function Home() {
     // Aggiungi un ritardo prima di navigare
     setTimeout(() => {
       navigate("/checkout");
-    }, 210); // 200 millisecondi di ritardo prima della navigazione
+    }, 200); // 200 millisecondi di ritardo prima della navigazione
   };
 
   const handleCardClick = (productName: string) => {

@@ -81,51 +81,70 @@ function Checkout() {
       const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
       let order: WithFieldValue<DocumentData>;
       const timestamp = new Date();
-      order = {
-        prodotti: selectedItems.map((item) => ({
-          nome: item.productName,
-          quantità: quantitySelectedMap[item.productName],
-        })),
-        delivery: {
-          hour: selectedTime?.hour(),
-          minute: selectedTime?.minute(),
-        },
-        nota: textNote,
-        timestamp: timestamp,
-        totale: Number(total.toFixed(2)),
-      };
-
-      try {
-        addDoc(ordersCollectionRef, order);
-        enqueueSnackbar("Order Sent", { variant: "success" });
-        if (!("Notification" in window)) {
-          alert("This browser does not support desktop notification");
-        } else if (Notification.permission === "granted") {
-          navigator.serviceWorker.controller?.postMessage({
+      if (selectedTime) {
+        order = {
+          prodotti: selectedItems.map((item) => ({
+            nome: item.productName,
+            quantità: quantitySelectedMap[item.productName],
+          })),
+          delivery: {
             hour: selectedTime?.hour(),
             minute: selectedTime?.minute(),
-            order: order,
-            nota: textNote,
-          });
-        } else if (Notification.permission !== "denied") {
-          // Richiedi i permessi solo se non sono stati negati
-          Notification.requestPermission().then((permission) => {
-            if (permission === "granted") {
-              navigator.serviceWorker.controller?.postMessage({
-                hour: selectedTime?.hour(),
-                minute: selectedTime?.minute(),
-                order: order,
-                nota: textNote,
-              });
-            }
-          });
-        } else {
-          // Gli utenti hanno già negato i permessi
-          enqueueSnackbar("Notifications are blocked", { variant: "error" });
+          },
+          nota: textNote,
+          timestamp: timestamp,
+          totale: Number(total.toFixed(2)),
+        };
+        try {
+          addDoc(ordersCollectionRef, order);
+          enqueueSnackbar("Order Sent", { variant: "success" });
+          if (!("Notification" in window)) {
+            alert("This browser does not support desktop notification");
+          } else if (Notification.permission === "granted") {
+            navigator.serviceWorker.controller?.postMessage({
+              hour: selectedTime?.hour(),
+              minute: selectedTime?.minute(),
+              order: order,
+              nota: textNote,
+            });
+            enqueueSnackbar("Timer Setted", { variant: "success" });
+          } else if (Notification.permission !== "denied") {
+            // Richiedi i permessi solo se non sono stati negati
+            Notification.requestPermission().then((permission) => {
+              if (permission === "granted") {
+                navigator.serviceWorker.controller?.postMessage({
+                  hour: selectedTime?.hour(),
+                  minute: selectedTime?.minute(),
+                  order: order,
+                  nota: textNote,
+                });
+              }
+            });
+          } else {
+            // Gli utenti hanno già negato i permessi
+            enqueueSnackbar("Notifications are blocked", { variant: "error" });
+          }
+          handleDeleteCart();
+        } catch (error) {
+          enqueueSnackbar("Error", { variant: "error" });
         }
-        handleDeleteCart();
-      } catch (error) {
-        enqueueSnackbar("Error", { variant: "error" });
+      } else {
+        order = {
+          prodotti: selectedItems.map((item) => ({
+            nome: item.productName,
+            quantità: quantitySelectedMap[item.productName],
+          })),
+          nota: textNote,
+          timestamp: timestamp,
+          totale: Number(total.toFixed(2)),
+        };
+        try {
+          addDoc(ordersCollectionRef, order);
+          enqueueSnackbar("Order Sent", { variant: "success" });
+          handleDeleteCart();
+        } catch (error) {
+          enqueueSnackbar("Error", { variant: "error" });
+        }
       }
     }
   };
@@ -238,10 +257,7 @@ function Checkout() {
             aria-label="Place Order"
             sx={{ py: 1 }}
             disabled={
-              selectedItems.length == 0 ||
-              showNoteInput ||
-              showTimerInput ||
-              selectedTime == null
+              selectedItems.length == 0 || showNoteInput || showTimerInput
             }
             onClick={handleOrder}
           >
@@ -313,33 +329,49 @@ function Checkout() {
                   borderRadius: 2,
                 }}
               >
-                <Paper
-                  sx={{ width: "100%" }}
-                  elevation={theme.palette.mode == "dark" ? 4 : 14}
-                >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DigitalClock
-                      timeStep={1}
-                      skipDisabled
-                      minTime={
-                        dayjs().isBefore(dayjs().hour(8).minute(0))
-                          ? dayjs("08:00")
-                          : dayjs()
-                      }
-                      maxTime={dayjs().hour(21).minute(0)}
-                      ampm={false}
-                      value={selectedTime || null}
-                      onChange={(newValue) => setSelectedTime(newValue)}
-                      sx={{
-                        scrolBehavior: "smooth",
-                        scrollbarColor:
-                          theme.palette.mode == "dark"
-                            ? `#777 #121212`
-                            : `#777 #fff`,
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Paper>
+                {dayjs().isAfter(dayjs().hour(21).minute(0)) ? (
+                  <Stack
+                    spacing={2}
+                    mt={5}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <Typography variant="h4" justifyContent={"center"}>
+                      Chiosco is Closed!
+                    </Typography>
+                    <Typography variant="h4" justifyContent={"center"}>
+                      Open time at 8:00
+                    </Typography>
+                  </Stack>
+                ) : (
+                  <Paper
+                    sx={{ width: "100%" }}
+                    elevation={theme.palette.mode == "dark" ? 4 : 14}
+                  >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DigitalClock
+                        timeStep={5}
+                        skipDisabled
+                        minTime={
+                          dayjs().isBefore(dayjs().hour(8).minute(0))
+                            ? dayjs("08:00")
+                            : dayjs()
+                        }
+                        maxTime={dayjs().hour(21).minute(0)}
+                        ampm={false}
+                        value={selectedTime || null}
+                        onChange={(newValue) => setSelectedTime(newValue)}
+                        sx={{
+                          scrolBehavior: "smooth",
+                          scrollbarColor:
+                            theme.palette.mode == "dark"
+                              ? `#777 #121212`
+                              : `#777 #fff`,
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </Paper>
+                )}
               </Box>
             )
           ) : selectedItems.length == 0 ? (

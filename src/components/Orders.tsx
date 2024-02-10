@@ -15,18 +15,25 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useContext, useEffect, useState } from "react";
+import { useSnackbar } from "notistack";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { UserContext } from "../App";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
   QueryDocumentSnapshot,
   collection,
+  doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { useSearchParams } from "react-router-dom";
 
 function Orders() {
+  const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const isLgScreen = useMediaQuery(theme.breakpoints.up("lg"));
@@ -50,6 +57,27 @@ function Orders() {
     setSearchParams(params.toString());
     setSortOrder((prev) => !prev);
     setOrders((prev) => [...prev].reverse());
+  };
+
+  const handleDelete = async () => {
+    if (user) {
+      try {
+        const q = query(collection(db, `users/${user.email}/orders`));
+        const querySnapshot = await getDocs(q);
+        // Get a new write batch
+        const batch = writeBatch(db);
+        querySnapshot.docs.forEach((docSnapshot) => {
+          const docRef = doc(db, `users/${user.email}/orders`, docSnapshot.id);
+          batch.delete(docRef);
+        });
+        // Commit the batch
+        await batch.commit();
+        enqueueSnackbar("Order History Deleted", { variant: "success" });
+      } catch (error) {
+        enqueueSnackbar("Error", { variant: "error" });
+        console.log(error);
+      }
+    }
   };
 
   const handleSliderChange = (_event: Event, newValue: number | number[]) => {
@@ -123,13 +151,14 @@ function Orders() {
         <Stack direction={"column"} spacing={3} mb={12} mt={isSmScreen ? 0 : 5}>
           <Button
             variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
-            sx={{ py: 1.3, minWidth: "190px" }}
+            sx={{ py: 1.3, minWidth: "220px" }}
             color={theme.palette.mode == "dark" ? "secondary" : "primary"}
             onClick={handleSort}
           >
-            <Typography>
+            <Typography fontWeight={"bold"} flexGrow={1}>
               {sortOrder ? "Sort Ascending" : "Sort Descending"}
             </Typography>
+            <SwapVertIcon fontSize="large" />
           </Button>
           <Typography variant="h6" display="flex" justifyContent={"center"}>
             Price Filter:
@@ -142,6 +171,18 @@ function Orders() {
             max={max}
             step={1}
           />
+          <Button
+            onClick={handleDelete}
+            disabled={!user}
+            variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
+            sx={{ py: 1.3, minWidth: "220px" }}
+            color="error"
+          >
+            <Typography fontWeight={"bold"} flexGrow={1}>
+              Delete
+            </Typography>
+            <DeleteIcon fontSize="large" />
+          </Button>
         </Stack>
         <Box flexGrow={1} display="flex" justifyContent={"center"}>
           {!user ? (
