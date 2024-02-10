@@ -284,7 +284,12 @@ function App() {
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
-          new Notification("Notification Activated!");
+          new Notification("MyChiosco", {
+            lang: "en",
+            body: message,
+            icon: "/assets/pwa-192x192.png",
+            vibrate: [200, 100, 200], //200ms pausa, 200ms,
+          });
         }
       });
     }

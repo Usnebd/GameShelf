@@ -30,7 +30,12 @@ import DoneIcon from "@mui/icons-material/Done";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from "notistack";
 import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
-import { addDoc, collection } from "firebase/firestore";
+import {
+  DocumentData,
+  WithFieldValue,
+  addDoc,
+  collection,
+} from "firebase/firestore";
 import { db } from "./firebase";
 import { purple } from "@mui/material/colors";
 import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
@@ -74,7 +79,7 @@ function Checkout() {
       enqueueSnackbar("Not Logged", { variant: "error" });
     } else {
       const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
-      let order;
+      let order: WithFieldValue<DocumentData>;
       const timestamp = new Date();
       order = {
         prodotti: selectedItems.map((item) => ({
@@ -93,12 +98,31 @@ function Checkout() {
       try {
         addDoc(ordersCollectionRef, order);
         enqueueSnackbar("Order Sent", { variant: "success" });
-        navigator.serviceWorker.controller?.postMessage({
-          hour: selectedTime?.hour(),
-          minute: selectedTime?.minute(),
-          order: order,
-          nota: textNote,
-        });
+        if (!("Notification" in window)) {
+          alert("This browser does not support desktop notification");
+        } else if (Notification.permission === "granted") {
+          navigator.serviceWorker.controller?.postMessage({
+            hour: selectedTime?.hour(),
+            minute: selectedTime?.minute(),
+            order: order,
+            nota: textNote,
+          });
+        } else if (Notification.permission !== "denied") {
+          // Richiedi i permessi solo se non sono stati negati
+          Notification.requestPermission().then((permission) => {
+            if (permission === "granted") {
+              navigator.serviceWorker.controller?.postMessage({
+                hour: selectedTime?.hour(),
+                minute: selectedTime?.minute(),
+                order: order,
+                nota: textNote,
+              });
+            }
+          });
+        } else {
+          // Gli utenti hanno già negato i permessi
+          enqueueSnackbar("Notifications are blocked", { variant: "error" });
+        }
         handleDeleteCart();
       } catch (error) {
         enqueueSnackbar("Error", { variant: "error" });
@@ -295,7 +319,7 @@ function Checkout() {
                 >
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DigitalClock
-                      timeStep={5}
+                      timeStep={1}
                       skipDisabled
                       minTime={
                         dayjs().isBefore(dayjs().hour(8).minute(0))
