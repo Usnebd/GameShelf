@@ -18,7 +18,7 @@ import Account from "./components/Account.tsx";
 import PasswordReset from "./components/PasswordReset.tsx";
 import Checkout from "./components/Checkout.tsx";
 import { registerSW } from "virtual:pwa-register";
-import Test from "./components/test.tsx";
+import Test from "./components/Test.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

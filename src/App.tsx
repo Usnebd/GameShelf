@@ -275,20 +275,24 @@ function App() {
     if (!("Notification" in window)) {
       alert("This browser does not support desktop notification");
     } else if (Notification.permission === "granted") {
-      new Notification("MyChiosco", {
-        lang: "en",
-        body: message,
-        icon: "/assets/pwa-192x192.png",
-        vibrate: [200, 100, 200], //200ms pausa, 200ms,
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification("MyChiosco", {
+          lang: "en",
+          body: message,
+          icon: "/assets/pwa-192x192.png",
+          vibrate: [200, 100, 200], //200ms pausa, 200ms,
+        });
       });
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
-          new Notification("MyChiosco", {
-            lang: "en",
-            body: message,
-            icon: "/assets/pwa-192x192.png",
-            vibrate: [200, 100, 200], //200ms pausa, 200ms,
+          navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification("MyChiosco", {
+              lang: "en",
+              body: message,
+              icon: "/assets/pwa-192x192.png",
+              vibrate: [200, 100, 200], //200ms pausa, 200ms,
+            });
           });
         }
       });

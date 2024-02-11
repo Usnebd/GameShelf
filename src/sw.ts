@@ -7,46 +7,82 @@ precacheAndRoute(self.__WB_MANIFEST);
 self.skipWaiting();
 clientsClaim();
 
+let notifications: {
+  hour: number;
+  minute: number;
+  order: { prodotti: { nome: string; quantità: number }[] };
+  nota: string;
+}[] = [];
+
+self.addEventListener("activate", () => {
+  const buildOrderText = (prodotti: { nome: string; quantità: number }[]) => {
+    const orderStrings = prodotti.map((item) => {
+      return `${item.quantità}x ${item.nome}`;
+    });
+    return orderStrings.join("\n");
+  };
+  const checkExactHour = () => {
+    if (notifications.length > 0) {
+      if (
+        new Date().getHours() === notifications[0].hour &&
+        new Date().getMinutes() === notifications[0].minute
+      ) {
+        const element = notifications.shift();
+        if (element) {
+          const bodyText = `Your order is ready: ${element.hour
+            .toString()
+            .padStart(2, "0")}:${element.minute
+            .toString()
+            .padStart(2, "0")}\n${buildOrderText(element.order.prodotti)}`;
+          const title = "MyChiosco";
+          const options = {
+            body:
+              element.nota == ""
+                ? bodyText
+                : bodyText + `\nNote: ${element.nota}`,
+            icon: "/assets/pwa-192x192.png",
+            vibrate: [200, 100, 200], //200ms pausa, 200ms,
+          };
+          self.registration.showNotification(title, options);
+        }
+      } else if (new Date().getHours() >= notifications[0].hour) {
+        if (new Date().getMinutes() > notifications[0].minute) {
+          const element = notifications.shift();
+          if (element) {
+            const bodyText = `Your order is ready: ${element.hour
+              .toString()
+              .padStart(2, "0")}:${element.minute
+              .toString()
+              .padStart(2, "0")}\n${buildOrderText(element.order.prodotti)}`;
+            const title = "MyChiosco";
+            const options = {
+              body:
+                element.nota == ""
+                  ? bodyText
+                  : bodyText + `\nNote: ${element.nota}`,
+              icon: "/assets/pwa-192x192.png",
+              vibrate: [200, 100, 200], //200ms pausa, 200ms,
+            };
+            self.registration.showNotification(title, options);
+          }
+        }
+      }
+    }
+  };
+  setInterval(checkExactHour, 60000);
+});
+
 self.addEventListener("message", (event) => {
   const hour: number = event.data.hour;
   const minute: number = event.data.minute;
   const order = event.data.order;
   const nota: string = event.data.nota;
-  // Funzione per controllare se è l'ora esatta
-  const isExactHour = () => {
-    const now = new Date();
-    return now.getHours() === hour && now.getMinutes() === minute;
-  };
-
-  const checkExactHour = setInterval(() => {
-    if (isExactHour()) {
-      clearInterval(checkExactHour); // Interrompi il controllo
-      const bodyText = `Your order is ready: ${hour
-        .toString()
-        .padStart(2, "0")}:${minute
-        .toString()
-        .padStart(2, "0")}\n${buildOrderText(order.prodotti)}`;
-      sendNotification(nota == "" ? bodyText : bodyText + `\nNote: ${nota}`);
-    }
-  }, 60000);
+  if (
+    hour !== undefined &&
+    nota !== undefined &&
+    order !== undefined &&
+    minute !== undefined
+  ) {
+    notifications.push({ hour, minute, order, nota });
+  }
 });
-
-const sendNotification = (messageBody: string) => {
-  const title = "MyChiosco";
-  const options = {
-    body: messageBody,
-    icon: "/assets/pwa-192x192.png",
-    vibrate: [200, 100, 200], //200ms pausa, 200ms,
-  };
-
-  self.registration.showNotification(title, options);
-};
-
-const buildOrderText = (prodotti: { nome: string; quantità: number }[]) => {
-  const orderStrings = prodotti.map((item) => {
-    return `${item.quantità}x ${item.nome}`;
-  });
-  return orderStrings.join("\n");
-};
-
-// Controlla ogni minuto se è l'ora esatta

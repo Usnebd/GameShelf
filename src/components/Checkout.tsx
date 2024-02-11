@@ -107,7 +107,7 @@ function Checkout() {
               order: order,
               nota: textNote,
             });
-            enqueueSnackbar("Timer Setted", { variant: "success" });
+            enqueueSnackbar("Timer Setted", { variant: "info" });
           } else if (Notification.permission !== "denied") {
             // Richiedi i permessi solo se non sono stati negati
             Notification.requestPermission().then((permission) => {
@@ -118,6 +118,7 @@ function Checkout() {
                   order: order,
                   nota: textNote,
                 });
+                enqueueSnackbar("Timer Setted", { variant: "success" });
               }
             });
           } else {
@@ -201,9 +202,12 @@ function Checkout() {
             aria-label={
               selectedItems.length == 0 ? "Create Order" : "Modify Order"
             }
-            color={showNoteInput ? "success" : "info"}
-            onClick={() => navigate("/")}
-            disabled={showNoteInput || showTimerInput}
+            color={"info"}
+            onClick={() => {
+              setShowTimerInput(false);
+              setShowNoteInput(false);
+              navigate("/");
+            }}
           >
             <Typography variant="h6" fontWeight={"bold"} flexGrow={1}>
               {selectedItems.length == 0 ? "Create Order" : "Modify Order"}
@@ -216,7 +220,6 @@ function Checkout() {
             aria-label="Add a note"
             sx={{ py: 1 }}
             onClick={handleNote}
-            disabled={showTimerInput}
           >
             <Typography variant="h6" fontWeight={"bold"} flexGrow={1}>
               Add note
@@ -329,7 +332,7 @@ function Checkout() {
                   borderRadius: 2,
                 }}
               >
-                {dayjs().isAfter(dayjs().hour(21).minute(0)) ? (
+                {dayjs().isAfter(dayjs().hour(23).minute(59)) ? (
                   <Stack
                     spacing={2}
                     mt={5}
@@ -350,14 +353,14 @@ function Checkout() {
                   >
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DigitalClock
-                        timeStep={5}
+                        timeStep={1}
                         skipDisabled
                         minTime={
                           dayjs().isBefore(dayjs().hour(8).minute(0))
                             ? dayjs("08:00")
                             : dayjs()
                         }
-                        maxTime={dayjs().hour(21).minute(0)}
+                        maxTime={dayjs().hour(23).minute(59)}
                         ampm={false}
                         value={selectedTime || null}
                         onChange={(newValue) => setSelectedTime(newValue)}
