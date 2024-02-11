@@ -50,9 +50,10 @@ export default function SignIn() {
             console.log(error.message);
           });
       }
-      await signInWithEmailAndPassword(auth, email, password);
-      enqueueSnackbar("Signed In", { variant: "success" });
-      navigate("/");
+      signInWithEmailAndPassword(auth, email, password).then(() => {
+        enqueueSnackbar("Signed In", { variant: "success" });
+        navigate("/");
+      });
     } catch (error) {
       if (error instanceof FirebaseError) {
         if (error.code === "auth/network-request-failed") {
