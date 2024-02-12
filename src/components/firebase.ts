@@ -1,12 +1,16 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, Auth } from "firebase/auth";
-import firebase from "firebase/compat/app";
+import {
+  getAuth,
+  Auth,
+  EmailAuthProvider,
+  FacebookAuthProvider,
+} from "firebase/auth";
 import {
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
 } from "firebase/firestore";
-import firebaseui from "firebaseui";
+import { GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyChoaAsbIA-XZVDmWE7DL0ahoh_5hCnQaI",
@@ -20,7 +24,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const ui = new firebaseui.auth.AuthUI(firebase.auth());
 // Initialize auth
 export const auth: Auth = getAuth(app);
 export const db = initializeFirestore(app, {
@@ -28,21 +31,3 @@ export const db = initializeFirestore(app, {
     /*settings*/ { tabManager: persistentMultipleTabManager() }
   ),
 });
-
-export const uiConfig = {
-  callbacks: {
-    signInSuccessWithAuthResult: function () {
-      // User successfully signed in.
-      // Return type determines whether we continue the redirect automatically
-      // or whether we leave that to developer to handle.
-      return true;
-    },
-  },
-  signInFlow: "popup",
-  signInSuccessUrl: "/",
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-    firebase.auth.EmailAuthProvider.PROVIDER_ID,
-  ],
-};

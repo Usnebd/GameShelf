@@ -11,13 +11,25 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useState } from "react";
-import { IconButton } from "@mui/material";
+import {
+  ButtonBase,
+  Divider,
+  IconButton,
+  Paper,
+  Stack,
+  styled,
+  useTheme,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import FacebookIcon from "@mui/icons-material/Facebook";
 import { auth } from "./firebase";
 import {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
   browserSessionPersistence,
   setPersistence,
   signInWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
@@ -27,6 +39,7 @@ export default function SignIn() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const theme = useTheme();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setChecked] = useState(false);
@@ -68,11 +81,87 @@ export default function SignIn() {
     }
   };
 
+  const handleFacebookSign = () => {
+    const provider = new FacebookAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // The signed-in user info.
+        const user = result.user;
+
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        const credential = FacebookAuthProvider.credentialFromResult(result);
+        const accessToken = credential?.accessToken;
+
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = FacebookAuthProvider.credentialFromError(error);
+
+        // ...
+      });
+  };
+
+  const handleGoogleSign = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential?.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
+  };
+
+  const GoogleButton = styled(ButtonBase)({
+    backgroundColor: "white",
+    color: "black",
+    img: {
+      marginRight: 30, // Margine a destra dell'icona
+      marginLeft: 15,
+    },
+    paddingTop: 11,
+    paddingBottom: 11,
+    borderRadius: 4,
+  });
+
+  // Componente Button personalizzato per Facebook
+  const FacebookButton = styled(ButtonBase)({
+    color: "white",
+    "& .MuiSvgIcon-root": {
+      marginRight: 30, // Margine a destra dell'icona
+      marginLeft: 15,
+    },
+    paddingTop: 11,
+    paddingBottom: 11,
+    borderRadius: 4,
+  });
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 3,
+          marginBottom: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -90,7 +179,6 @@ export default function SignIn() {
           id="signInForm"
           onSubmit={handleSubmit}
           noValidate
-          sx={{ mt: 1 }}
         >
           <TextField
             margin="normal"
@@ -144,7 +232,7 @@ export default function SignIn() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, pt: 1.3, pb: 1.3 }}
+            sx={{ my: 1, pt: 1.3, pb: 1.3 }}
           >
             Sign In
           </Button>
@@ -152,12 +240,15 @@ export default function SignIn() {
             <Grid item xs>
               <Link
                 to="/password-reset"
-                style={{ textDecoration: "none", color: "primary.main" }}
+                style={{
+                  textDecoration: "none",
+                  color: theme.palette.primary.main,
+                }}
               >
                 <Typography
                   sx={{
                     textDecoration: "underline",
-                    color: "primary.contrastText",
+                    color: theme.palette.primary.main,
                   }}
                 >
                   Forgot password?
@@ -167,12 +258,15 @@ export default function SignIn() {
             <Grid item>
               <Link
                 to="/sign-up"
-                style={{ textDecoration: "none", color: "primary.main" }}
+                style={{
+                  textDecoration: "none",
+                  color: theme.palette.primary.main,
+                }}
               >
                 <Typography
                   sx={{
                     textDecoration: "underline",
-                    color: "primary.contrastText",
+                    color: theme.palette.primary.main,
                   }}
                 >
                   Don't have an account? Sign Up
@@ -182,6 +276,36 @@ export default function SignIn() {
           </Grid>
         </Box>
       </Box>
+      <Divider sx={{ marginBottom: 2 }}>Or</Divider>
+      <Stack direction="column" spacing={2}>
+        <Paper elevation={5}>
+          <GoogleButton
+            sx={{ justifyContent: "start", width: "100%" }}
+            onClick={handleGoogleSign}
+          >
+            <img
+              src="public/assets/google-icon.svg"
+              alt="Google"
+              width="33"
+              height="33"
+            />
+            <Typography variant="h6">Sign in with Google</Typography>
+          </GoogleButton>
+        </Paper>
+        <Paper elevation={5}>
+          <FacebookButton
+            sx={{
+              bgcolor: "primary.main",
+              justifyContent: "start",
+              width: "100%",
+            }}
+            onClick={handleFacebookSign}
+          >
+            <FacebookIcon fontSize="large" />
+            <Typography variant="h6">Sign in with Facebook</Typography>
+          </FacebookButton>
+        </Paper>
+      </Stack>
     </Container>
   );
 }
