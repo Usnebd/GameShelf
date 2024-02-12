@@ -77,7 +77,7 @@ function Checkout() {
   const handleOrder = async () => {
     if (!user) {
       enqueueSnackbar("Not Logged", { variant: "error" });
-    } else {
+    } else if (user.emailVerified) {
       const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
       let order: WithFieldValue<DocumentData>;
       const timestamp = new Date();
@@ -147,6 +147,8 @@ function Checkout() {
           enqueueSnackbar("Error", { variant: "error" });
         }
       }
+    } else {
+      enqueueSnackbar("Verify Email", { variant: "warning" });
     }
   };
 
@@ -222,7 +224,7 @@ function Checkout() {
             onClick={handleNote}
           >
             <Typography variant="h6" fontWeight={"bold"} flexGrow={1}>
-              Add note
+              {textNote == "" ? "Add note" : "Modify Note"}
             </Typography>
             {showNoteInput ? (
               <DoneIcon fontSize="large" />
