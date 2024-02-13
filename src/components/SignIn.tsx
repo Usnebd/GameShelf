@@ -268,7 +268,7 @@ export default function SignIn() {
       </Box>
       <Divider sx={{ marginBottom: 3 }}>Or</Divider>
       <Stack direction="column" spacing={2}>
-        <Paper elevation={5}>
+        <Paper elevation={8}>
           <GoogleButton
             sx={{ justifyContent: "start", width: "100%" }}
             onClick={handleGoogleSign}
@@ -282,7 +282,7 @@ export default function SignIn() {
             <Typography variant="h6">Sign in with Google</Typography>
           </GoogleButton>
         </Paper>
-        <Paper elevation={5}>
+        <Paper elevation={8}>
           <GitHubButton
             sx={{
               justifyContent: "start",
@@ -294,7 +294,7 @@ export default function SignIn() {
             <Typography variant="h6">Sign in with GitHub</Typography>
           </GitHubButton>
         </Paper>
-        <Paper elevation={5}>
+        <Paper elevation={8}>
           <MicrosoftButton
             sx={{
               justifyContent: "start",
