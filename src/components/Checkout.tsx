@@ -36,7 +36,7 @@ import {
   addDoc,
   collection,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
 import { purple } from "@mui/material/colors";
 import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -77,7 +77,7 @@ function Checkout() {
   const handleOrder = async () => {
     if (!user) {
       enqueueSnackbar("Not Logged", { variant: "error" });
-    } else if (user.emailVerified) {
+    } else if (auth?.currentUser?.emailVerified) {
       const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
       let order: WithFieldValue<DocumentData>;
       const timestamp = new Date();
@@ -148,7 +148,7 @@ function Checkout() {
         }
       }
     } else {
-      enqueueSnackbar("Verify Email", { variant: "warning" });
+      enqueueSnackbar("Verify Email & Refresh page", { variant: "warning" });
     }
   };
 
@@ -355,7 +355,7 @@ function Checkout() {
                   >
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DigitalClock
-                        timeStep={1}
+                        timeStep={5}
                         skipDisabled
                         minTime={
                           dayjs().isBefore(dayjs().hour(8).minute(0))

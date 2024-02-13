@@ -1,12 +1,10 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -26,6 +24,7 @@ import { auth } from "./firebase";
 import {
   GithubAuthProvider,
   GoogleAuthProvider,
+  OAuthProvider,
   browserSessionPersistence,
   setPersistence,
   signInWithEmailAndPassword,
@@ -105,6 +104,30 @@ export default function SignIn() {
       });
   };
 
+  const handleMicrosoftSign = () => {
+    const provider = new OAuthProvider("microsoft.com");
+    signInWithPopup(auth, provider)
+      .then(() => {
+        enqueueSnackbar("Signed In", { variant: "success" });
+        navigate("/");
+      })
+      .catch(() => {
+        enqueueSnackbar("Error", { variant: "error" });
+      });
+  };
+
+  const MicrosoftButton = styled(ButtonBase)({
+    backgroundColor: "white",
+    color: "black",
+    img: {
+      marginRight: 30, // Margine a destra dell'icona
+      marginLeft: 15,
+    },
+    paddingTop: 11,
+    paddingBottom: 11,
+    borderRadius: 5,
+  });
+
   const GoogleButton = styled(ButtonBase)({
     backgroundColor: "white",
     color: "black",
@@ -114,7 +137,7 @@ export default function SignIn() {
     },
     paddingTop: 11,
     paddingBottom: 11,
-    borderRadius: 4,
+    borderRadius: 5,
   });
 
   const GitHubButton = styled(ButtonBase)({
@@ -126,7 +149,7 @@ export default function SignIn() {
     },
     paddingTop: 11,
     paddingBottom: 11,
-    borderRadius: 4,
+    borderRadius: 5,
   });
 
   return (
@@ -134,18 +157,12 @@ export default function SignIn() {
       <Box
         sx={{
           marginTop: 3,
-          marginBottom: 1,
+          marginBottom: 3,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
         <Box
           component="form"
           autoComplete="on"
@@ -228,7 +245,7 @@ export default function SignIn() {
                 </Typography>
               </Link>
             </Grid>
-            <Grid item>
+            <Grid item xs>
               <Link
                 to="/sign-up"
                 style={{
@@ -249,7 +266,7 @@ export default function SignIn() {
           </Grid>
         </Box>
       </Box>
-      <Divider sx={{ marginBottom: 2 }}>Or</Divider>
+      <Divider sx={{ marginBottom: 3 }}>Or</Divider>
       <Stack direction="column" spacing={2}>
         <Paper elevation={5}>
           <GoogleButton
@@ -276,6 +293,23 @@ export default function SignIn() {
             <GitHubIcon fontSize="large" />
             <Typography variant="h6">Sign in with GitHub</Typography>
           </GitHubButton>
+        </Paper>
+        <Paper elevation={5}>
+          <MicrosoftButton
+            sx={{
+              justifyContent: "start",
+              width: "100%",
+            }}
+            onClick={handleMicrosoftSign}
+          >
+            <img
+              src="assets/microsoft-icon.svg"
+              alt="Microsoft"
+              width="28"
+              height="28"
+            />
+            <Typography variant="h6">Sign in with Microsoft</Typography>
+          </MicrosoftButton>
         </Paper>
       </Stack>
     </Container>
