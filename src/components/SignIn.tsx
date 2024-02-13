@@ -21,10 +21,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import FacebookIcon from "@mui/icons-material/Facebook";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import { auth } from "./firebase";
 import {
-  FacebookAuthProvider,
+  GithubAuthProvider,
   GoogleAuthProvider,
   browserSessionPersistence,
   setPersistence,
@@ -81,54 +81,27 @@ export default function SignIn() {
     }
   };
 
-  const handleFacebookSign = () => {
-    const provider = new FacebookAuthProvider();
+  const handleGitHubSign = () => {
+    const provider = new GithubAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
-        // The signed-in user info.
-        const user = result.user;
-
-        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-        const credential = FacebookAuthProvider.credentialFromResult(result);
-        const accessToken = credential?.accessToken;
-
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
+      .then(() => {
+        enqueueSnackbar("Signed In", { variant: "success" });
+        navigate("/");
       })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = FacebookAuthProvider.credentialFromError(error);
-
-        // ...
+      .catch(() => {
+        enqueueSnackbar("Error", { variant: "error" });
       });
   };
 
   const handleGoogleSign = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
+      .then(() => {
+        enqueueSnackbar("Signed In", { variant: "success" });
+        navigate("/");
       })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
+      .catch(() => {
+        enqueueSnackbar("Error", { variant: "error" });
       });
   };
 
@@ -144,9 +117,9 @@ export default function SignIn() {
     borderRadius: 4,
   });
 
-  // Componente Button personalizzato per Facebook
-  const FacebookButton = styled(ButtonBase)({
+  const GitHubButton = styled(ButtonBase)({
     color: "white",
+    backgroundColor: "black",
     "& .MuiSvgIcon-root": {
       marginRight: 30, // Margine a destra dell'icona
       marginLeft: 15,
@@ -161,7 +134,7 @@ export default function SignIn() {
       <Box
         sx={{
           marginTop: 3,
-          marginBottom: 2,
+          marginBottom: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -232,7 +205,7 @@ export default function SignIn() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ my: 1, pt: 1.3, pb: 1.3 }}
+            sx={{ mt: 1, mb: 2, pt: 1.3, pb: 1.3 }}
           >
             Sign In
           </Button>
@@ -284,7 +257,7 @@ export default function SignIn() {
             onClick={handleGoogleSign}
           >
             <img
-              src="public/assets/google-icon.svg"
+              src="assets/google-icon.svg"
               alt="Google"
               width="33"
               height="33"
@@ -293,17 +266,16 @@ export default function SignIn() {
           </GoogleButton>
         </Paper>
         <Paper elevation={5}>
-          <FacebookButton
+          <GitHubButton
             sx={{
-              bgcolor: "primary.main",
               justifyContent: "start",
               width: "100%",
             }}
-            onClick={handleFacebookSign}
+            onClick={handleGitHubSign}
           >
-            <FacebookIcon fontSize="large" />
-            <Typography variant="h6">Sign in with Facebook</Typography>
-          </FacebookButton>
+            <GitHubIcon fontSize="large" />
+            <Typography variant="h6">Sign in with GitHub</Typography>
+          </GitHubButton>
         </Paper>
       </Stack>
     </Container>

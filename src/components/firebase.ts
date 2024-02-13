@@ -1,16 +1,10 @@
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  Auth,
-  EmailAuthProvider,
-  FacebookAuthProvider,
-} from "firebase/auth";
+import { getAuth, Auth } from "firebase/auth";
 import {
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
 } from "firebase/firestore";
-import { GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyChoaAsbIA-XZVDmWE7DL0ahoh_5hCnQaI",
