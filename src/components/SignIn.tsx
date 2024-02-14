@@ -19,10 +19,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import FacebookIcon from "@mui/icons-material/Facebook";
 import { auth } from "./firebase";
 import {
-  GithubAuthProvider,
+  FacebookAuthProvider,
   GoogleAuthProvider,
   OAuthProvider,
   browserSessionPersistence,
@@ -62,10 +62,14 @@ export default function SignIn() {
             console.log(error.message);
           });
       }
-      signInWithEmailAndPassword(auth, email, password).then(() => {
-        enqueueSnackbar("Signed In", { variant: "success" });
-        navigate("/");
-      });
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          enqueueSnackbar("Signed In", { variant: "success" });
+          navigate("/");
+        })
+        .catch(() => {
+          enqueueSnackbar("Wrong Credentials", { variant: "error" });
+        });
     } catch (error) {
       if (error instanceof FirebaseError) {
         if (error.code === "auth/network-request-failed") {
@@ -80,8 +84,8 @@ export default function SignIn() {
     }
   };
 
-  const handleGitHubSign = () => {
-    const provider = new GithubAuthProvider();
+  const handleFacebookSign = () => {
+    const provider = new FacebookAuthProvider();
     signInWithPopup(auth, provider)
       .then(() => {
         enqueueSnackbar("Signed In", { variant: "success" });
@@ -140,9 +144,9 @@ export default function SignIn() {
     borderRadius: 5,
   });
 
-  const GitHubButton = styled(ButtonBase)({
+  const FacebookButton = styled(ButtonBase)({
     color: "white",
-    backgroundColor: "black",
+    backgroundColor: theme.palette.primary.main,
     "& .MuiSvgIcon-root": {
       marginRight: 30, // Margine a destra dell'icona
       marginLeft: 15,
@@ -245,7 +249,7 @@ export default function SignIn() {
                 </Typography>
               </Link>
             </Grid>
-            <Grid item xs>
+            <Grid item>
               <Link
                 to="/sign-up"
                 style={{
@@ -283,16 +287,16 @@ export default function SignIn() {
           </GoogleButton>
         </Paper>
         <Paper elevation={8}>
-          <GitHubButton
+          <FacebookButton
             sx={{
               justifyContent: "start",
               width: "100%",
             }}
-            onClick={handleGitHubSign}
+            onClick={handleFacebookSign}
           >
-            <GitHubIcon fontSize="large" />
-            <Typography variant="h6">Sign in with GitHub</Typography>
-          </GitHubButton>
+            <FacebookIcon fontSize="large" />
+            <Typography variant="h6">Sign in with Facebook</Typography>
+          </FacebookButton>
         </Paper>
         <Paper elevation={8}>
           <MicrosoftButton

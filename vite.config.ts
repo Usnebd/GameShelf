@@ -6,7 +6,12 @@ import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
 
 const manifestForPlugin: Partial<VitePWAOptions> = {
   registerType: "autoUpdate",
-  includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+  includeAssets: [
+    "favicon.ico",
+    "apple-touch-icon.png",
+    "masked-icon.svg",
+    "assets/*.js",
+  ],
   strategies: "injectManifest",
   srcDir: "src",
   filename: "sw.ts",
@@ -36,20 +41,6 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
           expiration: {
             maxEntries: 10,
             maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
-          },
-          cacheableResponse: {
-            statuses: [0, 200],
-          },
-        },
-      },
-      {
-        urlPattern: /\.js$/i,
-        handler: "StaleWhileRevalidate",
-        options: {
-          cacheName: "js assets",
-          expiration: {
-            maxEntries: 15,
-            maxAgeSeconds: 60 * 60 * 24 * 365, // 1 hour
           },
           cacheableResponse: {
             statuses: [0, 200],
