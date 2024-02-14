@@ -63,7 +63,7 @@ function Orders() {
   };
 
   const handleDelete = async () => {
-    if (user) {
+    if (user && orders.length > 0) {
       try {
         const q = query(collection(db, `users/${user.email}/orders`));
         const querySnapshot = await getDocs(q);

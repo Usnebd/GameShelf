@@ -178,8 +178,8 @@ function Menu() {
                   xs={12}
                   sm={4}
                   md={4}
-                  lg={2.8}
-                  xl={2.4}
+                  lg={2.4}
+                  xl={2.3}
                 >
                   <Card elevation={6} sx={{ borderRadius: 3 }}>
                     {isLoading && <Skeleton width="100%" height={140} />}
