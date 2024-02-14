@@ -141,7 +141,7 @@ function Account() {
                   sx={{ borderRadius: 1 }}
                   onClick={() => {
                     setChangePassword(false);
-                    setChangeName(true);
+                    setChangeName((prev) => !prev);
                   }}
                 >
                   <ListItemText primary="Change First Name/Last Name" />
@@ -149,8 +149,8 @@ function Account() {
                 <ListItemButton
                   sx={{ borderRadius: 1 }}
                   onClick={() => {
-                    setChangePassword(true);
                     setChangeName(false);
+                    setChangePassword((prev) => !prev);
                   }}
                 >
                   <ListItemText primary="Change Password" />
