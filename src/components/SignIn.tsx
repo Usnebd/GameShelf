@@ -101,6 +101,11 @@ export default function SignIn() {
 
   const handleFacebookSign = () => {
     const provider = new FacebookAuthProvider();
+    setPersistence(auth, browserSessionPersistence)
+      .then()
+      .catch((error) => {
+        console.log(error.message);
+      });
     signInWithPopup(auth, provider)
       .then(() => {
         enqueueSnackbar("Signed In", { variant: "success" });
@@ -113,6 +118,11 @@ export default function SignIn() {
 
   const handleGoogleSign = () => {
     const provider = new GoogleAuthProvider();
+    setPersistence(auth, browserSessionPersistence)
+      .then()
+      .catch((error) => {
+        console.log(error.message);
+      });
     signInWithPopup(auth, provider)
       .then(() => {
         enqueueSnackbar("Signed In", { variant: "success" });
