@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useState } from "react";
 import {
+  Avatar,
   ButtonBase,
   Divider,
   IconButton,
@@ -18,13 +19,13 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { auth } from "./firebase";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
-  OAuthProvider,
   browserSessionPersistence,
   setPersistence,
   signInWithEmailAndPassword,
@@ -42,6 +43,8 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setChecked] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
   const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
@@ -52,34 +55,46 @@ export default function SignIn() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
-      if (isChecked) {
-        setPersistence(auth, browserSessionPersistence)
-          .then(() => {
-            enqueueSnackbar("Saving User Credentials", { variant: "info" });
-          })
-          .catch((error) => {
-            console.log(error.message);
-          });
-      }
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          enqueueSnackbar("Signed In", { variant: "success" });
-          navigate("/");
-        })
-        .catch(() => {
-          enqueueSnackbar("Wrong Credentials", { variant: "error" });
-        });
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        if (error.code === "auth/network-request-failed") {
-          enqueueSnackbar("Network error", { variant: "error" });
-        } else {
-          enqueueSnackbar("Wrong Credentials", { variant: "error" });
+    if (password.length < 6) {
+      setPasswordError(true);
+    } else {
+      setPasswordError(false);
+    }
+    if (email.length == 0) {
+      setEmailError(true);
+    } else {
+      setEmailError(false);
+    }
+    if (email.length > 0 || password.length >= 6) {
+      try {
+        if (isChecked) {
+          setPersistence(auth, browserSessionPersistence)
+            .then(() => {
+              enqueueSnackbar("Saving User Credentials", { variant: "info" });
+            })
+            .catch((error) => {
+              console.log(error.message);
+            });
         }
-      } else {
-        enqueueSnackbar("Unknown error", { variant: "error" });
-        console.error("Unknown error:", error);
+        signInWithEmailAndPassword(auth, email, password)
+          .then(() => {
+            enqueueSnackbar("Signed In", { variant: "success" });
+            navigate("/");
+          })
+          .catch(() => {
+            enqueueSnackbar("Wrong Credentials", { variant: "error" });
+          });
+      } catch (error) {
+        if (error instanceof FirebaseError) {
+          if (error.code === "auth/network-request-failed") {
+            enqueueSnackbar("Network error", { variant: "error" });
+          } else {
+            enqueueSnackbar("Wrong Credentials", { variant: "error" });
+          }
+        } else {
+          enqueueSnackbar("Unknown error", { variant: "error" });
+          console.error("Unknown error:", error);
+        }
       }
     }
   };
@@ -108,36 +123,12 @@ export default function SignIn() {
       });
   };
 
-  const handleMicrosoftSign = () => {
-    const provider = new OAuthProvider("microsoft.com");
-    signInWithPopup(auth, provider)
-      .then(() => {
-        enqueueSnackbar("Signed In", { variant: "success" });
-        navigate("/");
-      })
-      .catch(() => {
-        enqueueSnackbar("Error", { variant: "error" });
-      });
-  };
-
-  const MicrosoftButton = styled(ButtonBase)({
-    backgroundColor: "white",
-    color: "black",
-    img: {
-      marginRight: 30, // Margine a destra dell'icona
-      marginLeft: 15,
-    },
-    paddingTop: 11,
-    paddingBottom: 11,
-    borderRadius: 5,
-  });
-
   const GoogleButton = styled(ButtonBase)({
     backgroundColor: "white",
     color: "black",
     img: {
-      marginRight: 30, // Margine a destra dell'icona
-      marginLeft: 15,
+      marginRight: 32, // Margine a destra dell'icona
+      marginLeft: 16,
     },
     paddingTop: 11,
     paddingBottom: 11,
@@ -160,13 +151,19 @@ export default function SignIn() {
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          marginTop: 3,
+          marginTop: 2,
           marginBottom: 3,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
         }}
       >
+        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
         <Box
           component="form"
           autoComplete="on"
@@ -182,6 +179,8 @@ export default function SignIn() {
             label="Email Address"
             name="email"
             type="email"
+            error={emailError}
+            helperText={emailError ? "Empty" : false}
             onChange={(event) => setEmail(event.target.value)}
             InputProps={{
               autoComplete: "email", // Specify autocomplete type for email
@@ -194,6 +193,8 @@ export default function SignIn() {
             name="password"
             label="Password"
             type={showPassword ? "text" : "password"}
+            error={passwordError}
+            helperText={passwordError ? "At least 6 characters" : false}
             id="password"
             InputProps={{
               autoComplete: "current-password", // Specify autocomplete type for password
@@ -236,13 +237,15 @@ export default function SignIn() {
                 to="/password-reset"
                 style={{
                   textDecoration: "none",
-                  color: theme.palette.primary.main,
+                  color:
+                    theme.palette.mode == "dark"
+                      ? "inherit"
+                      : theme.palette.primary.main,
                 }}
               >
                 <Typography
                   sx={{
                     textDecoration: "underline",
-                    color: theme.palette.primary.main,
                   }}
                 >
                   Forgot password?
@@ -254,13 +257,16 @@ export default function SignIn() {
                 to="/sign-up"
                 style={{
                   textDecoration: "none",
-                  color: theme.palette.primary.main,
+                  color:
+                    theme.palette.mode == "dark"
+                      ? "inherit"
+                      : theme.palette.primary.main,
                 }}
               >
                 <Typography
                   sx={{
                     textDecoration: "underline",
-                    color: theme.palette.primary.main,
+                    color: "inherit",
                   }}
                 >
                   Don't have an account? Sign Up
@@ -280,8 +286,8 @@ export default function SignIn() {
             <img
               src="assets/google-icon.svg"
               alt="Google"
-              width="33"
-              height="33"
+              width="30"
+              height="30"
             />
             <Typography variant="h6">Sign in with Google</Typography>
           </GoogleButton>
@@ -297,23 +303,6 @@ export default function SignIn() {
             <FacebookIcon fontSize="large" />
             <Typography variant="h6">Sign in with Facebook</Typography>
           </FacebookButton>
-        </Paper>
-        <Paper elevation={8}>
-          <MicrosoftButton
-            sx={{
-              justifyContent: "start",
-              width: "100%",
-            }}
-            onClick={handleMicrosoftSign}
-          >
-            <img
-              src="assets/microsoft-icon.svg"
-              alt="Microsoft"
-              width="28"
-              height="28"
-            />
-            <Typography variant="h6">Sign in with Microsoft</Typography>
-          </MicrosoftButton>
         </Paper>
       </Stack>
     </Container>

@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   ButtonProps,
+  IconButton,
   List,
   ListItem,
   Paper,
@@ -13,11 +14,13 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
   styled,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useContext, useState } from "react";
 import { UserContext } from "../App";
@@ -35,6 +38,11 @@ import {
   WithFieldValue,
   addDoc,
   collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { purple } from "@mui/material/colors";
@@ -52,8 +60,10 @@ function Checkout() {
   const [showNoteInput, setShowNoteInput] = useState(false);
   const {
     selectedItems,
+    setSelectedItems,
     products,
     quantitySelectedMap,
+    setQuantitySelectedMap,
     total,
     user,
     textNote,
@@ -77,7 +87,90 @@ function Checkout() {
   const handleOrder = async () => {
     if (!user) {
       enqueueSnackbar("Not Logged", { variant: "error" });
-    } else if (auth?.currentUser?.emailVerified) {
+    } else if (
+      auth?.currentUser?.providerData.some(
+        (provider) => provider?.providerId === "password"
+      )
+    ) {
+      if (auth?.currentUser?.emailVerified) {
+        const ordersCollectionRef = collection(
+          db,
+          `users/${user.email}/orders`
+        );
+        let order: WithFieldValue<DocumentData>;
+        const timestamp = new Date();
+        if (selectedTime) {
+          order = {
+            prodotti: selectedItems.map((item) => ({
+              nome: item.productName,
+              quantità: quantitySelectedMap[item.productName],
+            })),
+            delivery: {
+              hour: selectedTime?.hour(),
+              minute: selectedTime?.minute(),
+            },
+            nota: textNote,
+            timestamp: timestamp,
+            totale: Number(total.toFixed(2)),
+          };
+          try {
+            addDoc(ordersCollectionRef, order);
+            enqueueSnackbar("Order Sent", { variant: "success" });
+            if (!("Notification" in window)) {
+              alert("This browser does not support desktop notification");
+            } else if (Notification.permission === "granted") {
+              navigator.serviceWorker.controller?.postMessage({
+                hour: selectedTime?.hour(),
+                minute: selectedTime?.minute(),
+                order: order,
+                nota: textNote,
+              });
+              enqueueSnackbar("Timer Setted", { variant: "info" });
+            } else if (Notification.permission !== "denied") {
+              // Richiedi i permessi solo se non sono stati negati
+              Notification.requestPermission().then((permission) => {
+                if (permission === "granted") {
+                  navigator.serviceWorker.controller?.postMessage({
+                    hour: selectedTime?.hour(),
+                    minute: selectedTime?.minute(),
+                    order: order,
+                    nota: textNote,
+                  });
+                  enqueueSnackbar("Timer Setted", { variant: "success" });
+                }
+              });
+            } else {
+              // Gli utenti hanno già negato i permessi
+              enqueueSnackbar("Notifications are blocked", {
+                variant: "error",
+              });
+            }
+            handleDeleteCart();
+          } catch (error) {
+            enqueueSnackbar("Error", { variant: "error" });
+          }
+        } else {
+          order = {
+            prodotti: selectedItems.map((item) => ({
+              nome: item.productName,
+              quantità: quantitySelectedMap[item.productName],
+            })),
+            nota: textNote,
+            timestamp: timestamp,
+            totale: Number(total.toFixed(2)),
+          };
+          try {
+            addDoc(ordersCollectionRef, order);
+            enqueueSnackbar("Order Sent", { variant: "success" });
+            handleDeleteCart();
+          } catch (error) {
+            enqueueSnackbar("Error", { variant: "error" });
+          }
+        }
+      } else {
+        enqueueSnackbar("Verify Email & Refresh page", { variant: "warning" });
+      }
+    } else {
       const ordersCollectionRef = collection(db, `users/${user.email}/orders`);
       let order: WithFieldValue<DocumentData>;
       const timestamp = new Date();
@@ -123,7 +216,9 @@ function Checkout() {
             });
           } else {
             // Gli utenti hanno già negato i permessi
-            enqueueSnackbar("Notifications are blocked", { variant: "error" });
+            enqueueSnackbar("Notifications are blocked", {
+              variant: "error",
+            });
           }
           handleDeleteCart();
         } catch (error) {
@@ -147,8 +242,31 @@ function Checkout() {
           enqueueSnackbar("Error", { variant: "error" });
         }
       }
-    } else {
-      enqueueSnackbar("Verify Email & Refresh page", { variant: "warning" });
+    }
+  };
+
+  const handleRemoveItem = async (productName: string) => {
+    setSelectedItems((prev) =>
+      prev.filter((item) => item.productName !== productName)
+    );
+    setQuantitySelectedMap((prevMap) => ({
+      ...prevMap,
+      [productName]: 0,
+    }));
+    if (user) {
+      try {
+        const q = query(
+          collection(db, `users/${user.email}/cart`),
+          where("productName", "==", productName)
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.docs.forEach((docSnapshot) => {
+          const docRef = doc(db, `users/${user.email}/cart`, docSnapshot.id);
+          deleteDoc(docRef);
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -399,6 +517,9 @@ function Checkout() {
                 <TableHead>
                   <TableRow>
                     <TableCell>
+                      <Typography variant="h5" />
+                    </TableCell>
+                    <TableCell>
                       <Typography variant="h5">Product</Typography>
                     </TableCell>
                     <TableCell align="right">
@@ -420,6 +541,23 @@ function Checkout() {
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}
                     >
+                      <TableCell align="left" sx={{ padding: 0 }}>
+                        <Tooltip title="Remove">
+                          <IconButton
+                            aria-label="remove"
+                            size="large"
+                            sx={{ ml: 2 }}
+                            onClick={() => {
+                              handleRemoveItem(item.productName);
+                            }}
+                          >
+                            <RemoveCircleOutlineIcon
+                              fontSize={isSmScreen ? "medium" : "large"}
+                              color="error"
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
                       <TableCell component="th" scope="row">
                         <Typography variant="h6">{item.productName}</Typography>
                       </TableCell>

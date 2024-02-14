@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  ButtonBase,
   Divider,
   List,
   ListItem,
@@ -20,8 +21,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { UserContext } from "../App";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
+  DocumentData,
   QueryDocumentSnapshot,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   onSnapshot,
@@ -92,6 +95,22 @@ function Orders() {
       params.set("offset", newOffset.toString());
     }
     setSearchParams(params.toString());
+  };
+
+  const handleDeleteItem = async (
+    order: QueryDocumentSnapshot<DocumentData, DocumentData>
+  ) => {
+    if (user) {
+      try {
+        await deleteDoc(doc(db, `users/${user.email}/orders`, order.id));
+        enqueueSnackbar("Order Deleted", {
+          variant: "success",
+        });
+      } catch (error) {
+        enqueueSnackbar("Error", { variant: "error" });
+        console.log(error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -308,6 +327,24 @@ function Orders() {
                           </Typography>
                         </Box>
                       )}
+                      <Box
+                        textAlign="center"
+                        display="flex"
+                        justifyContent={"center"}
+                        py={1}
+                        flexDirection={"row"}
+                        bgcolor="red"
+                      >
+                        <ButtonBase
+                          sx={{ width: "100%" }}
+                          onClick={() => handleDeleteItem(order)}
+                        >
+                          <Typography variant="h6" fontWeight="bold">
+                            Delete
+                          </Typography>
+                          <DeleteIcon fontSize="large" />
+                        </ButtonBase>
+                      </Box>
                     </Accordion>
                   </ListItem>
                 ))}

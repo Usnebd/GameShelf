@@ -13,7 +13,7 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { IconButton, InputAdornment } from "@mui/material";
+import { IconButton, InputAdornment, useTheme } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,14 +22,15 @@ import { FirebaseError } from "firebase/app";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const theme = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const [emailError, setEmailError] = useState(false);
 
   const handleClickShowPassword = () => {
@@ -207,12 +208,18 @@ export default function SignUp() {
             <Grid item>
               <Link
                 to="/sign-in"
-                style={{ textDecoration: "none", color: "primary.main" }}
+                style={{
+                  textDecoration: "none",
+                  color:
+                    theme.palette.mode == "dark"
+                      ? "inherit"
+                      : theme.palette.primary.main,
+                }}
               >
                 <Typography
                   sx={{
                     textDecoration: "underline",
-                    color: "primary.contrastText",
+                    color: "inherit",
                   }}
                 >
                   Already have an account? Sign in
