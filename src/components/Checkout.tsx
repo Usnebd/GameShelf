@@ -401,29 +401,29 @@ function Checkout() {
             </Typography>
             <DeleteIcon fontSize="large" />
           </Button>
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            sx={{
-              userSelect: "none",
-              alignItems: "center",
-              display: { xs: "flex", sm: "none" },
-            }}
-            justifyContent={"center"}
-          >
-            <ShoppingCartIcon fontSize={"large"} />
-            <Typography
-              variant="h4"
-              display="flex"
-              alignItems="center"
-              sx={{
-                textTransform: "none",
-              }}
-            >
-              {"Total: " + total.toFixed(2) + "€"}
-            </Typography>
-          </Box>
         </Stack>
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          sx={{
+            userSelect: "none",
+            alignItems: "center",
+            display: { xs: "flex", sm: "none" },
+          }}
+          justifyContent={"center"}
+        >
+          <ShoppingCartIcon fontSize={"large"} />
+          <Typography
+            variant="h4"
+            display="flex"
+            alignItems="center"
+            sx={{
+              textTransform: "none",
+            }}
+          >
+            {"Total: " + total.toFixed(2) + "€"}
+          </Typography>
+        </Box>
         <Box mx={isSmScreen ? 0 : 5} flexGrow={1}>
           {showNoteInput || showTimerInput ? (
             showNoteInput ? (
@@ -551,10 +551,7 @@ function Checkout() {
                               handleRemoveItem(item.productName);
                             }}
                           >
-                            <RemoveCircleOutlineIcon
-                              fontSize={isSmScreen ? "medium" : "large"}
-                              color="error"
-                            />
+                            <RemoveCircleOutlineIcon color="error" />
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -587,28 +584,38 @@ function Checkout() {
           ) : (
             <List>
               {selectedItems.map((item) => (
-                <ListItem
-                  disablePadding
-                  key={item.productName}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    borderBottom: "1px solid #ddd", // Aggiunge una linea divisoria tra gli elementi
-                    py: 2, // Padding verticale
-                  }}
-                >
-                  <Typography variant="h5">
-                    {quantitySelectedMap[item.productName]}x {item.productName}
-                  </Typography>
-                  <Typography variant="h6">
-                    {(
-                      quantitySelectedMap[item.productName] *
-                      products[item.category].find(
-                        (prod) => prod["nome"] === item.productName
-                      )?.prezzo
-                    ).toFixed(2) + "€"}
-                  </Typography>
+                <ListItem disableGutters key={item.productName}>
+                  <Paper
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      py: 1, // Padding verticale
+                    }}
+                  >
+                    <IconButton
+                      aria-label="remove"
+                      size="large"
+                      onClick={() => {
+                        handleRemoveItem(item.productName);
+                      }}
+                    >
+                      <RemoveCircleOutlineIcon color="error" fontSize="large" />
+                    </IconButton>
+                    <Typography variant="h5">
+                      {quantitySelectedMap[item.productName]}x{" "}
+                      {item.productName}
+                    </Typography>
+                    <Typography variant="h6" mr={2}>
+                      {(
+                        quantitySelectedMap[item.productName] *
+                        products[item.category].find(
+                          (prod) => prod["nome"] === item.productName
+                        )?.prezzo
+                      ).toFixed(2) + "€"}
+                    </Typography>
+                  </Paper>
                 </ListItem>
               ))}
             </List>
