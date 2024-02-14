@@ -279,7 +279,11 @@ function Checkout() {
   }));
 
   return (
-    <Box mx={4} mb={3} textAlign={isSmScreen ? "start" : "center"}>
+    <Box
+      mx={isSmScreen ? 4 : 2}
+      mb={3}
+      textAlign={isSmScreen ? "start" : "center"}
+    >
       <Stack
         mt={3}
         direction={"row"}
@@ -311,11 +315,10 @@ function Checkout() {
       </Stack>
       <Stack
         direction={isSmScreen ? "row" : "column"}
-        spacing={isSmScreen ? 8 : 5}
+        spacing={3}
         mt={isSmScreen ? 10 : 3}
-        mx={isSmScreen ? 0 : 2}
       >
-        <Stack direction={"column"} spacing={2}>
+        <Stack direction={"column"} spacing={2} px={isSmScreen ? 1 : 5}>
           <Button
             sx={{ py: 1 }}
             variant="contained"
@@ -589,7 +592,6 @@ function Checkout() {
                     sx={{
                       width: "100%",
                       display: "flex",
-                      justifyContent: "space-between",
                       alignItems: "center",
                       py: 1, // Padding verticale
                     }}
@@ -603,17 +605,13 @@ function Checkout() {
                     >
                       <RemoveCircleOutlineIcon color="error" fontSize="large" />
                     </IconButton>
-                    <Typography variant="h5">
+                    <Typography
+                      variant="h5"
+                      sx={{ textAlign: "center" }}
+                      alignItems={"center"}
+                    >
                       {quantitySelectedMap[item.productName]}x{" "}
                       {item.productName}
-                    </Typography>
-                    <Typography variant="h6" mr={2}>
-                      {(
-                        quantitySelectedMap[item.productName] *
-                        products[item.category].find(
-                          (prod) => prod["nome"] === item.productName
-                        )?.prezzo
-                      ).toFixed(2) + "€"}
                     </Typography>
                   </Paper>
                 </ListItem>

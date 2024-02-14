@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import InputAdornment from "@mui/material/InputAdornment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   ButtonBase,
@@ -29,7 +29,7 @@ import {
   browserSessionPersistence,
   setPersistence,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
@@ -52,6 +52,15 @@ export default function SignIn() {
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigate("/"); // Reindirizzamento alla homepage se l'utente è già autenticato
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -106,7 +115,7 @@ export default function SignIn() {
       .catch((error) => {
         console.log(error.message);
       });
-    signInWithPopup(auth, provider)
+    signInWithRedirect(auth, provider)
       .then(() => {
         enqueueSnackbar("Signed In", { variant: "success" });
         navigate("/");
@@ -123,7 +132,7 @@ export default function SignIn() {
       .catch((error) => {
         console.log(error.message);
       });
-    signInWithPopup(auth, provider)
+    signInWithRedirect(auth, provider)
       .then(() => {
         enqueueSnackbar("Signed In", { variant: "success" });
         navigate("/");
