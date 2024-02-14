@@ -150,7 +150,8 @@ function Orders() {
 
   return (
     <Box
-      mx={isSmScreen ? 5 : 0}
+      ml={isSmScreen ? 5 : 0}
+      mr={isSmScreen ? 2 : 0}
       mb={5}
       textAlign={isSmScreen ? "start" : "center"}
     >
@@ -161,13 +162,14 @@ function Orders() {
       >
         Orders
       </Typography>
-      <Stack
-        direction={isSmScreen ? "row" : "column"}
-        spacing={7}
-        mt={5}
-        mx={isSmScreen ? 0 : 5}
-      >
-        <Stack direction={"column"} spacing={3} mb={12} mt={isSmScreen ? 0 : 5}>
+      <Stack direction={isSmScreen ? "row" : "column"} spacing={5} mt={5}>
+        <Stack
+          direction={"column"}
+          spacing={3}
+          mb={12}
+          mt={isSmScreen ? 0 : 5}
+          px={isSmScreen ? 0 : 8}
+        >
           <Button
             variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
             sx={{ py: 1.3, minWidth: "220px" }}
@@ -203,7 +205,12 @@ function Orders() {
             <DeleteIcon fontSize="large" />
           </Button>
         </Stack>
-        <Box flexGrow={1} display="flex" justifyContent={"center"}>
+        <Box
+          flexGrow={1}
+          display="flex"
+          justifyContent={"center"}
+          px={isSmScreen ? 0 : 1.5}
+        >
           {!user ? (
             <Box>
               <Typography variant="h4">Please, Sign In !</Typography>
