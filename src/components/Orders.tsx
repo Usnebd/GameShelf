@@ -172,12 +172,12 @@ function Orders() {
         >
           <Button
             variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
-            sx={{ py: 1.3, minWidth: "220px" }}
+            sx={{ py: 1.3, minWidth: "210px" }}
             color={theme.palette.mode == "dark" ? "secondary" : "primary"}
             onClick={handleSort}
           >
             <Typography fontWeight={"bold"} flexGrow={1}>
-              {sortOrder ? "Sort Ascending" : "Sort Descending"}
+              Sort Date
             </Typography>
             <SwapVertIcon fontSize="large" />
           </Button>
@@ -196,7 +196,7 @@ function Orders() {
             onClick={handleDelete}
             disabled={!user}
             variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
-            sx={{ py: 1.3, minWidth: "220px" }}
+            sx={{ py: 1.3, minWidth: "210px" }}
             color="error"
           >
             <Typography fontWeight={"bold"} flexGrow={1}>
