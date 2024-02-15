@@ -337,7 +337,7 @@ function App() {
       >
         <SnackbarProvider
           disableWindowBlurListener={true}
-          transitionDuration={{ enter: 225, exit: 100 }}
+          autoHideDuration={3000}
         >
           <CssBaseline />
           <Navbar mode={mode} toggleMode={toggleMode} setItem={setItem} />
