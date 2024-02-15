@@ -128,15 +128,15 @@ function Checkout() {
               enqueueSnackbar("Timer Setted", { variant: "info" });
             } else if (Notification.permission !== "denied") {
               // Richiedi i permessi solo se non sono stati negati
+              navigator.serviceWorker.controller?.postMessage({
+                hour: selectedTime?.hour(),
+                minute: selectedTime?.minute(),
+                order: order,
+                nota: textNote,
+              });
               Notification.requestPermission().then((permission) => {
                 if (permission === "granted") {
-                  navigator.serviceWorker.controller?.postMessage({
-                    hour: selectedTime?.hour(),
-                    minute: selectedTime?.minute(),
-                    order: order,
-                    nota: textNote,
-                  });
-                  enqueueSnackbar("Timer Setted", { variant: "success" });
+                  enqueueSnackbar("Timer Setted", { variant: "info" });
                 }
               });
             } else {
@@ -486,7 +486,10 @@ function Checkout() {
                         maxTime={dayjs().hour(23).minute(59)}
                         ampm={false}
                         value={selectedTime || null}
-                        onChange={(newValue) => setSelectedTime(newValue)}
+                        onChange={(newValue) => {
+                          setSelectedTime(newValue);
+                          setShowTimerInput(false);
+                        }}
                         sx={{
                           scrolBehavior: "smooth",
                           scrollbarColor:
@@ -506,6 +509,7 @@ function Checkout() {
               flexDirection="column"
               justifyContent="center"
               alignItems="center"
+              mt={3}
             >
               <Typography variant="h3">Empty Cart</Typography>
               <RemoveShoppingCartIcon fontSize="large" sx={{ mt: 2 }} />

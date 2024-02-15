@@ -29,11 +29,9 @@ self.addEventListener("activate", () => {
       ) {
         const element = notifications.shift();
         if (element) {
-          const bodyText = `Your order is ready: ${element.hour
-            .toString()
-            .padStart(2, "0")}:${element.minute
-            .toString()
-            .padStart(2, "0")}\n${buildOrderText(element.order.prodotti)}`;
+          const bodyText = `Your order is ready:\n${buildOrderText(
+            element.order.prodotti
+          )}`;
           const title = "MyChiosco";
           const options = {
             body:
@@ -67,12 +65,12 @@ self.addEventListener("activate", () => {
       }
     }
   };
-  setInterval(checkExactHour, 45000);
+  setInterval(checkExactHour, 50000);
 });
 
 self.addEventListener("message", (event) => {
   const hour: number = event.data.hour;
-  const minute: number = event.data.minute - 1;
+  const minute: number = event.data.minute;
   const order = event.data.order;
   const nota: string = event.data.nota;
   if (
