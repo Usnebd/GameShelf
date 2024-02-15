@@ -80,8 +80,12 @@ function Checkout() {
     setShowNoteInput((prev) => !prev);
   };
   const handleTimer = () => {
-    setShowNoteInput(false);
-    setShowTimerInput(!showTimerInput);
+    if (selectedTime) {
+      setSelectedTime(null);
+    } else {
+      setShowNoteInput(false);
+      setShowTimerInput(!showTimerInput);
+    }
   };
 
   const handleOrder = async () => {
@@ -127,7 +131,6 @@ function Checkout() {
               });
               enqueueSnackbar("Timer Setted", { variant: "info" });
             } else if (Notification.permission !== "denied") {
-              // Richiedi i permessi solo se non sono stati negati
               navigator.serviceWorker.controller?.postMessage({
                 hour: selectedTime?.hour(),
                 minute: selectedTime?.minute(),
@@ -371,7 +374,9 @@ function Checkout() {
                     .padStart(2, "0")}`
                 : "Set Timer"}
             </Typography>
-            {showTimerInput ? (
+            {selectedTime ? (
+              <DeleteIcon fontSize="large" />
+            ) : showTimerInput ? (
               <DoneIcon fontSize="large" />
             ) : (
               <AccessAlarmsIcon fontSize="large" />
@@ -594,6 +599,7 @@ function Checkout() {
                 <ListItem disableGutters key={item.productName}>
                   <Paper
                     sx={{
+                      borderRadius: 4,
                       width: "100%",
                       display: "flex",
                       alignItems: "center",

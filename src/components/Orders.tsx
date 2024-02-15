@@ -234,7 +234,7 @@ function Orders() {
                     disableGutters
                   >
                     <Accordion
-                      elevation={6}
+                      elevation={10}
                       sx={{
                         width: isLgScreen ? "80%" : "100%",
                         bgcolor: order.metadata.hasPendingWrites

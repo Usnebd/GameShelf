@@ -21,15 +21,13 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import FacebookIcon from "@mui/icons-material/Facebook";
 import { auth } from "./firebase";
 import {
-  FacebookAuthProvider,
   GoogleAuthProvider,
   browserSessionPersistence,
   setPersistence,
   signInWithEmailAndPassword,
-  signInWithRedirect,
+  signInWithPopup,
 } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
@@ -108,23 +106,6 @@ export default function SignIn() {
     }
   };
 
-  const handleFacebookSign = () => {
-    const provider = new FacebookAuthProvider();
-    setPersistence(auth, browserSessionPersistence)
-      .then()
-      .catch((error) => {
-        console.log(error.message);
-      });
-    signInWithRedirect(auth, provider)
-      .then(() => {
-        enqueueSnackbar("Signed In", { variant: "success" });
-        navigate("/");
-      })
-      .catch(() => {
-        enqueueSnackbar("Error", { variant: "error" });
-      });
-  };
-
   const handleGoogleSign = () => {
     const provider = new GoogleAuthProvider();
     setPersistence(auth, browserSessionPersistence)
@@ -132,7 +113,7 @@ export default function SignIn() {
       .catch((error) => {
         console.log(error.message);
       });
-    signInWithRedirect(auth, provider)
+    signInWithPopup(auth, provider)
       .then(() => {
         enqueueSnackbar("Signed In", { variant: "success" });
         navigate("/");
@@ -154,23 +135,11 @@ export default function SignIn() {
     borderRadius: 5,
   });
 
-  const FacebookButton = styled(ButtonBase)({
-    color: "white",
-    backgroundColor: theme.palette.primary.main,
-    "& .MuiSvgIcon-root": {
-      marginRight: 30, // Margine a destra dell'icona
-      marginLeft: 15,
-    },
-    paddingTop: 11,
-    paddingBottom: 11,
-    borderRadius: 5,
-  });
-
   return (
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          marginTop: 2,
+          marginTop: 4,
           marginBottom: 3,
           display: "flex",
           flexDirection: "column",
@@ -310,18 +279,6 @@ export default function SignIn() {
             />
             <Typography variant="h6">Sign in with Google</Typography>
           </GoogleButton>
-        </Paper>
-        <Paper elevation={8}>
-          <FacebookButton
-            sx={{
-              justifyContent: "start",
-              width: "100%",
-            }}
-            onClick={handleFacebookSign}
-          >
-            <FacebookIcon fontSize="large" />
-            <Typography variant="h6">Sign in with Facebook</Typography>
-          </FacebookButton>
         </Paper>
       </Stack>
     </Container>

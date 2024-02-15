@@ -149,9 +149,6 @@ function App() {
               },
             },
           },
-          MuiAccordion: {
-            styleOverrides: {},
-          },
           MuiSpeedDialAction: {
             styleOverrides: {
               staticTooltipLabel: {
@@ -338,7 +335,10 @@ function App() {
           setQuantitySelectedMap,
         }}
       >
-        <SnackbarProvider disableWindowBlurListener={true}>
+        <SnackbarProvider
+          disableWindowBlurListener={true}
+          transitionDuration={{ enter: 225, exit: 100 }}
+        >
           <CssBaseline />
           <Navbar mode={mode} toggleMode={toggleMode} setItem={setItem} />
           <Box component="main" mt={2}>
