@@ -8,6 +8,7 @@ import {
   Switch,
   Tooltip,
   styled,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Toolbar } from "@mui/material";
@@ -41,6 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { user, selectedItems, setSelectedItems, setQuantitySelectedMap } =
     useContext(UserContext);
   const theme = useTheme();
+  const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const navigate = useNavigate();
   const pages = ["Home", "Menu", "Orders"];
   const LogoText = styled(Typography)(({ theme }) => ({
@@ -87,6 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         sx={{
           top: 0,
           zIndex: (theme) => theme.zIndex.drawer + 1,
+          py: isSmScreen ? 0 : 0.5,
         }}
       >
         <Toolbar>
@@ -171,7 +174,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               </Box>
             </Tooltip>
             <Tooltip title="Go to Cart">
-              <IconButton color="inherit" onClick={() => navigate("/checkout")}>
+              <IconButton
+                color="inherit"
+                onClick={() => navigate("/checkout")}
+                size="large"
+              >
                 <StyledBadge
                   badgeContent={selectedItems.length}
                   color="secondary"

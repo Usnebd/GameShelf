@@ -605,6 +605,7 @@ function Checkout() {
                       alignItems: "center",
                       py: 1, // Padding verticale
                     }}
+                    elevation={8}
                   >
                     <IconButton
                       aria-label="remove"
