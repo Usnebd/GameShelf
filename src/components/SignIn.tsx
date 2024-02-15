@@ -130,9 +130,9 @@ export default function SignIn() {
       marginRight: 32, // Margine a destra dell'icona
       marginLeft: 16,
     },
-    paddingTop: 11,
-    paddingBottom: 11,
-    borderRadius: 5,
+    paddingTop: 12,
+    paddingBottom: 12,
+    borderRadius: 8,
   });
 
   return (
@@ -266,7 +266,7 @@ export default function SignIn() {
       </Box>
       <Divider sx={{ marginBottom: 3 }}>Or</Divider>
       <Stack direction="column" spacing={2}>
-        <Paper elevation={8}>
+        <Paper elevation={9} sx={{ borderRadius: 8 }}>
           <GoogleButton
             sx={{ justifyContent: "start", width: "100%" }}
             onClick={handleGoogleSign}

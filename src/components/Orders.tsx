@@ -346,10 +346,17 @@ function Orders() {
                           sx={{ width: "100%" }}
                           onClick={() => handleDeleteItem(order)}
                         >
-                          <Typography variant="h6" fontWeight="bold">
+                          <Typography
+                            variant="h6"
+                            fontWeight="bold"
+                            color="white"
+                          >
                             Delete
                           </Typography>
-                          <DeleteIcon fontSize="large" />
+                          <DeleteIcon
+                            fontSize="large"
+                            sx={{ color: "white" }}
+                          />
                         </ButtonBase>
                       </Box>
                     </Accordion>
