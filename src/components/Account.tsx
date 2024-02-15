@@ -113,30 +113,48 @@ function Account() {
               >
                 Account
               </Typography>
-              {/* Aggiungi eventuali altri elementi nella barra superiore */}
             </Stack>
             <Stack
               direction={isSmScreen ? "row" : "column"}
               mt={isSmScreen ? 10 : 5}
-              mx={isSmScreen ? 0 : 5}
               spacing={2}
             >
-              {/* Informazioni sull'utente */}
               <Stack direction={"column"} spacing={2}>
-                <Typography variant={isSmScreen ? "h5" : "body1"} mt={2}>
-                  Username:{" "}
-                  {modifiedProfile !== "" ? modifiedProfile : user?.displayName}
-                </Typography>
-                <Typography variant={isSmScreen ? "h5" : "body1"}>
-                  Email: {user?.email}
-                </Typography>
+                <Stack
+                  direction={isSmScreen ? "row" : "column"}
+                  spacing={1}
+                  alignItems={"center"}
+                >
+                  <Typography
+                    variant={isSmScreen ? "h4" : "body1"}
+                    fontWeight={"bold"}
+                  >
+                    Username:
+                  </Typography>
+                  <Typography variant={isSmScreen ? "h5" : "body1"}>
+                    {modifiedProfile !== ""
+                      ? modifiedProfile
+                      : user?.displayName}
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction={isSmScreen ? "row" : "column"}
+                  spacing={1}
+                  alignItems={"center"}
+                >
+                  <Typography
+                    variant={isSmScreen ? "h4" : "body1"}
+                    fontWeight={"bold"}
+                  >
+                    Email:
+                  </Typography>
+                  <Typography variant={isSmScreen ? "h5" : "body1"}>
+                    {user?.email}
+                  </Typography>
+                </Stack>
               </Stack>
-
-              {/* Altri elementi, ad esempio: */}
               <Divider orientation="vertical" flexItem sx={{ mx: 3 }} />
-
-              {/* Lista delle opzioni/account */}
-              <List sx={{ mt: isMdScreen ? 0 : 5 }}>
+              <List sx={{ mt: isMdScreen ? 0 : 5, mx: isSmScreen ? 0 : 5 }}>
                 <ListItemButton
                   sx={{ borderRadius: 1 }}
                   onClick={() => {
