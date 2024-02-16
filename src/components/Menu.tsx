@@ -143,7 +143,7 @@ function Menu() {
                             images[
                               menuData[categorySelected].find(
                                 (x) => x.name === item.nome
-                              )?.src || ""
+                              )?.src || "assets/not-available.png"
                             ]
                           }
                         />
@@ -196,16 +196,9 @@ function Menu() {
                         images[
                           menuData[categorySelected].find(
                             (x) => x.name === item.nome
-                          )?.src || ""
+                          )?.src || "assets/not-available.png"
                         ]
                       }
-                      onError={(
-                        e: React.SyntheticEvent<HTMLImageElement, Event>
-                      ) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/assets/not_available.jpg";
-                        target.onerror = null; // Rimuove l'evento onError per evitare il loop
-                      }}
                     />
                     <CardContent>
                       {isLoading ? (

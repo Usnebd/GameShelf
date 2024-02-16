@@ -11,6 +11,8 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
     "apple-touch-icon.png",
     "masked-icon.svg",
     "assets/data.json",
+    "assets/not-available.png",
+    "assets/google-icon.svg",
   ],
   strategies: "injectManifest",
   srcDir: "public",
@@ -19,6 +21,7 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
     enabled: true,
     type: "module",
   },
+  mode: "development",
   manifest: {
     name: "My Chiosco",
     short_name: "My Chiosco",

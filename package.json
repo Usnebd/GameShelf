@@ -26,7 +26,8 @@
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.21.1",
-    "rollup": "^4.10.0"
+    "rollup": "^4.10.0",
+    "workbox-cacheable-response": "^7.0.0"
   },
   "devDependencies": {
     "@mui/x-date-pickers": "^6.19.3",

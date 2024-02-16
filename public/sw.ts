@@ -110,9 +110,9 @@ registerRoute(
   })
 );
 registerRoute(
-  /\.(?:html|js|css|png|jpg|webp|avif|svg)$/,
+  /\/images\/.*\.(png|jpg|webp|avif|svg)$/,
   new CacheFirst({
-    cacheName: "static-assets",
+    cacheName: "api-cache",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -132,7 +132,7 @@ registerRoute(
       return response || fetch(fetchEvent.request);
     } catch (error) {
       console.error("Errore durante il fetch:", error);
-      const offlineResponse = await caches.match("/offline.html");
+      const offlineResponse = await caches.match("/assets/offline.html");
       if (offlineResponse) {
         return offlineResponse;
       } else {
