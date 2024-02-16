@@ -105,29 +105,24 @@ export default function SignIn() {
       }
     }
   };
-
   const handleGoogleSign = () => {
     const provider = new GoogleAuthProvider();
     setPersistence(auth, browserSessionPersistence)
+      .then()
+      .catch((error) => {
+        console.log(error.message);
+      });
+    signInWithPopup(auth, provider)
       .then(() => {
-        signInWithPopup(auth, provider)
-          .then(() => {
-            enqueueSnackbar("Signed In", { variant: "success" });
-            navigate("/");
-          })
-          .catch((error) => {
-            // Gestione degli errori di autenticazione
-            if (error.code === "auth/network-request-failed") {
-              enqueueSnackbar("Network Error", { variant: "error" });
-            } else {
-              enqueueSnackbar("Invalid Credentials", { variant: "error" });
-            }
-          });
+        enqueueSnackbar("Signed In", { variant: "success" });
+        navigate("/");
       })
       .catch((error) => {
-        // Gestione degli errori di persistenza
-        console.log(error.message);
-        enqueueSnackbar("Error", { variant: "error" });
+        if (error.code == "auth/internal-error") {
+          enqueueSnackbar("Network Error", { variant: "error" });
+        } else if (error.code !== "auth/popup-closed-by-user") {
+          enqueueSnackbar("Invalid Credentials", { variant: "error" });
+        }
       });
   };
 
