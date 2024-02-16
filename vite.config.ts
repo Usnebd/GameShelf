@@ -6,59 +6,18 @@ import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
 
 const manifestForPlugin: Partial<VitePWAOptions> = {
   registerType: "autoUpdate",
-  includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+  includeAssets: [
+    "favicon.ico",
+    "apple-touch-icon.png",
+    "masked-icon.svg",
+    "assets/data.json",
+  ],
   strategies: "injectManifest",
-  srcDir: "src",
+  srcDir: "public",
   filename: "sw.ts",
-  workbox: {
-    globPatterns: ["**/*.{js,json,css,html,ico,png,jpg,avif,webp,svg}"],
-    cleanupOutdatedCaches: true,
-    runtimeCaching: [
-      {
-        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-        handler: "CacheFirst",
-        options: {
-          cacheName: "google-fonts-cache",
-          expiration: {
-            maxEntries: 10,
-            maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
-          },
-          cacheableResponse: {
-            statuses: [0, 200],
-          },
-        },
-      },
-      {
-        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-        handler: "CacheFirst",
-        options: {
-          cacheName: "gstatic-fonts-cache",
-          expiration: {
-            maxEntries: 10,
-            maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
-          },
-          cacheableResponse: {
-            statuses: [0, 200],
-          },
-        },
-      },
-      {
-        urlPattern: ({ url }) => {
-          return url.pathname.startsWith("/api");
-        },
-        handler: "StaleWhileRevalidate",
-        options: {
-          cacheName: "api-cache",
-          expiration: {
-            maxEntries: 10,
-            maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
-          },
-          cacheableResponse: {
-            statuses: [0, 200],
-          },
-        },
-      },
-    ],
+  devOptions: {
+    enabled: true,
+    type: "module",
   },
   manifest: {
     name: "My Chiosco",
