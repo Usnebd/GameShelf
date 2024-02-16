@@ -206,15 +206,15 @@ function Checkout() {
             enqueueSnackbar("Timer Setted", { variant: "info" });
           } else if (Notification.permission !== "denied") {
             // Richiedi i permessi solo se non sono stati negati
+            navigator.serviceWorker.controller?.postMessage({
+              hour: selectedTime?.hour(),
+              minute: selectedTime?.minute(),
+              order: order,
+              nota: textNote,
+            });
             Notification.requestPermission().then((permission) => {
               if (permission === "granted") {
-                navigator.serviceWorker.controller?.postMessage({
-                  hour: selectedTime?.hour(),
-                  minute: selectedTime?.minute(),
-                  order: order,
-                  nota: textNote,
-                });
-                enqueueSnackbar("Timer Setted", { variant: "success" });
+                enqueueSnackbar("Timer Setted", { variant: "info" });
               }
             });
           } else {

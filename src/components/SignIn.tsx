@@ -109,23 +109,31 @@ export default function SignIn() {
   const handleGoogleSign = () => {
     const provider = new GoogleAuthProvider();
     setPersistence(auth, browserSessionPersistence)
-      .then()
-      .catch((error) => {
-        console.log(error.message);
-      });
-    signInWithPopup(auth, provider)
       .then(() => {
-        enqueueSnackbar("Signed In", { variant: "success" });
-        navigate("/");
+        signInWithPopup(auth, provider)
+          .then(() => {
+            enqueueSnackbar("Signed In", { variant: "success" });
+            navigate("/");
+          })
+          .catch((error) => {
+            // Gestione degli errori di autenticazione
+            if (error.code === "auth/network-request-failed") {
+              enqueueSnackbar("Network Error", { variant: "error" });
+            } else {
+              enqueueSnackbar("Invalid Credentials", { variant: "error" });
+            }
+          });
       })
-      .catch(() => {
+      .catch((error) => {
+        // Gestione degli errori di persistenza
+        console.log(error.message);
         enqueueSnackbar("Error", { variant: "error" });
       });
   };
 
   const GoogleButton = styled(ButtonBase)({
-    backgroundColor: "white",
-    color: "black",
+    backgroundColor: theme.palette.mode == "dark" ? "white" : "black",
+    color: theme.palette.mode == "dark" ? "black" : "white",
     img: {
       marginRight: 32, // Margine a destra dell'icona
       marginLeft: 16,
@@ -266,9 +274,9 @@ export default function SignIn() {
       </Box>
       <Divider sx={{ marginBottom: 3 }}>Or</Divider>
       <Stack direction="column" spacing={2}>
-        <Paper elevation={9} sx={{ borderRadius: 8 }}>
+        <Paper elevation={3} sx={{ borderRadius: 2 }}>
           <GoogleButton
-            sx={{ justifyContent: "start", width: "100%" }}
+            sx={{ justifyContent: "start", width: "100%", borderRadius: 2 }}
             onClick={handleGoogleSign}
           >
             <img
