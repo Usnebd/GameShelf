@@ -143,7 +143,7 @@ function Menu() {
                             images[
                               menuData[categorySelected].find(
                                 (x) => x.name === item.nome
-                              )?.src || "assets/not-available.png"
+                              )?.src || ""
                             ]
                           }
                         />
@@ -196,7 +196,7 @@ function Menu() {
                         images[
                           menuData[categorySelected].find(
                             (x) => x.name === item.nome
-                          )?.src || "assets/not-available.png"
+                          )?.src || ""
                         ]
                       }
                     />

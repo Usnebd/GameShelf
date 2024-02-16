@@ -11,7 +11,6 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
     "apple-touch-icon.png",
     "masked-icon.svg",
     "assets/data.json",
-    "assets/not-available.png",
     "assets/google-icon.svg",
   ],
   strategies: "injectManifest",
