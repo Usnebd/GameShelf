@@ -68,7 +68,7 @@ self.addEventListener("activate", () => {
       }
     }
   };
-  setInterval(checkExactHour, 50000);
+  setInterval(checkExactHour, 30000);
 });
 
 self.addEventListener("message", (event) => {

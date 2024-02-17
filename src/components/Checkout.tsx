@@ -481,7 +481,7 @@ function Checkout() {
                   >
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DigitalClock
-                        timeStep={5}
+                        timeStep={1}
                         skipDisabled
                         minTime={
                           dayjs().isBefore(dayjs().hour(8).minute(0))
