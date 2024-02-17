@@ -26,6 +26,7 @@ self.addEventListener("activate", () => {
   };
   const checkExactHour = () => {
     if (notifications.length > 0) {
+      console.log(new Date().getHours(), new Date().getMinutes());
       if (
         new Date().getHours() === notifications[0].hour &&
         new Date().getMinutes() === notifications[0].minute
