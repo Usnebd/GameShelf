@@ -5,7 +5,17 @@ import { Box, Typography } from "@mui/material";
 function Test() {
   const { sendNotification } = useContext(UserContext);
   useEffect(() => {
-    sendNotification("This is a Test Notification");
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notification");
+    } else if (Notification.permission === "granted") {
+      sendNotification("This is a Test Notification");
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          sendNotification("This is a Test Notification");
+        }
+      });
+    }
   }, []);
 
   return (

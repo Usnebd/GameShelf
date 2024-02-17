@@ -119,16 +119,18 @@ function Checkout() {
             totale: Number(total.toFixed(2)),
           };
           try {
-            addDoc(ordersCollectionRef, order);
-            enqueueSnackbar("Order Sent", { variant: "success" });
             if (!("Notification" in window)) {
               alert("This browser does not support desktop notification");
             } else if (Notification.permission === "granted") {
+              addDoc(ordersCollectionRef, order);
+              enqueueSnackbar("Order Sent", { variant: "success" });
               sendNotification(
                 "Order: " +
-                  order.delivery.hour +
-                  ":" +
-                  order.delivery.minute +
+                  `${order.delivery.hour
+                    .toString()
+                    .padStart(2, "0")}:${order.delivery.minute
+                    .toString()
+                    .padStart(2, "0")}` +
                   "\n" +
                   order.prodotti
                     .map((item: { quantità: any; nome: any }) => {
@@ -140,20 +142,26 @@ function Checkout() {
               );
               enqueueSnackbar(
                 "Take away at " +
-                  order.delivery.hour +
-                  ":" +
-                  order.delivery.minute,
+                  `${order.delivery.hour
+                    .toString()
+                    .padStart(2, "0")}:${order.delivery.minute
+                    .toString()
+                    .padStart(2, "0")}`,
                 { variant: "info" }
               );
               handleDeleteCart();
             } else if (Notification.permission !== "denied") {
               Notification.requestPermission().then((permission) => {
                 if (permission === "granted") {
+                  addDoc(ordersCollectionRef, order);
+                  enqueueSnackbar("Order Sent", { variant: "success" });
                   sendNotification(
                     "Order: " +
-                      order.delivery.hour +
-                      ":" +
-                      order.delivery.minute +
+                      `${order.delivery.hour
+                        .toString()
+                        .padStart(2, "0")}:${order.delivery.minute
+                        .toString()
+                        .padStart(2, "0")}` +
                       "\n" +
                       order.prodotti
                         .map((item: { quantità: any; nome: any }) => {
@@ -165,22 +173,25 @@ function Checkout() {
                   );
                   enqueueSnackbar(
                     "Take away at " +
-                      order.delivery.hour +
-                      ":" +
-                      order.delivery.minute,
+                      `${order.delivery.hour
+                        .toString()
+                        .padStart(2, "0")}:${order.delivery.minute
+                        .toString()
+                        .padStart(2, "0")}`,
                     { variant: "info" }
                   );
                   handleDeleteCart();
+                } else {
+                  enqueueSnackbar("Notifications are blocked", {
+                    variant: "error",
+                  });
                 }
               });
             } else {
-              // Gli utenti hanno già negato i permessi
-              enqueueSnackbar("Notifications are blocked", {
-                variant: "error",
+              enqueueSnackbar("Activate Notifications", {
+                variant: "warning",
               });
-              handleDeleteCart();
             }
-            handleDeleteCart();
           } catch (error) {
             enqueueSnackbar("Error", { variant: "error" });
           }
@@ -235,16 +246,18 @@ function Checkout() {
           totale: Number(total.toFixed(2)),
         };
         try {
-          addDoc(ordersCollectionRef, order);
-          enqueueSnackbar("Order Sent", { variant: "success" });
           if (!("Notification" in window)) {
             alert("This browser does not support desktop notification");
           } else if (Notification.permission === "granted") {
+            addDoc(ordersCollectionRef, order);
+            enqueueSnackbar("Order Sent", { variant: "success" });
             sendNotification(
               "Order: " +
-                order.delivery.hour +
-                ":" +
-                order.delivery.minute +
+                `${order.delivery.hour
+                  .toString()
+                  .padStart(2, "0")}:${order.delivery.minute
+                  .toString()
+                  .padStart(2, "0")}` +
                 "\n" +
                 order.prodotti
                   .map((item: { quantità: any; nome: any }) => {
@@ -256,20 +269,26 @@ function Checkout() {
             );
             enqueueSnackbar(
               "Take away at " +
-                order.delivery.hour +
-                ":" +
-                order.delivery.minute,
+                `${order.delivery.hour
+                  .toString()
+                  .padStart(2, "0")}:${order.delivery.minute
+                  .toString()
+                  .padStart(2, "0")}`,
               { variant: "info" }
             );
             handleDeleteCart();
           } else if (Notification.permission !== "denied") {
             Notification.requestPermission().then((permission) => {
               if (permission === "granted") {
+                addDoc(ordersCollectionRef, order);
+                enqueueSnackbar("Order Sent", { variant: "success" });
                 sendNotification(
                   "Order: " +
-                    order.delivery.hour +
-                    ":" +
-                    order.delivery.minute +
+                    `${order.delivery.hour
+                      .toString()
+                      .padStart(2, "0")}:${order.delivery.minute
+                      .toString()
+                      .padStart(2, "0")}` +
                     "\n" +
                     order.prodotti
                       .map((item: { quantità: any; nome: any }) => {
@@ -277,25 +296,28 @@ function Checkout() {
                       })
                       .join("\n") +
                     "\n" +
-                    "Nota: " +
-                    order.nota
+                    (order.nota !== "" ? "Nota: " + order.nota : "")
                 );
                 enqueueSnackbar(
                   "Take away at " +
-                    order.delivery.hour +
-                    ":" +
-                    order.delivery.minute,
+                    `${order.delivery.hour
+                      .toString()
+                      .padStart(2, "0")}:${order.delivery.minute
+                      .toString()
+                      .padStart(2, "0")}`,
                   { variant: "info" }
                 );
                 handleDeleteCart();
+              } else {
+                enqueueSnackbar("Notifications are blocked", {
+                  variant: "error",
+                });
               }
             });
           } else {
-            // Gli utenti hanno già negato i permessi
-            enqueueSnackbar("Notifications are blocked", {
-              variant: "error",
+            enqueueSnackbar("Activate Notifications", {
+              variant: "warning",
             });
-            handleDeleteCart();
           }
         } catch (error) {
           enqueueSnackbar("Error", { variant: "error" });
