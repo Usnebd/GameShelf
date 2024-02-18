@@ -129,12 +129,12 @@ function Menu() {
                       xl={2.4}
                     >
                       <Card elevation={6} sx={{ borderRadius: 3 }}>
-                        {isLoading && <Skeleton width="100%" height={140} />}
+                        {isLoading && <Skeleton width="100%" height={130} />}
                         <CardMedia
                           component="img"
                           loading="lazy"
                           alt={item.nome}
-                          height="140"
+                          height="130"
                           sx={{
                             userSelect: "none",
                             display: isLoading ? "none" : "block",
@@ -182,12 +182,12 @@ function Menu() {
                   xl={2.3}
                 >
                   <Card elevation={6} sx={{ borderRadius: 3 }}>
-                    {isLoading && <Skeleton width="100%" height={140} />}
+                    {isLoading && <Skeleton width="100%" height={130} />}
                     <CardMedia
                       component="img"
                       loading="lazy"
                       alt={item.nome}
-                      height="140"
+                      height="130"
                       sx={{
                         userSelect: "none",
                         display: isLoading ? "none" : "block",

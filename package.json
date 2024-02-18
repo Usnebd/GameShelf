@@ -43,6 +43,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "firebaseui": "^6.1.0",
+    "imagemin": "^8.0.1",
     "rollup-plugin-typescript": "^1.0.1",
     "typescript": "^5.2.2",
     "vite": "^5.0.12",

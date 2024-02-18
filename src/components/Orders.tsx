@@ -8,6 +8,7 @@ import {
   Divider,
   List,
   ListItem,
+  Pagination,
   Slider,
   Stack,
   Typography,
@@ -37,6 +38,7 @@ import { useSearchParams } from "react-router-dom";
 
 function Orders() {
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useContext(UserContext);
   const theme = useTheme();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const isLgScreen = useMediaQuery(theme.breakpoints.up("lg"));
@@ -51,7 +53,11 @@ function Orders() {
     parseInt(searchParams.get("offset") || "0", 10),
     parseInt(searchParams.get("limit") || "0", 10),
   ]); // Valori di default per lo slider
-  const { user } = useContext(UserContext);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 6;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
 
   const handleSort = () => {
     const sortByValue = sortOrder ? "asc(date)" : "desc(date)";
@@ -227,6 +233,7 @@ function Orders() {
                     order.data().totale <= filteredPrice[1] &&
                     order.data().totale >= filteredPrice[0]
                 )
+                .slice(startIndex, endIndex)
                 .map((order) => (
                   <ListItem
                     key={order.data().timestamp}
@@ -362,6 +369,20 @@ function Orders() {
                     </Accordion>
                   </ListItem>
                 ))}
+              <Box justifyContent={"center"} display={"flex"} mt={2}>
+                <Pagination
+                  count={Math.ceil(
+                    orders.filter(
+                      (order) =>
+                        order.data().totale <= filteredPrice[1] &&
+                        order.data().totale >= filteredPrice[0]
+                    ).length / itemsPerPage
+                  )}
+                  color="secondary"
+                  size="large"
+                  onChange={(_event, page) => setCurrentPage(page)}
+                />
+              </Box>
             </List>
           )}
         </Box>

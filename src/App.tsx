@@ -199,7 +199,7 @@ function App() {
       }
     });
     return () => unsubscribe();
-  });
+  }, [auth]);
 
   useEffect(() => {
     const q = query(collection(db, `users/${user?.email}/cart`));
