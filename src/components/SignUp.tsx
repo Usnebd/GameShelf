@@ -3,8 +3,10 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import {
+  browserLocalPersistence,
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  setPersistence,
   updateProfile,
 } from "firebase/auth";
 import { auth } from "./firebase";
@@ -13,7 +15,13 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { IconButton, InputAdornment, useTheme } from "@mui/material";
+import {
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  useTheme,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,6 +38,7 @@ export default function SignUp() {
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isChecked, setChecked] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [emailError, setEmailError] = useState(false);
 
@@ -42,6 +51,9 @@ export default function SignUp() {
 
     // Verifica se "@" è presente e "." è dopo "@"
     return atIndex !== -1 && dotIndex !== -1 && dotIndex > atIndex;
+  };
+  const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -69,6 +81,10 @@ export default function SignUp() {
         setLastNameError(false);
       }
       if (password.length >= 6 && isValidEmail(email)) {
+        if (isChecked) {
+          await setPersistence(auth, browserLocalPersistence);
+          enqueueSnackbar("Saving User Credentials", { variant: "info" });
+        }
         await createUserWithEmailAndPassword(auth, email, password);
         if (auth.currentUser) {
           updateProfile(auth.currentUser, {
@@ -204,6 +220,17 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
+          <FormControlLabel
+            control={
+              <Checkbox
+                value="remember"
+                color="primary"
+                checked={isChecked}
+                onChange={handleCheckChange}
+              />
+            }
+            label="Remember me"
+          />
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link

@@ -1,4 +1,4 @@
-import { precacheAndRoute } from "workbox-precaching";
+import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
 import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
@@ -7,6 +7,7 @@ import { ExpirationPlugin } from "workbox-expiration";
 
 declare let self: ServiceWorkerGlobalScope;
 self.skipWaiting();
+cleanupOutdatedCaches();
 clientsClaim();
 precacheAndRoute(self.__WB_MANIFEST);
 

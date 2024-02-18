@@ -194,10 +194,12 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setGuestUser(true);
+      if (!currentUser) {
+        setGuestUser(true);
+      }
     });
     return () => unsubscribe();
-  }, []);
+  });
 
   useEffect(() => {
     const q = query(collection(db, `users/${user?.email}/cart`));

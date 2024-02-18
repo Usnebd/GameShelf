@@ -24,7 +24,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { auth } from "./firebase";
 import {
   GoogleAuthProvider,
-  browserSessionPersistence,
+  browserLocalPersistence,
   setPersistence,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -75,7 +75,7 @@ export default function SignIn() {
     if (email.length > 0 || password.length >= 6) {
       try {
         if (isChecked) {
-          setPersistence(auth, browserSessionPersistence)
+          setPersistence(auth, browserLocalPersistence)
             .then(() => {
               enqueueSnackbar("Saving User Credentials", { variant: "info" });
             })
@@ -107,22 +107,23 @@ export default function SignIn() {
   };
   const handleGoogleSign = () => {
     const provider = new GoogleAuthProvider();
-    setPersistence(auth, browserSessionPersistence)
-      .then()
-      .catch((error) => {
-        console.log(error.message);
-      });
-    signInWithPopup(auth, provider)
+    setPersistence(auth, browserLocalPersistence)
       .then(() => {
-        enqueueSnackbar("Signed In", { variant: "success" });
-        navigate("/");
+        signInWithPopup(auth, provider)
+          .then(() => {
+            enqueueSnackbar("Signed In", { variant: "success" });
+            navigate("/");
+          })
+          .catch((error) => {
+            if (error.code == "auth/internal-error") {
+              enqueueSnackbar("Network Error", { variant: "error" });
+            } else if (error.code !== "auth/popup-closed-by-user") {
+              enqueueSnackbar("Invalid Credentials", { variant: "error" });
+            }
+          });
       })
       .catch((error) => {
-        if (error.code == "auth/internal-error") {
-          enqueueSnackbar("Network Error", { variant: "error" });
-        } else if (error.code !== "auth/popup-closed-by-user") {
-          enqueueSnackbar("Invalid Credentials", { variant: "error" });
-        }
+        console.log(error.message);
       });
   };
 
