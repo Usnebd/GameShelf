@@ -158,7 +158,7 @@ function Orders() {
     <Box
       ml={isSmScreen ? 5 : 0}
       mr={isSmScreen ? 2 : 0}
-      mb={0}
+      mb={2}
       textAlign={isSmScreen ? "start" : "center"}
     >
       <Typography
@@ -170,7 +170,7 @@ function Orders() {
       </Typography>
       <Stack
         direction={isSmScreen ? "row" : "column"}
-        spacing={isSmScreen ? 5 : 1}
+        spacing={isSmScreen ? 5 : 3}
         mt={4}
       >
         <Stack direction={"column"} spacing={2.2} px={isSmScreen ? 0 : 10}>
