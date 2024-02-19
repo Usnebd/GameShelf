@@ -16,5 +16,12 @@ MyChiosco offre una serie di funzionalità per semplificare il processo di preno
 * **Supporto per gli Ospiti**: Anche gli utenti non autenticati possono utilizzare l'app per aggiungere elementi al carrello. Una volta effettuato l'accesso, i dati del carrello vengono automaticamente trasferiti all'account dell'utente.
 * **Persistenza dei Dati**: MyChiosco garantisce la persistenza dei dati anche in assenza di connettività Internet. Gli ordini vengono memorizzati localmente e sincronizzati con il database Firebase non appena possibile.
 * **Pagina di fallback**: si tratta di una pagina *Offline.html* che viene mostrata in assenza di connettività, nel caso in cui viene effettuato il refresh forzato.
+* **Notifiche**: quando si piazza un ordine, viene notificata all'utente una breve descrizione.
+
+### Service Worker
+* **Gestione Avanzata della Cache**: Il service worker sfrutta le librerie Workbox per memorizzare in modo intelligente le risorse statiche come file CSS, JavaScript, immagini e font nella cache del browser. Ciò garantisce un caricamento rapido delle pagine e un'esperienza utente fluida, anche in assenza di connessione di rete.
+* **Pianificazione delle Risorse Precaricate**: Grazie alla funzione precacheAndRoute, il service worker anticipa le necessità dell'utente memorizzando in anticipo le risorse chiave nella cache al momento del caricamento dell'applicazione. In questo modo, MyChiosco è sempre pronta all'uso, anche quando la connessione internet è debole o assente.
+* **Gestione Intelligente delle Richieste di Rete**: Il service worker si occupa di gestire le richieste di rete, fornendo una risposta immediata se la risorsa richiesta è già presente nella cache locale. In caso contrario, il service worker effettua il download della risorsa dalla rete e la memorizza nella cache per un accesso futuro più rapido.
+* **Gestione delle Richieste di Navigazione**: Quando l'utente cerca di accedere a una pagina di MyChiosco, il service worker interviene per garantire un'esperienza fluida anche in caso di errore di rete. Se la connessione è assente, il service worker visualizza una pagina offline personalizzata, mantenendo viva l'esperienza utente anche nei momenti più difficili.
 
 L'app è hostata su firebase al seguente link: [[mychiosco.web.app](https://mychiosco.web.app/)]
