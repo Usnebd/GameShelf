@@ -138,8 +138,7 @@ function Checkout() {
                       return `${item.quantità}x ${item.nome}`;
                     })
                     .join("\n") +
-                  "\n" +
-                  (order.nota !== "" ? "Nota: " + order.nota : "")
+                  (order.nota !== "" ? "\nNota: " + order.nota : "")
               );
               enqueueSnackbar(
                 "Take away at " +
@@ -170,8 +169,7 @@ function Checkout() {
                           return `${item.quantità}x ${item.nome}`;
                         })
                         .join("\n") +
-                      "\n" +
-                      (order.nota !== "" ? "Nota: " + order.nota : "")
+                      (order.nota !== "" ? "\nNota: " + order.nota : "")
                   );
                   enqueueSnackbar(
                     "Take away at " +
@@ -216,9 +214,7 @@ function Checkout() {
                 .map((item: { quantità: any; nome: any }) => {
                   return `${item.quantità}x ${item.nome}`;
                 })
-                .join("\n") +
-                "\n" +
-                (order.nota !== "" ? "Nota: " + order.nota : "")
+                .join("\n") + (order.nota !== "" ? "\nNota: " + order.nota : "")
             );
             handleDeleteCart();
           } catch (error) {
@@ -266,8 +262,7 @@ function Checkout() {
                     return `${item.quantità}x ${item.nome}`;
                   })
                   .join("\n") +
-                "\n" +
-                (order.nota !== "" ? "Nota: " + order.nota : "")
+                (order.nota !== "" ? "\nNota: " + order.nota : "")
             );
             enqueueSnackbar(
               "Take away at " +
@@ -298,8 +293,7 @@ function Checkout() {
                         return `${item.quantità}x ${item.nome}`;
                       })
                       .join("\n") +
-                    "\n" +
-                    (order.nota !== "" ? "Nota: " + order.nota : "")
+                    (order.nota !== "" ? "\nNota: " + order.nota : "")
                 );
                 enqueueSnackbar(
                   "Take away at " +
