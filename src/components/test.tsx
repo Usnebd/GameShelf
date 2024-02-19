@@ -8,11 +8,11 @@ function Test() {
     if (!("Notification" in window)) {
       alert("This browser does not support desktop notification");
     } else if (Notification.permission === "granted") {
-      sendNotification("This is a Test Notification");
+      sendNotification("Test", "This is a Test Notification");
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
-          sendNotification("This is a Test Notification");
+          sendNotification("Test", "This is a Test Notification");
         }
       });
     }

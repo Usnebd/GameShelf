@@ -125,7 +125,8 @@ function Checkout() {
               addDoc(ordersCollectionRef, order);
               enqueueSnackbar("Order Sent", { variant: "success" });
               sendNotification(
-                "Order: " +
+                "Order",
+                "Take away: " +
                   `${order.delivery.hour
                     .toString()
                     .padStart(2, "0")}:${order.delivery.minute
@@ -156,7 +157,8 @@ function Checkout() {
                   addDoc(ordersCollectionRef, order);
                   enqueueSnackbar("Order Sent", { variant: "success" });
                   sendNotification(
-                    "Order: " +
+                    "Order",
+                    "Take away: " +
                       `${order.delivery.hour
                         .toString()
                         .padStart(2, "0")}:${order.delivery.minute
@@ -209,13 +211,12 @@ function Checkout() {
             addDoc(ordersCollectionRef, order);
             enqueueSnackbar("Order Sent", { variant: "success" });
             sendNotification(
-              "Order: " +
-                "\n" +
-                order.prodotti
-                  .map((item: { quantità: any; nome: any }) => {
-                    return `${item.quantità}x ${item.nome}`;
-                  })
-                  .join("\n") +
+              "Order",
+              order.prodotti
+                .map((item: { quantità: any; nome: any }) => {
+                  return `${item.quantità}x ${item.nome}`;
+                })
+                .join("\n") +
                 "\n" +
                 (order.nota !== "" ? "Nota: " + order.nota : "")
             );
@@ -252,7 +253,8 @@ function Checkout() {
             addDoc(ordersCollectionRef, order);
             enqueueSnackbar("Order Sent", { variant: "success" });
             sendNotification(
-              "Order: " +
+              "Order",
+              "Take away: " +
                 `${order.delivery.hour
                   .toString()
                   .padStart(2, "0")}:${order.delivery.minute
@@ -283,7 +285,8 @@ function Checkout() {
                 addDoc(ordersCollectionRef, order);
                 enqueueSnackbar("Order Sent", { variant: "success" });
                 sendNotification(
-                  "Order: " +
+                  "Order",
+                  "Take away: " +
                     `${order.delivery.hour
                       .toString()
                       .padStart(2, "0")}:${order.delivery.minute

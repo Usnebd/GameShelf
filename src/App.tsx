@@ -35,7 +35,7 @@ interface UserContextType {
   textNote: string;
   showTimerInput: boolean;
   setShowTimerInput: (_flag: boolean) => void;
-  sendNotification: (_message: string) => void;
+  sendNotification: (_title: string, _message: string) => void;
   selectedTime: Dayjs | null;
   setSelectedTime: (_time: Dayjs | null) => void;
   setTextNote: (_text: string) => void;
@@ -270,9 +270,9 @@ function App() {
     return () => unsubscribe();
   }, [user]);
 
-  const sendNotification = (message: string) => {
+  const sendNotification = (title: string, message: string) => {
     navigator.serviceWorker.ready.then((registration) => {
-      registration.showNotification("MyChiosco", {
+      registration.showNotification(title, {
         lang: "en",
         body: message,
         icon: "/assets/pwa-192x192.png",
