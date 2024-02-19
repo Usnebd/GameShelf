@@ -158,7 +158,7 @@ function Orders() {
     <Box
       ml={isSmScreen ? 5 : 0}
       mr={isSmScreen ? 2 : 0}
-      mb={5}
+      mb={0}
       textAlign={isSmScreen ? "start" : "center"}
     >
       <Typography
@@ -168,17 +168,15 @@ function Orders() {
       >
         Orders
       </Typography>
-      <Stack direction={isSmScreen ? "row" : "column"} spacing={5} mt={5}>
-        <Stack
-          direction={"column"}
-          spacing={3}
-          mb={12}
-          mt={isSmScreen ? 0 : 5}
-          px={isSmScreen ? 0 : 8}
-        >
+      <Stack
+        direction={isSmScreen ? "row" : "column"}
+        spacing={isSmScreen ? 5 : 1}
+        mt={4}
+      >
+        <Stack direction={"column"} spacing={2.2} px={isSmScreen ? 0 : 10}>
           <Button
             variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
-            sx={{ py: 1.3, minWidth: "210px" }}
+            sx={{ py: 1.3, minWidth: "190px" }}
             color={theme.palette.mode == "dark" ? "secondary" : "primary"}
             onClick={handleSort}
           >
@@ -187,22 +185,24 @@ function Orders() {
             </Typography>
             <SwapVertIcon fontSize="large" />
           </Button>
-          <Typography variant="h6" display="flex" justifyContent={"center"}>
-            Price Filter:
-          </Typography>
-          <Slider
-            value={filteredPrice}
-            onChange={handleSliderChange}
-            valueLabelDisplay="auto"
-            min={0}
-            max={max}
-            step={1}
-          />
+          <Box>
+            <Typography variant="h6" display="flex" justifyContent={"center"}>
+              Price Filter:
+            </Typography>
+            <Slider
+              value={filteredPrice}
+              onChange={handleSliderChange}
+              valueLabelDisplay="auto"
+              min={0}
+              max={max}
+              step={1}
+            />
+          </Box>
           <Button
             onClick={handleDelete}
             disabled={!user}
             variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
-            sx={{ py: 1.3, minWidth: "210px" }}
+            sx={{ py: 1.3, minWidth: "190px" }}
             color="error"
           >
             <Typography fontWeight={"bold"} flexGrow={1}>
@@ -226,7 +226,7 @@ function Orders() {
               <Typography variant="h4">No orders Found !</Typography>
             </Box>
           ) : (
-            <List sx={{ width: "100%" }}>
+            <List sx={{ width: "100%" }} disablePadding>
               {orders
                 .filter(
                   (order) =>
@@ -380,6 +380,8 @@ function Orders() {
                   )}
                   color="secondary"
                   size="large"
+                  siblingCount={isSmScreen ? 1 : 0} // Imposta il numero di pulsanti di paginazione a sinistra e a destra della pagina corrente
+                  boundaryCount={1} // Imposta il numero di pulsanti di paginazione ai bordi della paginazione
                   onChange={(_event, page) => setCurrentPage(page)}
                 />
               </Box>
