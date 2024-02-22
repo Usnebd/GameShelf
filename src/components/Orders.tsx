@@ -378,7 +378,7 @@ function Orders() {
                         order.data().totale >= filteredPrice[0]
                     ).length / itemsPerPage
                   )}
-                  color="secondary"
+                  color={theme.palette.mode == "dark" ? "secondary" : "primary"}
                   size="large"
                   siblingCount={isSmScreen ? 1 : 0} // Imposta il numero di pulsanti di paginazione a sinistra e a destra della pagina corrente
                   boundaryCount={1} // Imposta il numero di pulsanti di paginazione ai bordi della paginazione
