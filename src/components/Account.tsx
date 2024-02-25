@@ -126,12 +126,12 @@ function Account() {
                   alignItems={"center"}
                 >
                   <Typography
-                    variant={isSmScreen ? "h4" : "body1"}
+                    variant={isSmScreen ? "h6" : "body1"}
                     fontWeight={"bold"}
                   >
                     Username:
                   </Typography>
-                  <Typography variant={isSmScreen ? "h5" : "body1"}>
+                  <Typography variant={isSmScreen ? "h6" : "body1"}>
                     {modifiedProfile !== ""
                       ? modifiedProfile
                       : user?.displayName}
@@ -143,12 +143,12 @@ function Account() {
                   alignItems={"center"}
                 >
                   <Typography
-                    variant={isSmScreen ? "h4" : "body1"}
+                    variant={isSmScreen ? "h6" : "body1"}
                     fontWeight={"bold"}
                   >
                     Email:
                   </Typography>
-                  <Typography variant={isSmScreen ? "h5" : "body1"}>
+                  <Typography variant={isSmScreen ? "h6" : "body1"}>
                     {user?.email}
                   </Typography>
                 </Stack>

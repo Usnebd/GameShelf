@@ -142,13 +142,6 @@ function App() {
           fontWeightBold: 700,
         },
         components: {
-          MuiTabs: {
-            styleOverrides: {
-              indicator: {
-                height: 3,
-              },
-            },
-          },
           MuiSpeedDialAction: {
             styleOverrides: {
               staticTooltipLabel: {

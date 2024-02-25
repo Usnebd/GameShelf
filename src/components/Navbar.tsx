@@ -43,6 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     useContext(UserContext);
   const theme = useTheme();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
+  const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
   const navigate = useNavigate();
   const pages = ["Home", "Menu", "Orders"];
   const LogoText = styled(Typography)(({ theme }) => ({
@@ -97,21 +98,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             component={Link}
             to="/"
             sx={{
-              color: "inherit",
-              textDecoration: "none",
-              display: { xs: "none", md: "flex" },
-            }}
-          >
-            <LogoText>MyChiosco</LogoText>
-            <LunchDiningIcon fontSize="large"></LunchDiningIcon>
-          </Box>
-          <Box
-            component={Link}
-            to="/"
-            sx={{
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1, // Fai espandere questo elemento per occupare lo spazio rimanente
-              alignItems: "center",
+              display: "flex",
+              flexGrow: isMdScreen ? "inherit" : 1, // Fai espandere questo elemento per occupare lo spazio rimanente
+              alignItems: isSmScreen ? "inherit" : "center",
               textDecoration: "none",
               color: "inherit",
             }}
