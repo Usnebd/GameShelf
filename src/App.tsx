@@ -261,7 +261,7 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
   const sendNotification = (title: string, message: string) => {
     navigator.serviceWorker.ready.then((registration) => {

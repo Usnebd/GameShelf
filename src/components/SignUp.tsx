@@ -89,11 +89,7 @@ export default function SignUp() {
         if (auth.currentUser) {
           updateProfile(auth.currentUser, {
             displayName: firstName.concat("." + lastName),
-          })
-            .then()
-            .catch((error) => {
-              console.log(error.message);
-            });
+          });
           sendEmailVerification(auth.currentUser).then(() => {
             enqueueSnackbar("Email Verification Sent", { variant: "info" });
           });
