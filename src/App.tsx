@@ -189,6 +189,8 @@ function App() {
       setUser(currentUser);
       if (!currentUser) {
         setGuestUser(true);
+        setSelectedItems([]);
+        setQuantitySelectedMap({});
       }
     });
     return () => unsubscribe();

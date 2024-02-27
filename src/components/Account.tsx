@@ -36,8 +36,7 @@ function Account() {
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
   const { enqueueSnackbar } = useSnackbar();
-  const { user, setSelectedItems, setQuantitySelectedMap } =
-    useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [changeName, setChangeName] = useState(false);
   const [credential, setCredential] = useState<AuthCredential | null>(null);
   const [changePassword, setChangePassword] = useState(false);
@@ -85,8 +84,6 @@ function Account() {
           .then(() => {
             if (auth.currentUser) {
               deleteUser(auth.currentUser).then(() => {
-                setSelectedItems([]);
-                setQuantitySelectedMap({});
                 navigate("/");
                 enqueueSnackbar("Account Deleted", {
                   variant: "success",
@@ -114,8 +111,6 @@ function Account() {
           .then(() => {
             if (auth.currentUser) {
               deleteUser(auth.currentUser).then(() => {
-                setSelectedItems([]);
-                setQuantitySelectedMap({});
                 navigate("/");
                 enqueueSnackbar("Account Deleted", {
                   variant: "success",
@@ -365,8 +360,6 @@ function Account() {
                         .then(() => {
                           if (auth.currentUser) {
                             deleteUser(auth.currentUser).then(() => {
-                              setSelectedItems([]);
-                              setQuantitySelectedMap({});
                               navigate("/");
                               enqueueSnackbar("Account Deleted", {
                                 variant: "success",

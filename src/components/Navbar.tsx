@@ -39,8 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   toggleMode,
   setItem,
 }) => {
-  const { user, selectedItems, setSelectedItems, setQuantitySelectedMap } =
-    useContext(UserContext);
+  const { user, selectedItems } = useContext(UserContext);
   const theme = useTheme();
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
@@ -60,8 +59,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     },
   }));
   const handleSignOut = () => {
-    setSelectedItems([]);
-    setQuantitySelectedMap({});
     signOut(auth)
       .then(() => {
         enqueueSnackbar("Signed Out", { variant: "info" });
