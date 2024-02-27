@@ -25,10 +25,17 @@ import {
   updatePassword,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
 import { useSnackbar } from "notistack";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import {
+  query,
+  collection,
+  getDocs,
+  writeBatch,
+  doc,
+} from "firebase/firestore";
 
 function Account() {
   const navigate = useNavigate();
@@ -36,7 +43,7 @@ function Account() {
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
   const { enqueueSnackbar } = useSnackbar();
-  const { user } = useContext(UserContext);
+  const { user, handleDeleteCart } = useContext(UserContext);
   const [changeName, setChangeName] = useState(false);
   const [credential, setCredential] = useState<AuthCredential | null>(null);
   const [changePassword, setChangePassword] = useState(false);
@@ -77,6 +84,46 @@ function Account() {
     }
   };
 
+  const handleDelete = async () => {
+    handleDeleteCart();
+    if (user) {
+      try {
+        const q = query(collection(db, `users/${user.email}/orders`));
+        const querySnapshot = await getDocs(q);
+        const totalOrders = querySnapshot.size;
+        const batchSize = 500; // Numero massimo di eliminazioni per batch
+
+        // Calcola il numero di batch necessari
+        const numBatches = Math.ceil(totalOrders / batchSize);
+        // Elimina documenti in batch più piccoli
+        for (let i = 0; i < numBatches; i++) {
+          const batch = writeBatch(db);
+          const batchStart = i * batchSize;
+          const batchEnd = Math.min(batchStart + batchSize, totalOrders);
+          querySnapshot.docs
+            .slice(batchStart, batchEnd)
+            .forEach((docSnapshot) => {
+              let docRef;
+              if (user) {
+                docRef = doc(db, `users/${user.email}/orders`, docSnapshot.id);
+              }
+              if (docRef) {
+                batch.delete(docRef);
+              }
+            });
+
+          // Commit del batch
+          await batch.commit();
+        }
+
+        enqueueSnackbar("Order History Deleted", { variant: "success" });
+      } catch (error) {
+        enqueueSnackbar("Error", { variant: "error" });
+        console.log(error);
+      }
+    }
+  };
+
   const handleDeleteAccount = () => {
     if (auth.currentUser) {
       if (credential) {
@@ -84,6 +131,7 @@ function Account() {
           .then(() => {
             if (auth.currentUser) {
               deleteUser(auth.currentUser).then(() => {
+                handleDelete();
                 navigate("/");
                 enqueueSnackbar("Account Deleted", {
                   variant: "success",
@@ -111,6 +159,7 @@ function Account() {
           .then(() => {
             if (auth.currentUser) {
               deleteUser(auth.currentUser).then(() => {
+                handleDelete();
                 navigate("/");
                 enqueueSnackbar("Account Deleted", {
                   variant: "success",
@@ -360,6 +409,7 @@ function Account() {
                         .then(() => {
                           if (auth.currentUser) {
                             deleteUser(auth.currentUser).then(() => {
+                              handleDelete();
                               navigate("/");
                               enqueueSnackbar("Account Deleted", {
                                 variant: "success",

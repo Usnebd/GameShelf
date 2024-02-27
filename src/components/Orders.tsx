@@ -27,13 +27,11 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
   onSnapshot,
   orderBy,
   query,
-  writeBatch,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
 import { useSearchParams } from "react-router-dom";
 
 function Orders() {
@@ -68,27 +66,6 @@ function Orders() {
     setOrders((prev) => [...prev].reverse());
   };
 
-  const handleDelete = async () => {
-    if (user && orders.length > 0) {
-      try {
-        const q = query(collection(db, `users/${user.email}/orders`));
-        const querySnapshot = await getDocs(q);
-        // Get a new write batch
-        const batch = writeBatch(db);
-        querySnapshot.docs.forEach((docSnapshot) => {
-          const docRef = doc(db, `users/${user.email}/orders`, docSnapshot.id);
-          batch.delete(docRef);
-        });
-        // Commit the batch
-        await batch.commit();
-        enqueueSnackbar("Order History Deleted", { variant: "success" });
-      } catch (error) {
-        enqueueSnackbar("Error", { variant: "error" });
-        console.log(error);
-      }
-    }
-  };
-
   const handleSliderChange = (_event: Event, newValue: number | number[]) => {
     const params = new URLSearchParams(searchParams);
     if (Array.isArray(newValue)) {
@@ -120,14 +97,13 @@ function Orders() {
   };
 
   useEffect(() => {
-    const fetchFirestoreData = async () => {
-      if (user !== null) {
-        const q = query(
-          collection(db, `users/${user.email}/orders`),
+    if (auth.currentUser) {
+      const unsubscribe = onSnapshot(
+        query(
+          collection(db, `users/${auth.currentUser.email}/orders`),
           orderBy("timestamp", "desc")
-        );
-
-        onSnapshot(q, (querySnapshot) => {
+        ),
+        (querySnapshot) => {
           const data = querySnapshot.docs.map((doc) => doc.data());
           if (data.length > 0) {
             setOrders(querySnapshot.docs);
@@ -147,11 +123,10 @@ function Orders() {
           } else {
             setFilteredPrice([0, 0]);
           }
-        });
-      }
-    };
-
-    fetchFirestoreData();
+        }
+      );
+      return () => unsubscribe();
+    }
   }, [user]);
 
   return (
@@ -198,18 +173,6 @@ function Orders() {
               step={1}
             />
           </Box>
-          <Button
-            onClick={handleDelete}
-            disabled={!user}
-            variant={theme.palette.mode == "dark" ? "outlined" : "contained"}
-            sx={{ py: 1.3, minWidth: "190px" }}
-            color="error"
-          >
-            <Typography fontWeight={"bold"} flexGrow={1}>
-              Delete
-            </Typography>
-            <DeleteIcon fontSize="large" />
-          </Button>
         </Stack>
         <Box
           flexGrow={1}
